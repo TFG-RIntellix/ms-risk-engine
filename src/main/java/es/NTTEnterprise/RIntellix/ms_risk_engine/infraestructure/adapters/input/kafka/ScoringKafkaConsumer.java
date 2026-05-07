@@ -13,6 +13,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProcessingPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.input.kafka.strategy.ScoringGenerationMessageStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.ScoringKafkaRequestMapper;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -67,7 +68,7 @@ public class ScoringKafkaConsumer {
             final Acknowledgment acknowledgment) {
 
         final Object message = record.value();
-        log.info("Received scoring message from Kafka. key={}, topic={}, offset={}",
+        log.info(LogMessage.KAFKA_MESSAGE_RECEIVED,
                 record.key(), record.topic(), record.offset());
 
         // Map the incoming message to the appropiate domain request using the strategy
@@ -76,11 +77,11 @@ public class ScoringKafkaConsumer {
 
         final boolean processed = scoringProcessingService.processScoringMessage(mappedMessage);
         if (!processed) {
-            throw new IllegalStateException("Scoring message was not processed successfully");
+            throw new IllegalStateException(LogMessage.KAFKA_MESSAGE_PROCESSING_FAILED);
         }
 
         acknowledgment.acknowledge();
-        log.info("Scoring message processed and acknowledged successfully");
+        log.info(LogMessage.KAFKA_MESSAGE_PROCESSED);
 
     }
 
@@ -93,7 +94,7 @@ public class ScoringKafkaConsumer {
     private ScoringGenerationPayload mapWithStrategy(final Object message) {
         final String requestType = ScoringKafkaRequestMapper.extractRequestType(message);
         if (requestType == null) {
-            throw new IllegalArgumentException("requestType is required to resolve scoring mapping strategy");
+            throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_IS_REQUIRED);
         }
 
         for (ScoringGenerationMessageStrategy strategy : strategies) {
@@ -102,7 +103,7 @@ public class ScoringKafkaConsumer {
             }
         }
 
-        throw new IllegalArgumentException("Unsupported requestType received from Kafka: " + requestType);
+        throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_NOT_FOUND + " " + requestType);
 
     }
-}
+}

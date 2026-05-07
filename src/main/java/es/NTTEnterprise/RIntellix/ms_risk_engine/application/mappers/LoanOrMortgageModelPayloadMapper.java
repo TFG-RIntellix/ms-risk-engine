@@ -22,9 +22,6 @@ public class LoanOrMortgageModelPayloadMapper {
     // TODO: Default LTV applied when ms-core-data sends null. Should be resolved in
     // ms-core-data.
     private static final double DEFAULT_LTV = 0.0;
-    // TODO: Default tipo_prestamo — ms-core-data does not provide a specific loan
-    // type field.
-    private static final String DEFAULT_TIPO_PRESTAMO = "Personal";
 
     /**
      * Maps loan or mortgage generation request to model payload.

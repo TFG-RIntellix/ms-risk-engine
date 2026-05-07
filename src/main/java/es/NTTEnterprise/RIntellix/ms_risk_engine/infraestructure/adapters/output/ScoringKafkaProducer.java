@@ -14,6 +14,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.Scoring
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.ScoringResultMessageDTOMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.ScoringResultPublisherPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -56,12 +57,12 @@ public class ScoringKafkaProducer implements ScoringResultPublisherPort {
     @Override
     public void publishScoringResult(final Scoring scoring) {
         if (scoring == null) {
-            log.warn("publishScoringResult called with null scoring, skipping publish");
+            log.info(LogMessage.SCORING_PAYLOAD_NULL);
             return;
         }
 
         final String requestId = scoring.getRequestId();
-        log.info("Publishing scoring result to Kafka. topic={}, requestId={}", topic, requestId);
+        log.info(LogMessage.SCORING_MESSAGE_PROCESSING, topic, requestId);
 
         final ScoringResultMessageDTO dto = scoringResultMessageDTOMapper.toDTO(scoring);
 
@@ -73,15 +74,14 @@ public class ScoringKafkaProducer implements ScoringResultPublisherPort {
 
         try {
             kafkaTemplate.send(message).get();
-            log.info("Scoring result published successfully. requestId={}", requestId);
+            log.info(LogMessage.SCORING_MESSAGE_PROCESSING, requestId);
         } catch (ExecutionException ex) {
-            log.error("Failed to publish scoring result. requestId={}, error={}",
-                    requestId, ex.getMessage(), ex);
-            throw new RuntimeException("Failed to publish scoring result for requestId=" + requestId, ex);
+            log.error(LogMessage.ERROR_PUBLISHING_SCORING_MESSAGE, requestId, ex.getMessage(), ex);
+            throw new RuntimeException(LogMessage.ERROR_PUBLISHING_SCORING_MESSAGE + requestId, ex);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            log.error("Scoring result publish interrupted. requestId={}", requestId, ex);
-            throw new RuntimeException("Scoring result publish interrupted for requestId=" + requestId, ex);
+            log.error(LogMessage.SCORING_RESULT_PUBLISH_INTERRUPTED, requestId, ex);
+            throw new RuntimeException(LogMessage.SCORING_RESULT_PUBLISH_INTERRUPTED + requestId, ex);
         }
     }
 }

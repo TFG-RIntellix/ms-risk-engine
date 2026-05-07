@@ -6,11 +6,9 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 
 /**
- * DTO that encapsulates model execution output for scoring processing.
- *
- * Contains the prepared model payload snapshot, the model prediction
- * response, and the fully computed risk metrics (EAD, LGD, ECL, RiskGrade)
- * to keep orchestration flow simple in application service layer.
+ * Encapsulates the complete output of a model execution, including the
+ * original request payload, the model's prediction, and the resulting risk
+ * metrics.
  *
  * @author Lucía Fernández Mancebo
  * @Date 04-25-2026

@@ -14,7 +14,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
  * data is sent to the scoring engine for credit cards, following the
  * Strategy Pattern for type-specific message transport.
  *
- * @author Lucia Fernandez Mancebo
+ * @author Lucía Fernández Mancebo
  * @Date 04-20-2026
  */
 public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload {
@@ -139,5 +139,13 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
 
     public void setIsRevolving(final Boolean isRevolving) {
         this.isRevolving = isRevolving;
+    }
+
+    @Override
+    public String toString() {
+        return "CreditCardScoringGenerationRequest [partyId=" + partyId + ", age=" + age + ", gender=" + gender
+                + ", maritalStatus=" + maritalStatus + ", employmentStatus=" + employmentStatus + ", annualIncome="
+                + annualIncome + ", creditLimit=" + creditLimit + ", isRevolving=" + isRevolving
+                + ", getRequestId()=" + getRequestId() + ", getRequestType()=" + getRequestType() + "]";
     }
 }

@@ -26,6 +26,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -116,11 +117,11 @@ public class KafkaConsumerConfig {
             if (exception instanceof ListenerExecutionFailedException
                     && exception.getCause() instanceof MethodArgumentNotValidException validationEx) {
                 validationEx.getBindingResult().getAllErrors().forEach(error -> log.warn(
-                        "Kafka consumer validation rejected {}: {}",
+                        LogMessage.KAFKA_CONSUMER_VALIDATION_REJECTED, // TODO: Add this
                         error.getObjectName(),
                         error.getDefaultMessage()));
             } else {
-                log.error("Kafka consumer error processing record: {}", consumerRecord, exception);
+                log.error(LogMessage.KAFKA_CONSUMER_ERROR, consumerRecord, exception);
             }
         }, backoff);
 

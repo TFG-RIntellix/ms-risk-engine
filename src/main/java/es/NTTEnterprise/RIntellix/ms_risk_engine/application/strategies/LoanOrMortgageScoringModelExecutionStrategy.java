@@ -17,6 +17,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -82,8 +83,7 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                         final String requestId) {
 
                 if (!(payload instanceof ScoringGenerationRequest request)) {
-                        throw new IllegalArgumentException(
-                                        "Loan/mortgage strategy requires ScoringGenerationRequest payload");
+                        throw new IllegalArgumentException(LogMessage.STRATEGY_ERROR_PAYLOAD);
                 }
 
                 // Map payload to model request format.
@@ -101,14 +101,13 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                                 requestType, null, riskCalculationStrategies);
                 final RiskMetrics prePdMetrics = riskStrategy.calculatePrePdMetrics(
                                 request.getLoanAmount(), request.getLtv());
-                log.debug("Pre-PD metrics computed for requestId={}: ead={}, lgd={}",
-                                requestId, prePdMetrics.getEad(), prePdMetrics.getLgd());
+
+                log.info(LogMessage.PRE_PD_METRICS_COMPUTED, requestId, prePdMetrics.getEad(), prePdMetrics.getLgd());
 
                 // Wait until obtaining PD result.
                 final ModelPredictionResult predictionResult = predictionResultFuture.join();
-                log.debug("Model prediction received for requestId={}: pd={}",
-                                requestId, predictionResult.getProbabilityOfDefault());
-                log.info("Model Prediction Result: {}", predictionResult.toString());
+                log.info(LogMessage.MODEL_PREDICTION_RESULT, requestId, predictionResult.getProbabilityOfDefault());
+                log.info(LogMessage.MODEL_PREDICTION_RESULT_TO_STRING, predictionResult.toString());
 
                 // Assemble full risk metrics with PD, ECL, and RiskGrade.
                 final RiskMetrics fullMetrics = riskStrategy.assembleFullMetrics(

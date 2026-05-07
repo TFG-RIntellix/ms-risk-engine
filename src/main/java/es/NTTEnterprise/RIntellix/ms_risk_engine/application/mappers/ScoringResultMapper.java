@@ -50,6 +50,14 @@ public class ScoringResultMapper {
         return scoring;
     }
 
+    /**
+     * Copies the SHAP explainability list and enriches feature values by resolving
+     * them against the input snapshot.
+     *
+     * @param shapExplanations the raw SHAP explanations from model.
+     * @param inputSnapshot    the original input snapshot sent to the model.
+     * @return the mapped and enriched explainability list.
+     */
     private List<RiskFeature> copyExplainability(
             final List<RiskFeature> shapExplanations,
             final Map<String, Object> inputSnapshot) {
@@ -70,6 +78,14 @@ public class ScoringResultMapper {
         return explainability;
     }
 
+    /**
+     * Resolves the feature value from the input snapshot, matching by feature name
+     * case-insensitively.
+     *
+     * @param sourceFeature the feature containing the name to resolve.
+     * @param inputSnapshot the original input snapshot.
+     * @return the resolved feature value as String, or empty string if not found.
+     */
     private String resolveFeatureValue(final RiskFeature sourceFeature, final Map<String, Object> inputSnapshot) {
         final String featureName = sourceFeature.getFeatureName();
         if (featureName == null || featureName.isBlank()) {

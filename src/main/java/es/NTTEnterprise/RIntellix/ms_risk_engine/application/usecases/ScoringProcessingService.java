@@ -14,6 +14,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringM
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProcessingPortService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -64,13 +65,13 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
     public boolean processScoringMessage(final ScoringGenerationPayload scoringCreationPayload) {
 
         if (scoringCreationPayload == null) {
-            log.warn("processScoringMessage received null scoring payload");
+            log.warn(LogMessage.SCORING_PAYLOAD_NULL);
             return false;
         }
 
         final String requestId = scoringCreationPayload.getRequestId();
         final String requestType = scoringCreationPayload.getRequestType();
-        log.info("Processing scoring message. requestId={}, requestType={}", requestId, requestType);
+        log.info(LogMessage.SCORING_MESSAGE_PROCESSING, requestId, requestType);
 
         try {
             // We get the strategy based on the request type.
@@ -82,7 +83,7 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
                     requestType,
                     requestId);
 
-            log.info("Execution Result: {}", executionResult.toString());
+            log.debug(LogMessage.MODEL_EXECUTION_RESULT, executionResult.toString());
 
             final Scoring scoring = scoringResultMapper.toScoring(
                     requestId,
@@ -93,18 +94,14 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
 
             scoringResultPublisher.publishScoringResult(scoring);
 
-            log.info("Scoring processed successfully. requestId={}, pd={}, riskLevel={}, explainabilityCount={}",
+            log.info(LogMessage.SCORING_PROCESSED_SUCCESSFULLY,
                     requestId,
                     scoring.getResults() == null ? null : scoring.getResults().getProbabilityOfDefault(),
                     scoring.getResults() == null ? null : scoring.getResults().getRiskLevel(),
                     scoring.getExplainability() == null ? 0 : scoring.getExplainability().size());
             return true;
         } catch (RuntimeException ex) {
-            log.error("Error processing scoring message. requestId={}, requestType={}, error={}",
-                    requestId,
-                    requestType,
-                    ex.getMessage(),
-                    ex);
+            log.error(LogMessage.ERROR_PROCESSING_SCORING_MESSAGE, requestId, requestType, ex.getMessage(), ex);
             return false;
         }
     }

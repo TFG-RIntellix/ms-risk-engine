@@ -1,11 +1,11 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
 
 /**
- * Output DTO representing a single explainability feature
- * for Kafka scoring result message transport.
+ * Represents a single feature used in the risk scoring process, including its
+ * metadata and contribution value.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @Date 04-26-2026S
  */
 public class RiskFeatureDTO {
 

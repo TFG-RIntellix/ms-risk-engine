@@ -7,7 +7,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
  * Credit Card).
  * Implementations are serialized to JSON for ms-model API consumption.
  *
- * @author JAVA_DEVELOPER
+ * @author Lucía Fernández Mancebo
  * @date 2026-04-05
  */
 public abstract class ScoringGenerationPayload {
@@ -54,5 +54,10 @@ public abstract class ScoringGenerationPayload {
 
     public void setRequestType(String requestType) {
         this.requestType = requestType;
+    }
+
+    @Override
+    public String toString() {
+        return "ScoringGenerationPayload [requestId=" + requestId + ", requestType=" + requestType + "]";
     }
 }

@@ -46,6 +46,12 @@ public class ScoringResultMessageDTOMapper {
         return dto;
     }
 
+    /**
+     * Maps a RiskMetrics domain entity to a RiskMetricsDTO.
+     *
+     * @param riskMetrics the riskMetrics domain entity.
+     * @return the mapped output DTO, or null if input is null.
+     */
     private RiskMetricsDTO mapRiskMetrics(final RiskMetrics riskMetrics) {
         if (riskMetrics == null) {
             return null;
@@ -60,6 +66,13 @@ public class ScoringResultMessageDTOMapper {
         return dto;
     }
 
+    /**
+     * Maps a List of RiskFeature domain entities to a List of RiskFeatureDTO.
+     *
+     * @param features the List of RiskFeature domain entities.
+     * @return the mapped List of RiskFeatureDTO, or an empty list if the input list
+     *         is null or empty.
+     */
     private List<RiskFeatureDTO> mapExplainability(final List<RiskFeature> features) {
         if (features == null || features.isEmpty()) {
             return List.of();
@@ -70,6 +83,12 @@ public class ScoringResultMessageDTOMapper {
                 .toList();
     }
 
+    /**
+     * Maps a RiskFeature domain entity to a RiskFeatureDTO.
+     * 
+     * @param feature the RiskFeature domain entity.
+     * @return the mapped output DTO, or null if input is null.
+     */
     private RiskFeatureDTO mapRiskFeature(final RiskFeature feature) {
         if (feature == null) {
             return null;

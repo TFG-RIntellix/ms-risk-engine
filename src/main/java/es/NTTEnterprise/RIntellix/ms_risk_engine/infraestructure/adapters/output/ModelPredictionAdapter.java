@@ -4,13 +4,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,12 +48,12 @@ public class ModelPredictionAdapter implements ModelPredictionPort {
     @Override
     public ModelPredictionResult predict(final Map<String, Object> modelPayload, final String requestId) {
         if (modelPayload == null) {
-            throw new IllegalArgumentException("modelPayload must not be null");
+            throw new IllegalArgumentException(LogMessage.MODEL_PAYLOAD_NULL);
         }
 
         final String endpointPath = extractEndpointPath(modelPayload);
         modelPayload.remove(ENDPOINT_KEY);
-        log.info("Invoking model prediction. requestId={}, endpoint={}", requestId, endpointPath);
+        log.info(LogMessage.INVOKING_MODEL_PREDICTION, requestId, endpointPath);
 
         final ModelPredictionResult result = webClient.post()
                 .uri(endpointPath)
@@ -63,8 +63,7 @@ public class ModelPredictionAdapter implements ModelPredictionPort {
                 .bodyToMono(ModelPredictionResult.class)
                 .block();
 
-        log.info("Model prediction completed. requestId={}, pd={}",
-                requestId,
+        log.info(LogMessage.MODEL_PREDICTION_COMPLETED, requestId,
                 result == null ? null : result.getProbabilityOfDefault());
         return result;
     }
@@ -72,7 +71,7 @@ public class ModelPredictionAdapter implements ModelPredictionPort {
     private String extractEndpointPath(final Map<String, Object> modelPayload) {
         final Object endpointValue = modelPayload.get(ENDPOINT_KEY);
         if (endpointValue == null) {
-            throw new IllegalArgumentException("modelPayload is missing required key: " + ENDPOINT_KEY);
+            throw new IllegalArgumentException(LogMessage.ENDPOINT_KEY_NOT_FOUND + ENDPOINT_KEY);
         }
         return String.valueOf(endpointValue);
     }

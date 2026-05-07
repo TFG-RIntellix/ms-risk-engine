@@ -18,6 +18,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -79,8 +80,7 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                         final String requestId) {
 
                 if (!(payload instanceof CreditCardScoringGenerationRequest request)) {
-                        throw new IllegalArgumentException(
-                                        "Credit-card strategy requires CreditCardScoringGenerationRequest payload");
+                        throw new IllegalArgumentException(LogMessage.CREDIT_CARD_STRATEGY_ERROR_PAYLOAD);
                 }
 
                 // Map payload to model request format.
@@ -97,15 +97,15 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                 final Boolean isRevolving = request.getIsRevolving();
                 final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(
                                 requestType, isRevolving, riskCalculationStrategies);
+
                 final RiskMetrics prePdMetrics = riskStrategy.calculatePrePdMetrics(
                                 request.getCreditLimit(), null);
-                log.debug("Pre-PD metrics computed for requestId={}: ead={}, lgd={}, isRevolving={}",
-                                requestId, prePdMetrics.getEad(), prePdMetrics.getLgd(), isRevolving);
+                log.debug(LogMessage.PRE_PD_METRICS_COMPUTED, requestId, prePdMetrics.getEad(), prePdMetrics.getLgd());
 
                 // Wait until obtaining PD result.
                 final ModelPredictionResult predictionResult = predictionResultFuture.join();
-                log.debug("Model prediction received for requestId={}: pd={}",
-                                requestId, predictionResult.getProbabilityOfDefault());
+                log.debug(LogMessage.MODEL_PREDICTION_RESULT, requestId,
+                                predictionResult.getProbabilityOfDefault());
 
                 // Assemble full risk metrics with PD, ECL, and RiskGrade.
                 final RiskMetrics fullMetrics = riskStrategy.assembleFullMetrics(

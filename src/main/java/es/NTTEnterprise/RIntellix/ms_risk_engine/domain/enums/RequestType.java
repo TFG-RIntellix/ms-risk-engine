@@ -2,6 +2,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+
 /**
  * This enum represents the type of a request, which can be a loan, mortgage or
  * a credit card.
@@ -37,7 +39,7 @@ public enum RequestType {
      */
     public static RequestType fromValue(String value) {
         if (value == null) {
-            throw new IllegalArgumentException("RequestType value cannot be null");
+            throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_NULL);
         }
 
         for (RequestType type : RequestType.values()) {
@@ -46,6 +48,6 @@ public enum RequestType {
             }
         }
 
-        throw new IllegalArgumentException("Unknown RequestType value: " + value);
+        throw new IllegalArgumentException(LogMessage.UNKNOWN_REQUEST_TYPE + value);
     }
 }

@@ -3,6 +3,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 import java.util.List;
 import java.util.Objects;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+
 /**
  * Factory class for creating ScoringModelExecutionStrategy instances based on
  * request type.
@@ -38,7 +40,7 @@ public final class ScoringModelExecutionStrategyFactory {
             }
         }
 
-        throw new IllegalArgumentException("Unsupported request type: " + requestType);
+        throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_NOT_FOUND + " " + requestType);
     }
 
 }

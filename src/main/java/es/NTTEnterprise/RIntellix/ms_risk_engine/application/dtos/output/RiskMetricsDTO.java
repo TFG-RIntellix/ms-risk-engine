@@ -83,4 +83,11 @@ public class RiskMetricsDTO {
     public void setRiskLevel(final String riskLevel) {
         this.riskLevel = riskLevel;
     }
+
+    @Override
+    public String toString() {
+        return "RiskMetricsDTO [probabilityOfDefault=" + probabilityOfDefault + ", lossGivenDefault="
+                + lossGivenDefault + ", exposureAtDefault=" + exposureAtDefault + ", expectedCalculatedLoss="
+                + expectedCalculatedLoss + ", riskLevel=" + riskLevel + "]";
+    }
 }

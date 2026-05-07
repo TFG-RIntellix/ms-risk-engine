@@ -114,4 +114,11 @@ public class ScoringResultMessageDTO {
     public void setExplainability(final List<RiskFeatureDTO> explainability) {
         this.explainability = explainability;
     }
+
+    @Override
+    public String toString() {
+        return "ScoringResultMessageDTO [requestId=" + requestId + ", modelVersion=" + modelVersion
+                + ", executionDate=" + executionDate + ", inputSnapshot=" + inputSnapshot + ", results=" + results
+                + ", baseValue=" + baseValue + ", explainability=" + explainability + "]";
+    }
 }

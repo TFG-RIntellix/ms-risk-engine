@@ -2,6 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
 
 /**
@@ -69,7 +70,7 @@ public interface RiskCalculationStrategy {
 
         if (pd == null || prePdMetrics == null || prePdMetrics.getEad() == null
                 || prePdMetrics.getLgd() == null) {
-            throw new IllegalArgumentException("Probability of default or pre-PD metrics are null");
+            throw new IllegalArgumentException(LogMessage.ERROR_ASSEMBLING_FULL_METRICS + pd);
         }
 
         double safePd = RiskCalculationDefaults.clampRatio(pd);
