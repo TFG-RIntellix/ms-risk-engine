@@ -1,0 +1,65 @@
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
+
+/**
+ * Risk calculation strategy for fixed-rate mortgages.
+ *
+ * Business logic: High-value debt secured by real estate.
+ * Risk is mitigated by the physical collateral.
+ *
+ * EAD = Requested Loan Amount.
+ * LGD = max(0.10, (EAD - (AppraisalValue * (1 - h) - ForeclosureCosts)) / EAD).
+ * h (Haircut) = 0.20 (20% market stress drop).
+ * Foreclosure Costs = 10% of appraisal value.
+ * Regulatory Floor: LGD cannot be lower than 10%.
+ *
+ * @author Lucía Fernández Mancebo
+ * @Date 04-25-2026
+ */
+public class MortgageRiskCalculationStrategy implements RiskCalculationStrategy {
+
+    @Override
+    public boolean supports(final String requestType, final Boolean isRevolving) {
+        return "HIPOTECA".equals(requestType);
+    }
+
+    @Override
+    public RiskMetrics calculatePrePdMetrics(final Double requestedAmount, final Double ltv)
+            throws IllegalArgumentException {
+
+        Double appraisalValue = null;
+        Double foreclosureCosts = null;
+        Double recoverableCollateral = null;
+        Double calculatedLgd = null;
+        Double safeLtv = null;
+        Double ead = null;
+        Double safeCreditLimit = null;
+
+        safeCreditLimit = RiskCalculationDefaults.validateRequestAmount(requestedAmount);
+
+        // For calculate the LGD.
+        safeLtv = RiskCalculationDefaults.clampRatio(ltv == null ? 0.0 : ltv);
+
+        if (safeLtv <= 0.0) {
+            calculatedLgd = RiskCalculationDefaults.MORTGAGE_LGD_UNSECURED_LOAN;
+        } else {
+            ead = safeCreditLimit;
+            appraisalValue = safeCreditLimit / safeLtv;
+            foreclosureCosts = appraisalValue * RiskCalculationDefaults.MORTGAGE_FORECLOSURE_COST_RATE;
+            recoverableCollateral = appraisalValue * (1.0 - RiskCalculationDefaults.MORTGAGE_HAIRCUT)
+                    - foreclosureCosts;
+            calculatedLgd = (ead - recoverableCollateral) / ead;
+
+            calculatedLgd = RiskCalculationDefaults.clampRatio(Math.max(calculatedLgd,
+                    RiskCalculationDefaults.MORTGAGE_LGD_FLOOR));
+        }
+
+        final RiskMetrics metrics = new RiskMetrics();
+        metrics.setExposureAtDefault(safeCreditLimit);
+        metrics.setLossGivenDefault(calculatedLgd);
+        return metrics;
+    }
+}
