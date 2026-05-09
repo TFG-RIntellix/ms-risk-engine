@@ -10,6 +10,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.Scoring
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Mapper that converts a Scoring domain entity into a
@@ -19,6 +21,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
  * @Date 04-26-2026
  */
 @Component
+@Slf4j
 public class ScoringResultMessageDTOMapper {
 
     /**
@@ -32,8 +35,8 @@ public class ScoringResultMessageDTOMapper {
             return null;
         }
 
-        System.out.println("Mapping Scoring entity to ScoringResultMessageDTO");
-        System.out.println("This is the actual scoring: " + scoring.toString());
+        log.info(LogMessage.MAPPING_SCORING_ENTITY_TO_DTO);
+        log.debug(LogMessage.ACTUAL_SCORING_DEBUG, scoring.toString());
 
         final ScoringResultMessageDTO dto = new ScoringResultMessageDTO();
         dto.setRequestId(scoring.getRequestId());

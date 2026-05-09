@@ -62,4 +62,44 @@ public final class LogMessage {
     public static final String REQUEST_TYPE_NULL = "RequestType value cannot be null";
     public static final String UNKNOWN_REQUEST_TYPE = "Unknown RequestType value: {}";
 
+    // Model Prediction Error Messages (Logging)
+    public static final String MODEL_VALIDATION_ERROR = "Model validation failed for requestId={}. Status={}, Error: {}";
+    public static final String MODEL_SERVICE_ERROR = "Model service error for requestId={}. Status={}, Error: {}";
+
+    // Model Prediction Exception Messages (Exception Details)
+    public static final String MODEL_VALIDATION_EXCEPTION_MESSAGE = "Model validation failed: ";
+    public static final String MODEL_SERVICE_EXCEPTION_MESSAGE = "Model service error: ";
+
+    // Model Prediction Adapter Messages
+    public static final String INVALID_MODEL_PREDICTION_REQUEST = "Invalid model prediction request for requestId={}. Error: {}";
+
+    // ============================================================
+    // VALIDATION AND EXCEPTION MESSAGES
+    // ============================================================
+
+    // Null Validation Messages
+    public static final String PAYLOAD_NULL_ERROR = "modelPayload must not be null";
+    public static final String ENDPOINT_PATH_NULL_ERROR = "modelEndpointPath must not be null";
+    public static final String REQUEST_ID_NULL_ERROR = "requestId must not be null";
+    public static final String TARGET_TYPE_NULL_ERROR = "targetType must not be null";
+    public static final String KAFKA_PAYLOAD_NULL_ERROR = "Kafka payload must not be null";
+    public static final String REQUEST_TYPE_CANNOT_BE_NULL = "Request type cannot be null";
+    public static final String STRATEGIES_LIST_CANNOT_BE_NULL = "Strategies list cannot be null";
+
+    // Business Rule Validation Messages
+    public static final String REQUESTED_AMOUNT_MUST_BE_GREATER_THAN_ZERO = "Requested amount must be greater than 0";
+    public static final String NO_RISK_CALCULATION_STRATEGY_FOUND = "No risk calculation strategy found for requestType=%s, isRevolving=%s";
+    public static final String FORM_CHANGES_CONTAIN_UNSUPPORTED_FIELDS = "Form changes contain unsupported fields";
+
+    // Utility Class Messages
+    public static final String UTILITY_CLASS_NEVER_INSTANTIATE = "Utility class — never instantiate";
+    public static final String FACTORY_CLASS_NEVER_INSTANTIATE = "Never instantiate";
+
+    // ============================================================
+    // DEBUG AND DIAGNOSTIC MESSAGES
+    // ============================================================
+
+    public static final String MAPPING_SCORING_ENTITY_TO_DTO = "Mapping Scoring entity to ScoringResultMessageDTO";
+    public static final String ACTUAL_SCORING_DEBUG = "This is the actual scoring: {}";
+
 }

@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,7 +16,7 @@ import jakarta.validation.Payload;
 @Documented
 public @interface ValidSimulationFormChanges {
 
-    String message() default "Form changes contain unsupported fields";
+    String message() default LogMessage.FORM_CHANGES_CONTAIN_UNSUPPORTED_FIELDS;
 
     Class<?>[] groups() default {};
 

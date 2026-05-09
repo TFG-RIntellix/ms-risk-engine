@@ -2,6 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.outpu
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -10,16 +11,32 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.handler.ModelPredictionErrorHandler;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.util.ModelPayloadUtil;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Output adapter that invokes the ms-model AI prediction service
- * via synchronous WebClient calls.
+ * via asynchronous, non-blocking WebClient calls.
  *
- * Extracts the target endpoint path from the payload, sends the
- * model input as a JSON POST request, and maps the response into
- * a ModelPredictionResult domain entity.
+ * Responsibilities:
+ * - Orchestrate WebClient POST request to the model service endpoint
+ * - Perform defensive validation of inputs (fail-safe)
+ * - Return CompletableFuture for async composition
+ * - Delegate error handling to ModelPredictionErrorHandler
+ *
+ * Validation: Although the application layer validates inputs before calling
+ * this adapter,
+ * this adapter also validates defensively as part of the infrastructure
+ * boundary.
+ * This ensures robustness even if called directly or if upstream validation is
+ * bypassed.
+ *
+ * Error Handling (delegated):
+ * - 422 Unprocessable Entity: ModelValidationException
+ * - 5xx Server Errors: ModelServiceException
+ * - Other HTTP/network errors: propagated as-is
  *
  * @author Lucía Fernández Mancebo
  * @Date 04-26-2026
@@ -28,51 +45,56 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ModelPredictionAdapter implements ModelPredictionPort {
 
-    private static final String ENDPOINT_KEY = "modelEndpointPath";
-
     private final WebClient webClient;
+    private final ModelPredictionErrorHandler errorHandler;
 
     /**
      * Constructor of the ModelPredictionAdapter class.
      *
-     * @param baseUrl the base URL of the ms-model service.
+     * @param baseUrl      the base URL of the ms-model service.
+     * @param errorHandler the error handler for mapping HTTP responses to domain
+     *                     exceptions.
      */
     public ModelPredictionAdapter(
-            @Value("${risk.model.base-url}") final String baseUrl) {
+            @Value("${risk.model.base-url}") final String baseUrl,
+            final ModelPredictionErrorHandler errorHandler) {
         Objects.requireNonNull(baseUrl);
+        Objects.requireNonNull(errorHandler);
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
                 .build();
+        this.errorHandler = errorHandler;
     }
 
     @Override
-    public ModelPredictionResult predict(final Map<String, Object> modelPayload, final String requestId) {
-        if (modelPayload == null) {
-            throw new IllegalArgumentException(LogMessage.MODEL_PAYLOAD_NULL);
+    public CompletableFuture<ModelPredictionResult> predictAsync(
+            final Map<String, Object> modelPayload,
+            final String requestId,
+            final String modelEndpointPath) {
+
+        try {
+            ModelPayloadUtil.validatePayloadNotNull(modelPayload);
+            Objects.requireNonNull(modelEndpointPath, LogMessage.ENDPOINT_PATH_NULL_ERROR);
+
+            log.info(LogMessage.INVOKING_MODEL_PREDICTION, requestId, modelEndpointPath);
+
+            return webClient.post()
+                    .uri(modelEndpointPath)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(modelPayload)
+                    .retrieve()
+                    .bodyToMono(ModelPredictionResult.class)
+                    .toFuture()
+                    .thenApply(result -> {
+                        log.info(LogMessage.MODEL_PREDICTION_COMPLETED, requestId,
+                                result == null ? null : result.getProbabilityOfDefault());
+                        return result;
+                    })
+                    .exceptionally(throwable -> errorHandler.handleError(requestId, throwable));
+
+        } catch (RuntimeException ex) {
+            log.error(LogMessage.INVALID_MODEL_PREDICTION_REQUEST, requestId, ex.getMessage());
+            return CompletableFuture.failedFuture(ex);
         }
-
-        final String endpointPath = extractEndpointPath(modelPayload);
-        modelPayload.remove(ENDPOINT_KEY);
-        log.info(LogMessage.INVOKING_MODEL_PREDICTION, requestId, endpointPath);
-
-        final ModelPredictionResult result = webClient.post()
-                .uri(endpointPath)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(modelPayload)
-                .retrieve()
-                .bodyToMono(ModelPredictionResult.class)
-                .block();
-
-        log.info(LogMessage.MODEL_PREDICTION_COMPLETED, requestId,
-                result == null ? null : result.getProbabilityOfDefault());
-        return result;
-    }
-
-    private String extractEndpointPath(final Map<String, Object> modelPayload) {
-        final Object endpointValue = modelPayload.get(ENDPOINT_KEY);
-        if (endpointValue == null) {
-            throw new IllegalArgumentException(LogMessage.ENDPOINT_KEY_NOT_FOUND + ENDPOINT_KEY);
-        }
-        return String.valueOf(endpointValue);
     }
 }

@@ -15,7 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 public final class RiskCalculationDefaults {
 
     private RiskCalculationDefaults() {
-        throw new UnsupportedOperationException("Utility class — never instantiate");
+        throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }
 
     // ============================================================
@@ -126,7 +126,7 @@ public final class RiskCalculationDefaults {
      */
     public static double validateRequestAmount(Double requestedAmount) {
         if (requestedAmount == null || requestedAmount <= 0) {
-            throw new IllegalArgumentException("Requested amount must be greater than 0");
+            throw new IllegalArgumentException(LogMessage.REQUESTED_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
         }
         return requestedAmount;
     }

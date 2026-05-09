@@ -4,8 +4,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
  * Mapper utility for inbound Kafka scoring payload conversion.
@@ -19,7 +21,7 @@ public final class ScoringKafkaRequestMapper {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private ScoringKafkaRequestMapper() {
-        // Utility class
+        throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }
 
     /**
@@ -31,9 +33,9 @@ public final class ScoringKafkaRequestMapper {
      * @return typed DTO instance
      */
     public static <T> T toType(final Object payload, final Class<T> targetType) {
-        Objects.requireNonNull(targetType, "targetType must not be null");
+        Objects.requireNonNull(targetType, LogMessage.TARGET_TYPE_NULL_ERROR);
         if (payload == null) {
-            throw new IllegalArgumentException("Kafka payload must not be null");
+            throw new IllegalArgumentException(LogMessage.KAFKA_PAYLOAD_NULL_ERROR);
         }
 
         if (targetType.isInstance(payload)) {

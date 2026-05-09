@@ -15,12 +15,11 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.LoanOrMortg
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.ScoringModelInvocationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Set;
 
 /**
  * Strategy for loan and mortgage model execution with parallelized risk
@@ -41,10 +40,6 @@ import java.util.Set;
 @Component
 @Slf4j
 public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
-
-        private static final Set<String> SUPPORTED_REQUEST_TYPES = Set.of(
-                        "PRESTAMO",
-                        "HIPOTECA");
 
         private final LoanOrMortgageModelPayloadMapper payloadMapper;
         private final ScoringModelInvocationService modelInvocationService;
@@ -73,7 +68,12 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
 
         @Override
         public boolean supports(final String requestType) {
-                return requestType != null && SUPPORTED_REQUEST_TYPES.contains(requestType);
+                try {
+                        RequestType type = RequestType.fromValue(requestType);
+                        return type == RequestType.PRESTAMO || type == RequestType.HIPOTECA;
+                } catch (IllegalArgumentException e) {
+                        return false;
+                }
         }
 
         @Override

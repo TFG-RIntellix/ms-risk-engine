@@ -13,7 +13,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 public final class ScoringModelExecutionStrategyFactory {
 
     private ScoringModelExecutionStrategyFactory() {
-        throw new UnsupportedOperationException("Never instantiate");
+        throw new UnsupportedOperationException(LogMessage.FACTORY_CLASS_NEVER_INSTANTIATE);
     }
 
     /**
@@ -31,8 +31,8 @@ public final class ScoringModelExecutionStrategyFactory {
     public static ScoringModelExecutionStrategy createStrategy(
             final String requestType,
             final List<ScoringModelExecutionStrategy> strategies) {
-        Objects.requireNonNull(requestType, "Request type cannot be null");
-        Objects.requireNonNull(strategies, "strategies cannot be null");
+        Objects.requireNonNull(requestType, LogMessage.REQUEST_TYPE_CANNOT_BE_NULL);
+        Objects.requireNonNull(strategies, LogMessage.STRATEGIES_LIST_CANNOT_BE_NULL);
 
         for (ScoringModelExecutionStrategy strategy : strategies) {
             if (strategy.supports(requestType)) {
@@ -40,7 +40,8 @@ public final class ScoringModelExecutionStrategyFactory {
             }
         }
 
-        throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_NOT_FOUND + " " + requestType);
+        throw new IllegalArgumentException(
+                String.format(LogMessage.REQUEST_TYPE_NOT_FOUND, requestType));
     }
 
 }

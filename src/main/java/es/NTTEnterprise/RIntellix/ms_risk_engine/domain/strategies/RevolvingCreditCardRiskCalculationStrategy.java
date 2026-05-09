@@ -1,6 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
 
@@ -22,7 +23,12 @@ public class RevolvingCreditCardRiskCalculationStrategy implements RiskCalculati
 
     @Override
     public boolean supports(final String requestType, final Boolean isRevolving) {
-        return "TARJETA_CREDITO".equals(requestType) && Boolean.TRUE.equals(isRevolving);
+        try {
+            return RequestType.fromValue(requestType) == RequestType.TARJETA_CREDITO
+                    && Boolean.TRUE.equals(isRevolving);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override

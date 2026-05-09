@@ -3,7 +3,6 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.CreditCardM
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.ScoringModelInvocationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
@@ -39,9 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CreditCardScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
-
-        private static final Set<String> SUPPORTED_REQUEST_TYPES = Set.of(
-                        "TARJETA_CREDITO");
 
         private final CreditCardModelPayloadMapper payloadMapper;
         private final ScoringModelInvocationService modelInvocationService;
@@ -70,7 +67,11 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
 
         @Override
         public boolean supports(final String requestType) {
-                return requestType != null && SUPPORTED_REQUEST_TYPES.contains(requestType);
+                try {
+                        return RequestType.fromValue(requestType) == RequestType.TARJETA_CREDITO;
+                } catch (IllegalArgumentException e) {
+                        return false;
+                }
         }
 
         @Override
