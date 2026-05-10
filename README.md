@@ -96,6 +96,21 @@ The AI model call and risk metric pre-computation run **in parallel**:
 
 ---
 
+## Simulation Draft API (UC-06)
+
+`ms-risk-engine` also exposes a stateless draft simulation endpoint:
+
+- **POST** `/api/v1/simulations/draft`
+- Fetches base request + scoring from `ms-core-data`
+- Merges base variables with submitted `formChanges`
+- Calls `ms-model` to recalculate PD
+- Recomputes financial metrics and delta values
+- Returns `simulatedResults` + `delta` without persistence
+
+Persistence is intentionally out of scope for this microservice and belongs to `ms-core-data`.
+
+---
+
 ## Domain Model
 
 | Entity | Description |
