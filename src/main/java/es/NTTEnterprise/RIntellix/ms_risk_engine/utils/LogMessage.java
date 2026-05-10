@@ -90,6 +90,16 @@ public final class LogMessage {
     public static final String REQUESTED_AMOUNT_MUST_BE_GREATER_THAN_ZERO = "Requested amount must be greater than 0";
     public static final String NO_RISK_CALCULATION_STRATEGY_FOUND = "No risk calculation strategy found for requestType=%s, isRevolving=%s";
     public static final String FORM_CHANGES_CONTAIN_UNSUPPORTED_FIELDS = "Form changes contain unsupported fields";
+    public static final String SIMULATION_REQUEST_ID_REQUIRED = "Simulation requestId is required";
+    public static final String SIMULATION_FORM_CHANGES_REQUIRED = "Simulation formChanges are required";
+    public static final String SIMULATION_BASE_SCORING_NOT_FOUND = "Base scoring not found for request";
+    public static final String SIMULATION_SAVE_REQUEST_REQUIRED = "Simulation save request is required";
+    public static final String SIMULATION_BASE_SCORING_ID_REQUIRED = "Simulation baseScoringsId is required";
+    public static final String SIMULATION_SAVE_DATA_REQUIRED = "Simulation formChanges, simulatedResults and delta are required";
+    public static final String SIMULATION_DUPLICATED_NAME = "Ya existe una simulación con este nombre.";
+    public static final String SIMULATION_FETCH_BASE_SCORING_ERROR = "Error fetching base scoring from ms-core-data";
+    public static final String SIMULATION_CHECK_NAME_ERROR = "Error validating simulation name in ms-core-data";
+    public static final String SIMULATION_SAVE_ERROR = "No se puede almacenar la simulación en la base de datos, inténtelo de nuevo más tarde";
 
     // Utility Class Messages
     public static final String UTILITY_CLASS_NEVER_INSTANTIATE = "Utility class — never instantiate";
