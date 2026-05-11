@@ -13,12 +13,17 @@ public class ValidSimulationFormChangesValidator
 
     // Allowed simulation form fields that can be modified in what-if scenarios
     private static final Set<String> ALLOWED_KEYS = Set.of(
-            "interestRate",      // Scenario: different interest rates
-            "termMonths",        // Scenario: different loan terms
-            "requestedAmount",   // Scenario: different loan amounts
-            "annualIncome",      // Scenario: different income levels
-            "employmentStatus",  // Scenario: employment status changes
-            "hasMortgage");      // Scenario: mortgage obligation changes
+            "interestRate", "interest_rate",      // Scenario: different interest rates
+            "termMonths", "term_months",          // Scenario: different loan terms
+            "requestedAmount", "loanAmount", "amount", // Scenario: different loan amounts
+            "requestedCreditLimit", "requested_credit_limit", "creditLimit", "credit_limit",
+            "annualIncome", "annual_income",      // Scenario: different income levels
+            "employmentStatus", "employment_status", // Scenario: employment status changes
+            "hasMortgage", "has_mortgage",        // Scenario: mortgage obligation changes
+            "isRevolving", "is_revolving",        // Scenario: credit card type changes
+            "revolvingMinimumPayment", "revolving_minimum_payment",
+            "revolvingPaymentType", "revolving_payment_type",
+            "nrDependants", "nr_dependants", "dependents", "dependants");
 
     @Override
     public boolean isValid(final Map<String, Object> value, final ConstraintValidatorContext context) {

@@ -16,9 +16,10 @@ class ValidSimulationFormChangesValidatorTest {
     @DisplayName("Given allowed keys when validating then return true")
     void givenAllowedKeys_whenValidating_thenReturnTrue() {
         Map<String, Object> input = Map.of(
-                "interestRate", 4.5,
-                "termMonths", 120,
-                "annualIncome", 45000.0);
+                "interest_rate", 4.5,
+                "term_months", 120,
+                "annual_income", 45000.0,
+                "requested_credit_limit", 1500.0);
 
         boolean result = validator.isValid(input, null);
 
