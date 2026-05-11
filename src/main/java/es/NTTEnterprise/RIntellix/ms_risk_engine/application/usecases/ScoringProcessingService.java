@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.ScoringResultMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.ScoringResultPublisherPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ScoringResultPublisherPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;

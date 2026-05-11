@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
 
@@ -21,3 +21,4 @@ public interface ScoringResultPublisherPort {
      */
     void publishScoringResult(Scoring scoring);
 }
+
