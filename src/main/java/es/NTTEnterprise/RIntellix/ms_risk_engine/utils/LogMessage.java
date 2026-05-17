@@ -73,6 +73,12 @@ public final class LogMessage {
     // Model Prediction Adapter Messages
     public static final String INVALID_MODEL_PREDICTION_REQUEST = "Invalid model prediction request for requestId={}. Error: {}";
 
+
+    // Simulation Exceptions
+
+    public static final String SCORING_RETRIEVING_MESSAGE_ERROR = "Failed to retrieve scoring for requestId={}. Status code:{}";
+    public static final String SCORING_RETRIEVING_MESSAGE_EXCEPTION = "Exception occurred while retrieving scoring for requestId={}. Error: {}";
+
     // ============================================================
     // VALIDATION AND EXCEPTION MESSAGES
     // ============================================================
