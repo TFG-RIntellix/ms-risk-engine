@@ -1,7 +1,5 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
-
 /**
  * Centralized holder for risk calculation constants and shared utility methods.
  *
@@ -131,89 +129,4 @@ public final class RiskCalculationDefaults {
         return requestedAmount;
     }
 
-    // TODO: Check this ones.
-    /**
-     * Calculates the French (annuity) monthly payment for a fixed-rate loan.
-     *
-     * @param amount     the principal amount.
-     * @param termMonths the number of monthly instalments.
-     * @param annualRate the nominal annual interest rate (as percentage, e.g. 5.0
-     *                   for 5%).
-     * @return the monthly payment amount.
-     */
-    public static double calculateFrenchMonthlyPayment(final Double amount,
-            final Integer termMonths, final Double annualRate) {
-        double principal = validateRequestAmount(amount);
-        int terms = termMonths == null || termMonths <= 0 ? 1 : termMonths;
-        double monthlyRate = (annualRate == null ? 0.0 : annualRate) / 1200.0;
-
-        if (monthlyRate == 0.0) {
-            return principal / terms;
-        }
-
-        double numerator = principal * monthlyRate;
-        double denominator = 1.0 - Math.pow(1.0 + monthlyRate, -terms);
-        if (denominator == 0.0) {
-            return principal / terms;
-        }
-        return numerator / denominator;
-    }
-
-    /**
-     * Calculates the risk grade based on PD, ECL ratio, and payment-to-income.
-     *
-     * Applies a multi-factor scoring model:
-     * 1. Base grade from PD thresholds (A/B/C/D).
-     * 2. Adjustment from ECL-to-EAD ratio.
-     * 3. Adjustment from payment-to-income stress indicator.
-     *
-     * @param pd           the probability of default.
-     * @param ecl          the expected credit loss.
-     * @param ead          the exposure at default.
-     * @param amount       the requested amount for monthly payment calculation.
-     * @param annualIncome the borrower annual income.
-     * @param termMonths   the loan term in months (null for credit cards).
-     * @param interestRate the annual interest rate.
-     * @return the calculated risk grade.
-     */
-    public static RiskGrade calculateRiskGrade(final double pd, final double ecl, final double ead,
-            final double amount, final Double annualIncome, final Integer termMonths,
-            final Double interestRate) {
-
-        int gradeIndex;
-        if (pd < PD_THRESHOLD_GRADE_A) {
-            gradeIndex = 0;
-        } else if (pd < PD_THRESHOLD_GRADE_B) {
-            gradeIndex = 1;
-        } else if (pd < PD_THRESHOLD_GRADE_C) {
-            gradeIndex = 2;
-        } else {
-            gradeIndex = 3;
-        }
-
-        double eclRatio = ead <= 0.0 ? 1.0 : (ecl / ead);
-        if (eclRatio > ECL_RATIO_DOWNGRADE_THRESHOLD && gradeIndex < 3) {
-            gradeIndex += 1;
-        }
-        if (eclRatio < ECL_RATIO_UPGRADE_THRESHOLD && gradeIndex > 0) {
-            gradeIndex -= 1;
-        }
-
-        if (termMonths != null && termMonths > 0) {
-            double monthlyPayment = calculateFrenchMonthlyPayment(amount, termMonths, interestRate);
-            double income = annualIncome == null ? 0.0 : annualIncome;
-            double monthlyIncome = income / 12.0;
-            double paymentToIncome = monthlyIncome <= 0.0 ? 1.0 : monthlyPayment / monthlyIncome;
-            if (paymentToIncome > PAYMENT_TO_INCOME_STRESS_THRESHOLD && gradeIndex < 3) {
-                gradeIndex += 1;
-            }
-        }
-
-        return switch (gradeIndex) {
-            case 0 -> RiskGrade.A;
-            case 1 -> RiskGrade.B;
-            case 2 -> RiskGrade.C;
-            default -> RiskGrade.D;
-        };
-    }
 }

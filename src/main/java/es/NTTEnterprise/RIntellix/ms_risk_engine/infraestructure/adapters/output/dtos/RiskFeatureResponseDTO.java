@@ -1,41 +1,55 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.dtos;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
+
 /**
- * Represents one explainability feature returned by the scoring model.
- * Pure domain entity without any infrastructure library dependencies (Jackson,
- * etc.).
- * JSON serialization/deserialization is handled at the infrastructure layer.
+ * Data Transfer Object for a risk feature returned by the AI model.
+ * This DTO handles JSON serialization/deserialization at the infrastructure
+ * boundary.
+ * It maps model API field names (snake_case) to domain entity properties
+ * (camelCase).
+ *
+ * Responsibilities:
+ * - Deserialize model API JSON responses into typed objects
+ * - Map external JSON field names to internal property names
+ * - Provide conversion to domain entity (RiskFeature)
  *
  * @author Lucia Fernandez Mancebo
- * @Date 04-25-2026
+ * @Date 09-05-2026
  */
-public class RiskFeature {
+public class RiskFeatureResponseDTO {
 
+    @JsonProperty("feature")
     private String featureName;
 
+    @JsonProperty("feature_value")
     private String featureValue;
 
+    @JsonProperty("impact")
     private Double shapValue;
 
+    @JsonProperty("direction")
     private String description;
 
     /**
-     * Constructor of the RiskFeature class.
+     * Constructor of the RiskFeatureResponseDTO class.
      */
-    public RiskFeature() {
+    public RiskFeatureResponseDTO() {
     }
 
     /**
-     * Constructor of the RiskFeature class.
+     * Constructor of the RiskFeatureResponseDTO class.
      *
      * @param featureName  the feature name.
      * @param featureValue the feature value used by the model.
      * @param shapValue    the SHAP contribution value.
      * @param description  the human-readable direction/description.
      */
-    public RiskFeature(final String featureName,
+    public RiskFeatureResponseDTO(final String featureName,
             final String featureValue,
             final Double shapValue,
             final String description) {
@@ -77,6 +91,21 @@ public class RiskFeature {
         this.description = description;
     }
 
+    /**
+     * Converts this DTO to a domain entity (RiskFeature).
+     * This method is called after deserialization to move the data into the domain
+     * layer.
+     *
+     * @return a RiskFeature domain entity with values mapped from this response
+     */
+    public RiskFeature toDomainEntity() {
+        return new RiskFeature(
+                this.featureName,
+                this.featureValue,
+                this.shapValue,
+                this.description);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -96,7 +125,7 @@ public class RiskFeature {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final RiskFeature other = (RiskFeature) obj;
+        final RiskFeatureResponseDTO other = (RiskFeatureResponseDTO) obj;
         return Objects.equals(featureName, other.featureName)
                 && Objects.equals(featureValue, other.featureValue)
                 && Objects.equals(shapValue, other.shapValue)
@@ -105,7 +134,7 @@ public class RiskFeature {
 
     @Override
     public String toString() {
-        return "RiskFeature{" +
+        return "RiskFeatureResponseDTO{" +
                 "featureName='" + featureName + '\'' +
                 ", featureValue='" + featureValue + '\'' +
                 ", shapValue=" + shapValue +

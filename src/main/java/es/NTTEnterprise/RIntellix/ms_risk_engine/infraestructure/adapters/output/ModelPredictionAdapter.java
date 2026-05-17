@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.dtos.ModelPredictionResponseDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.handler.ModelPredictionErrorHandler;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.util.ModelPayloadUtil;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
@@ -83,12 +84,14 @@ public class ModelPredictionAdapter implements ModelPredictionPort {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(modelPayload)
                     .retrieve()
-                    .bodyToMono(ModelPredictionResult.class)
+                    .bodyToMono(ModelPredictionResponseDTO.class)
                     .toFuture()
-                    .thenApply(result -> {
+                    .thenApply(response -> {
+                        // Convert infrastructure DTO to domain entity at the adapter boundary
+                        final ModelPredictionResult domainResult = response.toDomainEntity();
                         log.info(LogMessage.MODEL_PREDICTION_COMPLETED, requestId,
-                                result == null ? null : result.getProbabilityOfDefault());
-                        return result;
+                                domainResult == null ? null : domainResult.getProbabilityOfDefault());
+                        return domainResult;
                     })
                     .exceptionally(throwable -> errorHandler.handleError(requestId, throwable));
 

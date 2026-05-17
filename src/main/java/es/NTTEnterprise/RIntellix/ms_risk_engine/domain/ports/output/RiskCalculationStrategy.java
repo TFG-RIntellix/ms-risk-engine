@@ -2,6 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
 
@@ -47,13 +48,14 @@ public interface RiskCalculationStrategy {
     RiskMetrics calculatePrePdMetrics(Double requestedAmount, Double ltv);
 
     /**
-     * Assembles the final risk metrics once PD is available.
+     * Assembles the final risk metrics once PD is available using
+     * RiskGradeCalculator.
+     *
+     * This method is the preferred implementation that uses the domain service
+     * for risk grade calculation, ensuring proper separation of concerns.
      *
      * Combines the pre-computed EAD and LGD with the model-provided PD
-     * to produce ECL and the composite RiskGrade.
-     *
-     * Default implementation applies the universal ECL formula:
-     * ECL = PD x LGD x EAD x d (d = 1 for admission).
+     * to produce ECL and the composite RiskGrade using RiskGradeCalculator.
      *
      * @param pd              the probability of default from the AI model.
      * @param prePdMetrics    the pre-computed metrics containing EAD and LGD.
@@ -61,12 +63,18 @@ public interface RiskCalculationStrategy {
      * @param annualIncome    the borrower annual income.
      * @param termMonths      the loan term in months; null for credit cards.
      * @param interestRate    the annual interest rate; null for credit cards.
+     * @param gradeCalculator the RiskGradeCalculator domain service.
      * @return the fully assembled RiskMetrics with PD, LGD, EAD, ECL, and
      *         RiskGrade.
      */
-    default RiskMetrics assembleFullMetrics(final Double pd, final RiskMetrics prePdMetrics,
-            final Double requestedAmount, final Double annualIncome,
-            final Integer termMonths, final Double interestRate) {
+    default RiskMetrics assembleFullMetricsWithGradeCalculator(
+            final Double pd,
+            final RiskMetrics prePdMetrics,
+            final Double requestedAmount,
+            final Double annualIncome,
+            final Integer termMonths,
+            final Double interestRate,
+            final RiskGradeCalculator gradeCalculator) {
 
         if (pd == null || prePdMetrics == null || prePdMetrics.getEad() == null
                 || prePdMetrics.getLgd() == null) {
@@ -78,7 +86,8 @@ public interface RiskCalculationStrategy {
         double lgd = prePdMetrics.getLgd();
         double ecl = safePd * lgd * ead * RiskCalculationDefaults.DISCOUNT_FACTOR;
 
-        RiskGrade riskGrade = RiskCalculationDefaults.calculateRiskGrade(
+        // Use RiskGradeCalculator for risk grade determination
+        RiskGrade riskGrade = gradeCalculator.calculateRiskGrade(
                 safePd, ecl, ead, requestedAmount, annualIncome, termMonths, interestRate);
 
         return new RiskMetrics(safePd, lgd, ead, ecl, riskGrade);
