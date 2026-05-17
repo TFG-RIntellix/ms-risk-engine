@@ -1,169 +1,255 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.FetchRequestPort;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.FetchScoringPort;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.PredictPdPort;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.BaseScoringData;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.FormChanges;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDelta;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationMetrics;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.*;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.InvalidFormChangesException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ScoringNotFoundException;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.SimulationDraftPortService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.FetchScoringPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Use case that orchestrates stateless simulation draft calculations.
  *
+ * Implements the SimulationDraftPortService (domain input port) to properly expose
+ * the use case functionality through the hexagonal architecture boundary.
+ *
+ * Follows the same pattern as ScoringProcessingService:
+ * - Fetches base scoring data via output ports
+ * - Merges form changes with base features
+ * - Invokes model prediction asynchronously (via ModelPredictionPort)
+ * - Returns simulation draft with metrics and deltas
+ *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
  */
 @Service
-public class CalculateSimulationDraftUseCase {
+@Slf4j
+public class CalculateSimulationDraftUseCase implements SimulationDraftPortService {
 
     private static final String REQUESTED_AMOUNT_KEY = "requestedAmount";
     private static final String INTEREST_RATE_KEY = "interestRate";
     private static final String TERM_MONTHS_KEY = "termMonths";
     private static final String ANNUAL_INCOME_KEY = "annualIncome";
 
-    private final FetchRequestPort fetchRequestPort;
     private final FetchScoringPort fetchScoringPort;
-    private final PredictPdPort predictPdPort;
+    private final ModelPredictionPort modelPredictionPort;
 
+    /**
+     * Constructor of the CalculateSimulationDraftUseCase class.
+     *
+     * @param fetchScoringPort               output port to fetch scoring data.
+     * @param modelPredictionPort            output port to invoke model predictions.
+     */
     public CalculateSimulationDraftUseCase(
-            final FetchRequestPort fetchRequestPort,
             final FetchScoringPort fetchScoringPort,
-            final PredictPdPort predictPdPort) {
-        this.fetchRequestPort = Objects.requireNonNull(fetchRequestPort);
+            final ModelPredictionPort modelPredictionPort) {
         this.fetchScoringPort = Objects.requireNonNull(fetchScoringPort);
-        this.predictPdPort = Objects.requireNonNull(predictPdPort);
+        this.modelPredictionPort = Objects.requireNonNull(modelPredictionPort);
     }
 
     /**
      * Calculates a simulation draft without persistence.
      *
+     * Process flow (following hexagonal architecture):
+     * 1. Fetch base scoring data for the request
+     * 2. Merge base features with form changes to create simulation input
+     * 3. Fire async model prediction call to obtain new PD
+     * 4. Calculate deltas by comparing simulated metrics with base metrics
+     *
      * @param requestId   the request identifier.
      * @param formChanges the user-specified modified values.
      * @return the simulation draft with simulated metrics and deltas.
+     * @throws ScoringNotFoundException if scoring data cannot be retrieved
+     * @throws InvalidFormChangesException if form changes are invalid
      */
+    @Override
     public SimulationDraft calculateDraft(final String requestId, final FormChanges formChanges) {
-        if (requestId == null || requestId.isBlank()) {
-            throw new InvalidFormChangesException("requestId is required");
-        }
-        if (formChanges == null) {
+
+        if (formChanges == null || formChanges.getValues() == null || formChanges.getValues().isEmpty()) {
             throw new InvalidFormChangesException("formChanges is required");
         }
 
-        final Map<String, Object> baseRequestData = fetchRequestPort.fetchByRequestId(requestId);
-        final BaseScoringData baseScoring = fetchScoringPort.fetchByRequestId(requestId);
-        if (baseScoring == null || baseScoring.getBaseMetrics() == null) {
-            throw new ScoringNotFoundException("Scoring not found for requestId: " + requestId);
+        // Retrieve base scoring - contains input snapshot and base metrics
+        final Scoring baseScoring = fetchScoringPort.fetchByRequestId(requestId);
+        if (baseScoring == null || baseScoring.getResults() == null) {
+            throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_EXCEPTION + requestId);
         }
 
-        final Map<String, Object> baseVariables = mergeScenarioVariables(
-                baseScoring.getInputSnapshot(),
-                baseRequestData,
-                Map.of());
-        final Map<String, Object> mergedVariables = mergeScenarioVariables(
-                baseVariables,
-                Map.of(),
-                formChanges.getValues());
+        // Extract base variables for delta calculation
+        final Map<String, Object> baseVariables = extractBaseVariables(baseScoring);
 
-        final Double predictedPd = predictPdPort.predictPd(mergedVariables, requestId);
-        final SimulationMetrics simulated = buildSimulatedMetrics(predictedPd, mergedVariables, baseScoring.getBaseMetrics());
-        final SimulationDelta delta = buildDelta(baseScoring.getBaseMetrics(), simulated, baseVariables);
-        return new SimulationDraft(simulated, delta);
+        // Merge base input features with form changes to create simulation input payload
+        final Map<String, Object> mergedVariables = mergeData(baseScoring, formChanges);
+
+        // Invoke model asynchronously to obtain new PD prediction
+        final CompletableFuture<ModelPredictionResult> predictionResultFuture = modelPredictionPort
+                .predictAsync(
+                        mergedVariables,
+                        requestId,
+                        resolveModelEndpointPath());
+
+        // Calculate rest of the metrics in parallell like we do with the scoring.
+
+        // Wait for model prediction result
+        final ModelPredictionResult predictionResult = predictionResultFuture.join();
+
+        // Build simulated metrics from base metrics and new PD prediction
+        final SimulationMetrics simulatedMetrics = buildSimulatedMetrics(
+                predictionResult.getProbabilityOfDefault(),
+                baseScoring.getResults(),
+                mergedVariables);
+
+        // Calculate delta between base and simulated metrics
+        final SimulationDelta delta = buildDelta(baseScoring.getResults(), simulatedMetrics, baseVariables);
+
+        return new SimulationDraft(simulatedMetrics, delta);
     }
 
-    private Map<String, Object> mergeScenarioVariables(
-            final Map<String, Object> inputSnapshot,
-            final Map<String, Object> baseRequestData,
-            final Map<String, Object> formChanges) {
-        final Map<String, Object> merged = new HashMap<>();
-        if (inputSnapshot != null) {
-            merged.putAll(inputSnapshot);
+    /**
+     * Extracts base variables from the scoring input snapshot for delta calculation.
+     * 
+     * @param baseScoring the base scoring containing input features.
+     * @return a Map with base variable values.
+     */
+    private Map<String, Object> extractBaseVariables(final Scoring baseScoring) {
+        final Map<String, Object> baseVariables = new HashMap<>();
+        if (baseScoring.getInputSnapshot() != null && baseScoring.getInputSnapshot().getFeatures() != null) {
+            baseVariables.putAll(baseScoring.getInputSnapshot().getFeatures());
         }
-        if (baseRequestData != null) {
-            merged.putAll(baseRequestData);
-        }
-        if (formChanges != null) {
-            merged.putAll(formChanges);
-        }
-        return merged;
+        return baseVariables;
     }
 
+    /**
+     * Resolves the model endpoint path.
+     * For now, defaults to loan endpoint.
+     *
+     * @return the appropriate model endpoint path.
+     */
+    private String resolveModelEndpointPath() {
+        return "/api/v1/risk/predict-loan"; // default
+    }
+
+    /**
+     * Merges the base scoring input features with the user-provided
+     * form changes to create a comprehensive set of variables for PD prediction.
+     *
+     * @param baseScoring the base scoring data containing the original input snapshot and metrics.
+     * @param formChanges the user-specified modified values that should override the base scoring features.
+     * @return a Map containing the merged variables to be used for PD prediction and simulation calculations.
+     */
+    private Map<String, Object> mergeData(final Scoring baseScoring, final FormChanges formChanges) {
+        final Map<String, Object> mergedData = new HashMap<>();
+
+        final ModelInputs baseInputs = baseScoring.getInputSnapshot();
+        if (baseInputs == null || baseInputs.getFeatures() == null 
+                || baseInputs.getFeatures().isEmpty()) {
+            throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_EXCEPTION);
+        }
+
+        // Start with base features
+        mergedData.putAll(baseInputs.getFeatures());
+
+        // Override with form changes (user modifications take precedence)
+        mergedData.putAll(formChanges.getValues());
+
+        return mergedData;
+    }
+
+    /**
+     * Builds simulated metrics from the base metrics, new PD prediction, and merged variables.
+     * Includes financial metrics like monthly payment, DTI, total payment, etc.
+     *
+     * @param newPd the new probability of default from the model.
+     * @param baseMetrics the base risk metrics from the original scoring.
+     * @param mergedVariables the merged variables containing loan parameters.
+     * @return the SimulationMetrics with all calculated values.
+     */
     private SimulationMetrics buildSimulatedMetrics(
-            final Double predictedPd,
-            final Map<String, Object> mergedVariables,
-            final SimulationMetrics baseMetrics) {
+            final Double newPd,
+            final RiskMetrics baseMetrics,
+            final Map<String, Object> mergedVariables) {
 
-        final double principal = getDouble(mergedVariables, REQUESTED_AMOUNT_KEY,
-                baseMetrics.getEad() == null ? SimulationConstants.ZERO_VALUE : baseMetrics.getEad());
-        final double annualRate = getDouble(mergedVariables, INTEREST_RATE_KEY, SimulationConstants.ZERO_VALUE);
+        final double principal = getDouble(mergedVariables, REQUESTED_AMOUNT_KEY, 0);
+        final double annualRate = getDouble(mergedVariables, INTEREST_RATE_KEY, 0);
         final int termMonths = (int) getDouble(mergedVariables, TERM_MONTHS_KEY, SimulationConstants.MIN_TERM_MONTHS);
-        final double annualIncome = getDouble(mergedVariables, ANNUAL_INCOME_KEY, SimulationConstants.ZERO_VALUE);
+        final double annualIncome = getDouble(mergedVariables, ANNUAL_INCOME_KEY, 0);
 
+        // Calculate financial metrics
         final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(principal, annualRate, termMonths);
         final double dti = FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome);
         final double totalPayment = FinancialMetricsCalculator.calculateTotalPayment(monthlyPayment, termMonths);
         final double totalInterest = FinancialMetricsCalculator.calculateTotalInterest(totalPayment, principal);
         final double disposableIncome = FinancialMetricsCalculator.calculateDisposableIncome(annualIncome, monthlyPayment);
 
-        final double pd = predictedPd == null ? SimulationConstants.ZERO_VALUE : predictedPd;
-        final double lgd = baseMetrics.getLgd() == null ? RiskCalculationDefaults.LOAN_LGD : baseMetrics.getLgd();
-        final double ead = principal;
-        final double ecl = pd * lgd * ead * RiskCalculationDefaults.DISCOUNT_FACTOR;
-        final RiskGrade riskGrade = RiskCalculationDefaults.calculateRiskGrade(
-                pd,
-                ecl,
-                ead,
-                principal,
-                annualIncome,
-                termMonths,
-                annualRate);
+        // Calculate risk metrics using new PD and base LGD/EAD
+        final double pd = newPd == null ? baseMetrics.getProbabilityOfDefault() : newPd;
+        final double lgd = baseMetrics.getLossGivenDefault() != null ? baseMetrics.getLossGivenDefault() : SimulationConstants.ZERO_VALUE;
+        final double ead = principal > 0 ? principal : (baseMetrics.getExposureAtDefault() != null ? baseMetrics.getExposureAtDefault() : SimulationConstants.ZERO_VALUE);
+        final double ecl = pd * lgd * ead;
 
+        // Build simulation metrics
         final SimulationMetrics metrics = new SimulationMetrics();
         metrics.setPd(pd);
         metrics.setLgd(lgd);
         metrics.setEad(ead);
         metrics.setEcl(ecl);
-        metrics.setRiskGrade(riskGrade.name());
+        if (baseMetrics.getRiskLevel() != null) {
+            metrics.setRiskGrade(baseMetrics.getRiskLevel());
+        }
         metrics.setMonthlyPayment(monthlyPayment);
         metrics.setDti(dti);
         metrics.setTotalPayment(totalPayment);
         metrics.setTotalInterest(totalInterest);
         metrics.setDisposableIncome(disposableIncome);
+
         return metrics;
     }
 
+    /**
+     * Builds the simulation delta by comparing base metrics with simulated metrics.
+     * Delta represents the change in key metrics between the base scenario and the simulated scenario.
+     * 
+     * @param baseMetrics the original risk metrics from base scoring.
+     * @param simulatedMetrics the new metrics from simulation.
+     * @param baseVariables the original feature values.
+     * @return the SimulationDelta with all calculated changes.
+     */
     private SimulationDelta buildDelta(
-            final SimulationMetrics baseMetrics,
+            final RiskMetrics baseMetrics,
             final SimulationMetrics simulatedMetrics,
             final Map<String, Object> baseVariables) {
-        final double principal = getDouble(baseVariables, REQUESTED_AMOUNT_KEY,
-                baseMetrics.getEad() == null ? SimulationConstants.ZERO_VALUE : baseMetrics.getEad());
-        final double annualRate = getDouble(baseVariables, INTEREST_RATE_KEY, SimulationConstants.ZERO_VALUE);
-        final int termMonths = (int) getDouble(baseVariables, TERM_MONTHS_KEY, SimulationConstants.MIN_TERM_MONTHS);
-        final double annualIncome = getDouble(baseVariables, ANNUAL_INCOME_KEY, SimulationConstants.ZERO_VALUE);
-        final double baseMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(principal, annualRate, termMonths);
-        final double baseDti = FinancialMetricsCalculator.calculateDti(baseMonthlyPayment, annualIncome);
+        
+        final double basePrincipal = getDouble(baseVariables, REQUESTED_AMOUNT_KEY, 0);
+        final double baseAnnualRate = getDouble(baseVariables, INTEREST_RATE_KEY, 0);
+        final int baseTermMonths = (int) getDouble(baseVariables, TERM_MONTHS_KEY, SimulationConstants.MIN_TERM_MONTHS);
+        final double baseAnnualIncome = getDouble(baseVariables, ANNUAL_INCOME_KEY, 0);
 
+        // Calculate base financial metrics for comparison
+        final double baseMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(basePrincipal, baseAnnualRate, baseTermMonths);
+        final double baseDti = FinancialMetricsCalculator.calculateDti(baseMonthlyPayment, baseAnnualIncome);
+
+        // Build delta
         final SimulationDelta delta = new SimulationDelta();
-        delta.setPdChange(getSafe(simulatedMetrics.getPd()) - getSafe(baseMetrics.getPd()));
-        delta.setEclChange(getSafe(simulatedMetrics.getEcl()) - getSafe(baseMetrics.getEcl()));
+        delta.setPdChange(getSafe(simulatedMetrics.getPd()) - getSafe(baseMetrics.getProbabilityOfDefault()));
+        delta.setEclChange(getSafe(simulatedMetrics.getEcl()) - getSafe(baseMetrics.getExpectedCalculatedLoss()));
+        final String baseRiskGradeName = baseMetrics.getRiskLevel() != null ? baseMetrics.getRiskLevel() : "UNKNOWN";
         delta.setRiskGradeChange(
-                String.valueOf(baseMetrics.getRiskGrade()) + SimulationConstants.RISK_GRADE_ARROW + simulatedMetrics.getRiskGrade());
+                baseRiskGradeName + SimulationConstants.RISK_GRADE_ARROW + simulatedMetrics.getRiskGrade());
         delta.setMonthlyPaymentChange(getSafe(simulatedMetrics.getMonthlyPayment()) - baseMonthlyPayment);
         delta.setDtiChange(getSafe(simulatedMetrics.getDti()) - baseDti);
+        
         return delta;
     }
 

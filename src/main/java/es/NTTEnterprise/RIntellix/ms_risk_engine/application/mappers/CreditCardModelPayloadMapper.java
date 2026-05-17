@@ -31,8 +31,8 @@ public class CreditCardModelPayloadMapper {
             final CreditCardScoringGenerationRequest request,
             final String normalizedRequestType) {
         final Map<String, Object> modelPayload = new LinkedHashMap<>();
-        modelPayload.put("request_type", normalizedRequestType);
-        modelPayload.put("request_id", request.getRequestId());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_REQUEST_TYPE, normalizedRequestType);
+        modelPayload.put(ModelPayloadFieldNames.FIELD_REQUEST_ID, request.getRequestId());
         return modelPayload;
     }
 }

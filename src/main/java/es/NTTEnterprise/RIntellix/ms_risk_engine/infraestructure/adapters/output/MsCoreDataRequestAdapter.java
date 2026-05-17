@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.FetchRequestPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.FetchRequestPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.BaseRequestFetchException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.clients.MsCoreDataClient;
 

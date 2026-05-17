@@ -2,16 +2,18 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.outpu
 
 import java.util.Map;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "msCoreDataClient", url = "${ms-core-data.base-url:http://localhost:8081}")
 public interface MsCoreDataClient {
 
-    @GetMapping("/api/v1/requests/{requestId}")
+    @GetMapping("/api/requests/{requestId}")
     Map<String, Object> getRequestById(@PathVariable("requestId") String requestId);
 
-    @GetMapping("/api/v1/scorings/by-request/{requestId}")
-    Map<String, Object> getScoringByRequestId(@PathVariable("requestId") String requestId);
+    @GetMapping("/api/requests/{requestId}/scoring")
+    ResponseEntity<ScoringDTO> getScoringByRequestId(@PathVariable("requestId") String requestId);
 }

@@ -2,10 +2,13 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.utils.ModelPayloadUtilities;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
  * Mapper for transforming loan and mortgage scoring requests into
@@ -23,6 +26,13 @@ public class LoanOrMortgageModelPayloadMapper {
     // ms-core-data.
     private static final double DEFAULT_LTV = 0.0;
 
+    private final ModelPayloadUtilities payloadUtilities;
+
+    public LoanOrMortgageModelPayloadMapper(final ModelPayloadUtilities payloadUtilities) {
+        this.payloadUtilities = Objects.requireNonNull(payloadUtilities,
+                LogMessage.MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL);
+    }
+
     /**
      * Maps loan or mortgage generation request to model payload.
      *
@@ -31,82 +41,42 @@ public class LoanOrMortgageModelPayloadMapper {
      */
     public Map<String, Object> toModelPayload(final ScoringGenerationRequest request) {
         final Map<String, Object> modelPayload = new LinkedHashMap<>();
-        modelPayload.put("edad", request.getAge());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_EDAD, request.getAge());
         // TODO: Enum normalization applied below — ms-core-data should send values
         // matching ms-model enums directly.
-        modelPayload.put("genero", normalizeEnum(request.getGender()));
-        modelPayload.put("estado_civil", normalizeEnum(request.getMaritalStatus()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_GENERO,
+                payloadUtilities.normalizeEnumToTitleCase(request.getGender()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_ESTADO_CIVIL,
+                payloadUtilities.normalizeEnumToTitleCase(request.getMaritalStatus()));
         // Educacion enums use spaces: "Sin Estudios", "Formacion Profesional"
-        modelPayload.put("educacion", normalizeEnumWithSpaces(request.getEducation()));
-        modelPayload.put("situacion_laboral", normalizeEnum(request.getEmploymentStatus()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_EDUCACION,
+                payloadUtilities.normalizeEnumToTitleCaseWithSpaces(request.getEducation()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_SITUACION_LABORAL,
+                payloadUtilities.normalizeEnumToTitleCase(request.getEmploymentStatus()));
         // Sector trabajo enums use spaces: "Sector Publico"
-        modelPayload.put("sector_trabajo", normalizeEnumWithSpaces(request.getOccupationSector()));
-        modelPayload.put("dependientes", request.getDependents());
-        modelPayload.put("vivienda", normalizeEnum(request.getHomeOwnership()));
-        modelPayload.put("tiene_hipoteca", Boolean.TRUE.equals(request.getHasMortgage()) ? YES_VALUE : NO_VALUE);
-        modelPayload.put("ingresos_anuales", request.getAnnualIncome());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_SECTOR_TRABAJO,
+                payloadUtilities.normalizeEnumToTitleCaseWithSpaces(request.getOccupationSector()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_DEPENDIENTES, request.getDependents());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_VIVIENDA,
+                payloadUtilities.normalizeEnumToTitleCase(request.getHomeOwnership()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_TIENE_HIPOTECA,
+                Boolean.TRUE.equals(request.getHasMortgage()) ? YES_VALUE : NO_VALUE);
+        modelPayload.put(ModelPayloadFieldNames.FIELD_INGRESOS_ANUALES, request.getAnnualIncome());
         // TODO: tipo_prestamo defaults to "Personal" — ms-core-data should provide the
         // specific loan type enum value.
-        modelPayload.put("tipo_prestamo", request.getLoanType());
-        modelPayload.put("proposito", normalizeEnum(request.getPurpose()));
-        modelPayload.put("monto_prestamo", request.getLoanAmount());
-        modelPayload.put("plazo_meses", request.getTermMonths());
-        modelPayload.put("tasa_interes", request.getInterestRate());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_TIPO_PRESTAMO, request.getLoanType());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_PROPOSITO,
+                payloadUtilities.normalizeEnumToTitleCase(request.getPurpose()));
+        modelPayload.put(ModelPayloadFieldNames.FIELD_MONTO_PRESTAMO, request.getLoanAmount());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_PLAZO_MESES, request.getTermMonths());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_TASA_INTERES, request.getInterestRate());
         // TODO: null LTV defaulted to 0.0 — ms-core-data should compute and provide
         // this value.
-        modelPayload.put("ltv", request.getLtv() != null ? request.getLtv() : DEFAULT_LTV);
-        modelPayload.put("dti", request.getDti());
-        modelPayload.put("num_prestamos_previos", request.getPreviousLoansCount());
-        modelPayload.put("num_moras_previas", request.getPreviousDefaultsCount());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_LTV, request.getLtv() != null ? request.getLtv() : DEFAULT_LTV);
+        modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, request.getDti());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_NUM_PRESTAMOS_PREVIOS, request.getPreviousLoansCount());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_NUM_MORAS_PREVIAS, request.getPreviousDefaultsCount());
         return modelPayload;
     }
 
-    /**
-     * Normalizes UPPERCASE_VALUE to Title_Case (underscore-separated).
-     * Used for enums like ViviendaEnum ("Propia_Hipoteca") and PropositoEnum
-     * ("Compra_Vehiculo").
-     *
-     * TODO: Workaround — ms-core-data should send values in model-expected format.
-     *
-     * @param value the raw enum value.
-     * @return the normalized value, or null if input is null.
-     */
-    private String normalizeEnum(final String value) {
-        return normalizeValue(value, "_");
-    }
-
-    /**
-     * Normalizes UPPERCASE_VALUE to Title Case (space-separated).
-     * Used for enums like EducacionEnum ("Sin Estudios", "Formacion Profesional")
-     * and SectorTrabajoEnum ("Sector Publico").
-     *
-     * TODO: Workaround — ms-core-data should send values in model-expected format.
-     *
-     * @param value the raw enum value.
-     * @return the normalized value, or null if input is null.
-     */
-    private String normalizeEnumWithSpaces(final String value) {
-        return normalizeValue(value, " ");
-    }
-
-    private String normalizeValue(final String value, final String separator) {
-        if (value == null || value.isEmpty()) {
-            return value;
-        }
-
-        final String[] parts = value.split("[_ ]");
-        final StringBuilder normalized = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            if (i > 0) {
-                normalized.append(separator);
-            }
-            if (!parts[i].isEmpty()) {
-                normalized.append(Character.toUpperCase(parts[i].charAt(0)));
-                if (parts[i].length() > 1) {
-                    normalized.append(parts[i].substring(1).toLowerCase());
-                }
-            }
-        }
-        return normalized.toString();
-    }
 }

@@ -73,6 +73,12 @@ public final class LogMessage {
     // Model Prediction Adapter Messages
     public static final String INVALID_MODEL_PREDICTION_REQUEST = "Invalid model prediction request for requestId={}. Error: {}";
 
+
+    // Simulation Exceptions
+
+    public static final String SCORING_RETRIEVING_MESSAGE_ERROR = "Failed to retrieve scoring for requestId={}. Status code:{}";
+    public static final String SCORING_RETRIEVING_MESSAGE_EXCEPTION = "Exception occurred while retrieving scoring for requestId={}. Error: {}";
+
     // ============================================================
     // VALIDATION AND EXCEPTION MESSAGES
     // ============================================================
@@ -85,6 +91,11 @@ public final class LogMessage {
     public static final String KAFKA_PAYLOAD_NULL_ERROR = "Kafka payload must not be null";
     public static final String REQUEST_TYPE_CANNOT_BE_NULL = "Request type cannot be null";
     public static final String STRATEGIES_LIST_CANNOT_BE_NULL = "Strategies list cannot be null";
+    public static final String LOAN_PAYMENT_CALCULATOR_CANNOT_BE_NULL = "LoanPaymentCalculator cannot be null";
+    public static final String MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL = "ModelPayloadUtilities cannot be null";
+    public static final String PROBABILITY_OF_DEFAULT_CANNOT_BE_NULL = "Probability of default cannot be null";
+    public static final String PRINCIPAL_AMOUNT_CANNOT_BE_NULL = "Principal amount cannot be null";
+    public static final String TERM_MONTHS_CANNOT_BE_NULL = "Term months cannot be null";
 
     // Business Rule Validation Messages
     public static final String REQUESTED_AMOUNT_MUST_BE_GREATER_THAN_ZERO = "Requested amount must be greater than 0";

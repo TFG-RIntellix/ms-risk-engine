@@ -17,6 +17,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
         private final CreditCardModelPayloadMapper payloadMapper;
         private final ScoringModelInvocationService modelInvocationService;
         private final List<RiskCalculationStrategy> riskCalculationStrategies;
+        private final RiskGradeCalculator riskGradeCalculator;
         private final String predictCreditCardPath;
 
         /**
@@ -52,16 +54,20 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
          *                                  payload.
          * @param modelInvocationService    the service that executes model calls.
          * @param riskCalculationStrategies the available risk calculation strategies.
+         * @param riskGradeCalculator       the domain service for risk grade
+         *                                  calculation.
          * @param predictCreditCardPath     the model endpoint path for credit cards.
          */
         public CreditCardScoringModelExecutionStrategy(
                         final CreditCardModelPayloadMapper payloadMapper,
                         final ScoringModelInvocationService modelInvocationService,
                         final List<RiskCalculationStrategy> riskCalculationStrategies,
+                        final RiskGradeCalculator riskGradeCalculator,
                         @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") final String predictCreditCardPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.modelInvocationService = Objects.requireNonNull(modelInvocationService);
                 this.riskCalculationStrategies = Objects.requireNonNull(riskCalculationStrategies);
+                this.riskGradeCalculator = Objects.requireNonNull(riskGradeCalculator);
                 this.predictCreditCardPath = Objects.requireNonNull(predictCreditCardPath);
         }
 
@@ -109,13 +115,14 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                                 predictionResult.getProbabilityOfDefault());
 
                 // Assemble full risk metrics with PD, ECL, and RiskGrade.
-                final RiskMetrics fullMetrics = riskStrategy.assembleFullMetrics(
+                final RiskMetrics fullMetrics = riskStrategy.assembleFullMetricsWithGradeCalculator(
                                 predictionResult.getProbabilityOfDefault(),
                                 prePdMetrics,
                                 request.getCreditLimit(),
                                 request.getAnnualIncome(),
                                 null,
-                                null);
+                                null,
+                                riskGradeCalculator);
 
                 return new ScoringModelExecutionResultDTO(modelRequestPayload, predictionResult, fullMetrics);
         }

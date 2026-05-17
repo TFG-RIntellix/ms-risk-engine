@@ -3,27 +3,22 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents the prediction response returned by the AI risk model.
+ * Pure domain entity without any infrastructure library dependencies (Jackson,
+ * etc.).
+ * JSON serialization/deserialization is handled at the infrastructure layer.
  *
  * @author Lucia Fernandez Mancebo
  * @Date 03-05-2026
  */
 public class ModelPredictionResult {
-    // TODO: Abstract the json from the domain because we dont want dependencies.
-    // Hexagonal architecture must be respected.
-    @JsonProperty("probability_of_default")
     private Double probabilityOfDefault;
 
-    @JsonProperty("risk_segment")
     private String riskSegment;
 
-    @JsonProperty("base_value")
     private Double baseValue;
 
-    @JsonProperty("shap_explanations")
     private List<RiskFeature> shapExplanations;
 
     /**
