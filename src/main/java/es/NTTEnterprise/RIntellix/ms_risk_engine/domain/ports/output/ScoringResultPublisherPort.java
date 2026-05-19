@@ -1,6 +1,6 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 
 /**
  * Output port for publishing scoring results to the ms-core-data.
@@ -21,4 +21,3 @@ public interface ScoringResultPublisherPort {
      */
     void publishScoringResult(Scoring scoring);
 }
-

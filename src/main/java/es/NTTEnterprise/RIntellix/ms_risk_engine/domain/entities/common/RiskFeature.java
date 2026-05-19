@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common;
 
 import java.util.Objects;
 

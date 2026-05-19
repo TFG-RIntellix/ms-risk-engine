@@ -1,0 +1,555 @@
+{
+  "info": {
+    "name": "ms-risk-engine - Simulation Draft API",
+    "description": "Postman collection for testing the SimulationDraft API endpoint of ms-risk-engine microservice. This collection includes requests for generating simulation drafts with various product types (Loan, Mortgage, Credit Card) and different form change scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "ms-risk-engine-2026"
+  },
+  "item": [
+    {
+      "name": "Simulation Draft - LOAN",
+      "item": [
+        {
+          "name": "Calculate Draft - LOAN (Basic)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate a unique requestId using timestamp and random number",
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-LOAN-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Verify response status is 200",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Verify response structure",
+                  "pm.test('Response contains required fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('requestId');",
+                  "    pm.expect(jsonData).to.have.property('partyId');",
+                  "    pm.expect(jsonData).to.have.property('baseScoringId');",
+                  "    pm.expect(jsonData).to.have.property('formChanges');",
+                  "    pm.expect(jsonData).to.have.property('simulatedResults');",
+                  "    pm.expect(jsonData).to.have.property('delta');",
+                  "});",
+                  "",
+                  "// Verify simulatedResults structure",
+                  "pm.test('SimulatedResults contains risk metrics', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.simulatedResults).to.have.property('probabilityOfDefault');",
+                  "    pm.expect(jsonData.simulatedResults).to.have.property('exposureAtDefault');",
+                  "    pm.expect(jsonData.simulatedResults).to.have.property('lossGivenDefault');",
+                  "    pm.expect(jsonData.simulatedResults).to.have.property('expectedCreditLoss');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"LOAN\",\n  \"formChanges\": {\n    \"interestRate\": 5.5,\n    \"termMonths\": 60,\n    \"requestedAmount\": 25000,\n    \"annualIncome\": 50000,\n    \"employmentStatus\": \"EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a LOAN with basic parameters including interest rate, term, amount, income, and employment status."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - LOAN (Higher Interest Rate)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-LOAN-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"LOAN\",\n  \"formChanges\": {\n    \"interestRate\": 8.5,\n    \"termMonths\": 84,\n    \"requestedAmount\": 40000,\n    \"annualIncome\": 45000,\n    \"employmentStatus\": \"SELF_EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a LOAN with higher interest rate scenario (what-if analysis)."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - LOAN (Changed Income)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-LOAN-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"LOAN\",\n  \"formChanges\": {\n    \"interestRate\": 6.0,\n    \"termMonths\": 60,\n    \"requestedAmount\": 30000,\n    \"annualIncome\": 75000,\n    \"employmentStatus\": \"EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a LOAN with changed annual income scenario."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Simulation Draft - MORTGAGE",
+      "item": [
+        {
+          "name": "Calculate Draft - MORTGAGE (Basic)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-MORTGAGE-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains mortgage-specific fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.formChanges).to.have.property('propertyValue');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"MORTGAGE\",\n  \"formChanges\": {\n    \"interestRate\": 4.5,\n    \"termMonths\": 360,\n    \"requestedAmount\": 300000,\n    \"annualIncome\": 80000,\n    \"employmentStatus\": \"EMPLOYED\",\n    \"propertyValue\": 400000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a MORTGAGE with basic parameters. Note the propertyValue field which is specific to mortgage products."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - MORTGAGE (Higher Property Value)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-MORTGAGE-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"MORTGAGE\",\n  \"formChanges\": {\n    \"interestRate\": 4.75,\n    \"termMonths\": 360,\n    \"requestedAmount\": 400000,\n    \"annualIncome\": 100000,\n    \"employmentStatus\": \"EMPLOYED\",\n    \"propertyValue\": 550000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a MORTGAGE with higher property value scenario (affects LTV ratio)."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - MORTGAGE (With Existing Obligations)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-MORTGAGE-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"MORTGAGE\",\n  \"formChanges\": {\n    \"interestRate\": 4.5,\n    \"termMonths\": 360,\n    \"requestedAmount\": 300000,\n    \"annualIncome\": 80000,\n    \"employmentStatus\": \"EMPLOYED\",\n    \"hasMortgage\": true,\n    \"propertyValue\": 400000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a MORTGAGE when the customer already has existing mortgage obligations (hasMortgage = true)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Simulation Draft - CREDIT_CARD",
+      "item": [
+        {
+          "name": "Calculate Draft - CREDIT_CARD (Basic)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-CC-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"CREDIT_CARD\",\n  \"formChanges\": {\n    \"requestedAmount\": 5000,\n    \"annualIncome\": 60000,\n    \"employmentStatus\": \"EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a CREDIT_CARD with basic parameters. Note that interestRate and termMonths are not typically applicable to credit cards."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - CREDIT_CARD (Higher Limit)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-CC-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"CREDIT_CARD\",\n  \"formChanges\": {\n    \"requestedAmount\": 15000,\n    \"annualIncome\": 80000,\n    \"employmentStatus\": \"EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a CREDIT_CARD with a higher credit limit scenario."
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate Draft - CREDIT_CARD (Changed Employment)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = new Date().getTime();",
+                  "const random = Math.floor(Math.random() * 10000);",
+                  "pm.environment.set('requestId', `REQ-CC-${timestamp}-${random}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"requestType\": \"CREDIT_CARD\",\n  \"formChanges\": {\n    \"requestedAmount\": 8000,\n    \"annualIncome\": 50000,\n    \"employmentStatus\": \"SELF_EMPLOYED\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/simulations/draft",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulations",
+                "draft"
+              ]
+            },
+            "description": "Calculate simulation draft for a CREDIT_CARD with changed employment status scenario."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Environment Setup",
+      "item": [
+        {
+          "name": "Instructions & Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "## Setup Instructions\n\n### 1. Create a Postman Environment\nBefore running any requests, you need to set up environment variables:\n\n1. Click on \"Environments\" in the left sidebar\n2. Create a new environment called \"ms-risk-engine-local\" (or any name you prefer)\n3. Add the following variables:\n   - `base_url`: http://localhost:8080 (or your server's URL)\n   - `requestId`: Will be auto-generated by pre-request scripts\n\n### 2. Select the Environment\n- In the top-right corner, select your environment from the dropdown\n\n### 3. Available Form Change Fields\nThe `formChanges` object accepts the following fields:\n- **interestRate** (number): Interest rate percentage (e.g., 5.5)\n- **termMonths** (number): Loan/mortgage term in months (e.g., 60, 360)\n- **requestedAmount** (number): Requested loan/credit amount (e.g., 25000)\n- **annualIncome** (number): Annual income of the applicant (e.g., 50000)\n- **employmentStatus** (string): Employment status (e.g., \"EMPLOYED\", \"SELF_EMPLOYED\", \"UNEMPLOYED\")\n- **hasMortgage** (boolean): Whether the customer has existing mortgage obligations (true/false)\n- **propertyValue** (number): Property value in EUR (for MORTGAGE only, needed to calculate LTV)\n\n### 4. Supported Request Types\n- **LOAN**: Standard personal/business loan\n- **MORTGAGE**: Home mortgage product\n- **CREDIT_CARD**: Credit card product\n\n### 5. Running Requests\nSelect any request from the collection and click \"Send\". The pre-request script will automatically generate a unique `requestId`.\n\n### 6. Expected Response Structure\nAll successful requests (HTTP 200) will return:\n```json\n{\n  \"requestId\": \"REQ-LOAN-1234567890-1234\",\n  \"partyId\": \"PARTY-123\",\n  \"baseScoringId\": \"SCORING-123\",\n  \"formChanges\": { /* your input changes */ },\n  \"simulatedResults\": {\n    \"probabilityOfDefault\": 0.05,\n    \"exposureAtDefault\": 25000,\n    \"lossGivenDefault\": 0.35,\n    \"expectedCreditLoss\": 437.5,\n    \"riskGrade\": \"A\"\n  },\n  \"delta\": {\n    \"deltaPD\": 0.01,\n    \"deltaEL\": 50.0,\n    \"deltaRiskGrade\": \"+0\"\n  }\n}\n```\n\n### 7. Troubleshooting\n\n**400 Bad Request**\n- Verify all required fields are present (requestId, requestType, formChanges)\n- Check that field values match expected types (numbers as numbers, not strings)\n- Verify requestType is one of: LOAN, MORTGAGE, CREDIT_CARD\n\n**Validation Errors**\n- Check that formChanges only contains allowed field names\n- For MORTGAGE, include propertyValue to calculate LTV\n- Verify employmentStatus matches accepted values\n\n**500 Internal Server Error**\n- Check that the ms-risk-engine service is running\n- Review the server logs for detailed error information\n- Verify database/external service connectivity"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "requestId",
+      "value": "REQ-LOAN-000000000-0000",
+      "type": "string"
+    }
+  ]
+}

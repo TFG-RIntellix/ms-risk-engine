@@ -19,8 +19,9 @@ public interface SimulationDraftPortService {
      * Calculates a simulation draft based on form changes.
      *
      * @param requestId   the request identifier for fetching base data.
+     * @param requestType the type of the request.
      * @param formChanges the user-specified form modifications.
      * @return the calculated simulation draft with metrics and deltas.
      */
-    SimulationDraft calculateDraft(String requestId, FormChanges formChanges);
+    SimulationDraft calculateDraft(String requestId, String requestType, FormChanges formChanges);
 }

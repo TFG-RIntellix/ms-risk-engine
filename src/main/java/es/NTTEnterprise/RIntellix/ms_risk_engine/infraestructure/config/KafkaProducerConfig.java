@@ -13,7 +13,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 /**
  * Kafka producer configuration for scoring generation messages.
@@ -66,7 +66,7 @@ public class KafkaProducerConfig {
      * and CreditCardScoringGenerationDTO objects.
      *
      * @return ProducerFactory configured with StringSerializer for keys
-     *         and JacksonJsonSerializer for polymorphic Object values
+     *         and JsonSerializer for polymorphic Object values
      */
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
@@ -74,7 +74,7 @@ public class KafkaProducerConfig {
 
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(ProducerConfig.ACKS_CONFIG, acks);
         configProps.put(ProducerConfig.RETRIES_CONFIG, retries);
         configProps.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);

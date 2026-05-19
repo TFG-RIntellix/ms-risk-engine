@@ -1,6 +1,6 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
@@ -76,20 +76,20 @@ public interface RiskCalculationStrategy {
             final Double interestRate,
             final RiskGradeCalculator gradeCalculator) {
 
-        if (pd == null || prePdMetrics == null || prePdMetrics.getEad() == null
-                || prePdMetrics.getLgd() == null) {
+        if (pd == null || prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
+                || prePdMetrics.getLossGivenDefault() == null) {
             throw new IllegalArgumentException(LogMessage.ERROR_ASSEMBLING_FULL_METRICS + pd);
         }
 
         double safePd = RiskCalculationDefaults.clampRatio(pd);
-        double ead = prePdMetrics.getEad();
-        double lgd = prePdMetrics.getLgd();
+        double ead = prePdMetrics.getExposureAtDefault();
+        double lgd = prePdMetrics.getLossGivenDefault();
         double ecl = safePd * lgd * ead * RiskCalculationDefaults.DISCOUNT_FACTOR;
 
         // Use RiskGradeCalculator for risk grade determination
         RiskGrade riskGrade = gradeCalculator.calculateRiskGrade(
                 safePd, ecl, ead, requestedAmount, annualIncome, termMonths, interestRate);
 
-        return new RiskMetrics(safePd, lgd, ead, ecl, riskGrade);
+        return new RiskMetrics(safePd, lgd, ead, ecl, riskGrade.toString());
     }
 }

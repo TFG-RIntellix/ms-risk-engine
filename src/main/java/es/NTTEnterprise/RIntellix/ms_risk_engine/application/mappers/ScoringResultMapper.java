@@ -8,9 +8,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 
 /**
  * Mapper that converts model execution output into Scoring domain entity.

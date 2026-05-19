@@ -10,6 +10,9 @@ public class CalculateSimulationDraftRequestDTO {
     @NotBlank(message = "requestId is required")
     private String requestId;
 
+    @NotBlank(message = "requestType is required")
+    private String requestType;
+
     @ValidSimulationFormChanges
     private Map<String, Object> formChanges;
 
@@ -27,5 +30,13 @@ public class CalculateSimulationDraftRequestDTO {
 
     public void setFormChanges(final Map<String, Object> formChanges) {
         this.formChanges = formChanges;
+    }
+
+    public String getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
     }
 }

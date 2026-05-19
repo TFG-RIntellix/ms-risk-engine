@@ -1,0 +1,41 @@
+package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
+
+/**
+ * Centralized constants for model payload transformations.
+ * 
+ * Contains hardcoded values used when mapping domain objects to model payloads,
+ * including boolean representations in Spanish, default values, and other
+ * constants
+ * specific to the AI model requirements.
+ *
+ * @author Lucía Fernández Mancebo
+ * @Date 05-18-2026
+ */
+public final class ModelPayloadConstants {
+
+    private ModelPayloadConstants() {
+        throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
+    }
+
+    // ============================================================
+    // BOOLEAN REPRESENTATIONS IN MODEL PAYLOAD (Spanish)
+    // ============================================================
+
+    /** Boolean TRUE representation in model payload (Spanish: "Sí"). */
+    public static final String BOOLEAN_VALUE_YES = "Si";
+
+    /** Boolean FALSE representation in model payload (Spanish: "No"). */
+    public static final String BOOLEAN_VALUE_NO = "No";
+
+    // ============================================================
+    // DEFAULT VALUES FOR MODEL PAYLOAD
+    // ============================================================
+
+    /**
+     * Default LTV value applied when ms-core-data sends null.
+     * 
+     * TODO: Default LTV applied when ms-core-data sends null. Should be resolved in
+     * ms-core-data.
+     */
+    public static final double DEFAULT_LTV = 0.0;
+}

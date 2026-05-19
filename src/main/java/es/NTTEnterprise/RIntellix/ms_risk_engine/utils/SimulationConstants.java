@@ -18,4 +18,14 @@ public final class SimulationConstants {
     public static final double ZERO_VALUE = 0.0;
     public static final int MIN_TERM_MONTHS = 1;
     public static final String RISK_GRADE_ARROW = " -> ";
+
+    /**
+     * Safely returns the value of a Double or ZERO_VALUE if null.
+     *
+     * @param value the Double value to check.
+     * @return the double value or ZERO_VALUE if value is null.
+     */
+    public static double getSafe(final Double value) {
+        return value == null ? ZERO_VALUE : value;
+    }
 }

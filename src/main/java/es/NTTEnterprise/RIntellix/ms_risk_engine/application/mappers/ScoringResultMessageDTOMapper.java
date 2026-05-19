@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.RiskFeatureDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.RiskMetricsDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringResultMessageDTO;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 

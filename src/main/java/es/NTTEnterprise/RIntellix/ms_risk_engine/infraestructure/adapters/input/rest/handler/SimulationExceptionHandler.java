@@ -9,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.BaseRequestFetchException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.InvalidFormChangesException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelPredictionException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ScoringNotFoundException;
@@ -33,11 +32,6 @@ public class SimulationExceptionHandler {
                 ? HttpStatus.BAD_GATEWAY
                 : HttpStatus.valueOf(ex.getStatusCode());
         return ResponseEntity.status(status).body(Map.of("message", ex.getMessage()));
-    }
-
-    @ExceptionHandler(BaseRequestFetchException.class)
-    public ResponseEntity<Map<String, Object>> handleBaseRequestFetch(final BaseRequestFetchException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

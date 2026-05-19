@@ -43,6 +43,7 @@ public final class LogMessage {
 
     public static final String ASYNCHRONOUS_MODEL_INVOCATION = "Asynchronous model invocation started for requestId={}";
     public static final String ASYNCHRONOUS_RISK_CALCULATION_STARTED = "Asynchronous risk calculation started for requestId={}";
+    public static final String RISK_METRICS_CALCULATION_STARTED = "Risk metrics calculation started for requestId={}";
 
     public static final String ERROR_ASSEMBLING_FULL_METRICS = "Error assembling full metrics for requestId={}, probability of default or pre-PD metrics are null";
 
@@ -73,7 +74,6 @@ public final class LogMessage {
     // Model Prediction Adapter Messages
     public static final String INVALID_MODEL_PREDICTION_REQUEST = "Invalid model prediction request for requestId={}. Error: {}";
 
-
     // Simulation Exceptions
 
     public static final String SCORING_RETRIEVING_MESSAGE_ERROR = "Failed to retrieve scoring for requestId={}. Status code:{}";
@@ -93,6 +93,8 @@ public final class LogMessage {
     public static final String STRATEGIES_LIST_CANNOT_BE_NULL = "Strategies list cannot be null";
     public static final String LOAN_PAYMENT_CALCULATOR_CANNOT_BE_NULL = "LoanPaymentCalculator cannot be null";
     public static final String MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL = "ModelPayloadUtilities cannot be null";
+    public static final String MODEL_PREDICTION_PORT_CANNOT_BE_NULL = "ModelPredictionPort cannot be null";
+    public static final String RISK_GRADE_CALCULATOR_CANNOT_BE_NULL = "RiskGradeCalculator cannot be null";
     public static final String PROBABILITY_OF_DEFAULT_CANNOT_BE_NULL = "Probability of default cannot be null";
     public static final String PRINCIPAL_AMOUNT_CANNOT_BE_NULL = "Principal amount cannot be null";
     public static final String TERM_MONTHS_CANNOT_BE_NULL = "Term months cannot be null";
@@ -112,5 +114,14 @@ public final class LogMessage {
 
     public static final String MAPPING_SCORING_ENTITY_TO_DTO = "Mapping Scoring entity to ScoringResultMessageDTO";
     public static final String ACTUAL_SCORING_DEBUG = "This is the actual scoring: {}";
+    public static final String REQUEST_TYPE_NULL_ERROR = "Request type is null, cannot resolve strategy";
 
+    // ============================================================
+    // SIMULATION CALCULATION MESSAGES
+    // ============================================================
+
+    public static final String SIMULATION_DTI_RECALCULATED = "Recalculated DTI for simulation: {} (monthlyPayment={}, annualIncome={})";
+    public static final String SIMULATION_LTV_RECALCULATED = "Recalculated LTV for mortgage simulation: {} (loanAmount={}, propertyValue={})";
+    public static final String SIMULATION_PROPERTY_VALUE_REMOVED = "Removed propertyValue from model input (it is not a model feature, LTV is used instead)";
+    public static final String SIMULATION_RISK_INDICATORS_CALCULATION_ERROR = "Error recalculating risk indicators for simulation. Error: {}";
 }

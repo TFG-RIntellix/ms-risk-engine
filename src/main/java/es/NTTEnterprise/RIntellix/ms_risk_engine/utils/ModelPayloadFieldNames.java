@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 /**
  * Constants for model payload field names used in mapper classes.
@@ -11,7 +11,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers;
 public final class ModelPayloadFieldNames {
 
     private ModelPayloadFieldNames() {
-        throw new UnsupportedOperationException("This is a constants class and cannot be instantiated");
+        throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }
 
     // ============================================================

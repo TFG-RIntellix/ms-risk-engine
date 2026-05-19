@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.application.utils;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 import org.springframework.stereotype.Component;
 

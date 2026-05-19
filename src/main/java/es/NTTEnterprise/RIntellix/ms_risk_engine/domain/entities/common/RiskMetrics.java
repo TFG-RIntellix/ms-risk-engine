@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common;
 
 /**
  * Class representing the risk metrics calculated by the scoring model.
@@ -46,7 +46,7 @@ public class RiskMetrics {
      *                               interpretation by end-users.
      */
     public RiskMetrics(Double probabilityOfDefault, Double lossGivenDefault, Double exposureAtDefault,
-                       Double expectedCalculatedLoss, String riskLevel) {
+            Double expectedCalculatedLoss, String riskLevel) {
         this.probabilityOfDefault = probabilityOfDefault;
         this.lossGivenDefault = lossGivenDefault;
         this.exposureAtDefault = exposureAtDefault;

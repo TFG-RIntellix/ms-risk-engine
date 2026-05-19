@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.output.PredictPdPort;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.PredictPdPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelPredictionException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.clients.MsModelClient;
 
