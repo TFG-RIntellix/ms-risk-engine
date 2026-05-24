@@ -10,7 +10,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.FormChanges;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDelta;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Infrastructure Adapter Mapper for Simulation Draft API Response.
@@ -40,8 +41,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 09-05-2026
  */
 @Component
-@Slf4j
 public class SimulationDraftMapper {
+
+    private static final Logger log = LoggerFactory.getLogger(SimulationDraftMapper.class);
 
     /**
      * Maps input API request DTO to domain FormChanges entity.

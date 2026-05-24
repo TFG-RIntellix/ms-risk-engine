@@ -3,7 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 /**
  * Centralized constants for model input field names used in simulation
  * calculations.
- * These field names correspond to the Spanish field names expected by the AI
+ * These field names correspond to the model field names expected by the AI
  * model.
  *
  * @author Lucía Fernández Mancebo
@@ -16,26 +16,26 @@ public final class SimulationFieldNames {
     }
 
     // ============================================================
-    // LOAN/MORTGAGE MODEL INPUT FIELDS (Spanish naming convention)
+    // LOAN/MORTGAGE MODEL INPUT FIELDS (model naming convention)
     // ============================================================
 
     /** Requested loan amount field name in model input. */
-    public static final String MODEL_FIELD_REQUESTED_AMOUNT = "Monto_Prestamo";
+    public static final String MODEL_FIELD_REQUESTED_AMOUNT = "loanAmount";
 
     /** Interest rate field name in model input. */
-    public static final String MODEL_FIELD_INTEREST_RATE = "Tasa_Interes";
+    public static final String MODEL_FIELD_INTEREST_RATE = "interestRate";
 
     /** Loan term in months field name in model input. */
-    public static final String MODEL_FIELD_TERM_MONTHS = "Plazo_Meses";
+    public static final String MODEL_FIELD_TERM_MONTHS = "termMonths";
 
     /** Annual income field name in model input. */
-    public static final String MODEL_FIELD_ANNUAL_INCOME = "Ingresos_Anuales";
+    public static final String MODEL_FIELD_ANNUAL_INCOME = "annualIncome";
 
     /** Debt-to-Income ratio field name in model input. */
-    public static final String MODEL_FIELD_DTI = "DTI";
+    public static final String MODEL_FIELD_DTI = "dti";
 
     /** Loan-to-Value ratio field name in model input. */
-    public static final String MODEL_FIELD_LTV = "LTV";
+    public static final String MODEL_FIELD_LTV = "ltv";
 
     // ============================================================
     // FORM INPUT FIELDS (for simulation form changes)

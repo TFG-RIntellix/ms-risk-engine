@@ -15,14 +15,16 @@ public final class FinancialMetricsCalculator {
     /**
      * Calculates the monthly payment using French amortization formula.
      *
-     * @param principal    the principal amount.
-     * @param annualRate   the annual nominal interest rate (percentage).
-     * @param termMonths   the loan term in months.
+     * @param principal  the principal amount.
+     * @param annualRate the annual nominal interest rate (percentage).
+     * @param termMonths the loan term in months.
      * @return the monthly payment.
      */
-    public static double calculateMonthlyPayment(final double principal, final double annualRate, final int termMonths) {
+    public static double calculateMonthlyPayment(final double principal, final double annualRate,
+            final int termMonths) {
         final int safeTermMonths = Math.max(termMonths, SimulationConstants.MIN_TERM_MONTHS);
-        final double monthlyRate = annualRate / SimulationConstants.PERCENTAGE_DIVISOR / SimulationConstants.MONTHS_PER_YEAR;
+        final double monthlyRate = annualRate / SimulationConstants.PERCENTAGE_DIVISOR
+                / SimulationConstants.MONTHS_PER_YEAR;
 
         if (monthlyRate == SimulationConstants.ZERO_RATE) {
             return principal / safeTermMonths;
@@ -38,18 +40,18 @@ public final class FinancialMetricsCalculator {
     }
 
     /**
-     * Calculates debt-to-income ratio.
+     * Calculates debt-to-income ratio as a decimal (0-1 range).
      *
      * @param monthlyPayment the monthly payment.
      * @param annualIncome   the annual income.
-     * @return DTI percentage.
+     * @return DTI as decimal (0-1 range, not percentage).
      */
     public static double calculateDti(final double monthlyPayment, final double annualIncome) {
         final double monthlyIncome = annualIncome / SimulationConstants.MONTHS_PER_YEAR;
         if (monthlyIncome <= SimulationConstants.ZERO_VALUE) {
             return SimulationConstants.ZERO_VALUE;
         }
-        return (monthlyPayment / monthlyIncome) * SimulationConstants.PERCENTAGE_DIVISOR;
+        return monthlyPayment / monthlyIncome;
     }
 
     /**

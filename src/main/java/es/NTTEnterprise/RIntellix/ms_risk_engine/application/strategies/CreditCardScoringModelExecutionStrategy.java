@@ -16,10 +16,11 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalc
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Strategy for credit card model execution with parallelized risk calculation.
@@ -37,8 +38,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-25-2026
  */
 @Component
-@Slf4j
 public class CreditCardScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
+
+        private static final Logger log = LoggerFactory.getLogger(CreditCardScoringModelExecutionStrategy.class);
 
         private final CreditCardModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
@@ -92,9 +94,8 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                 // Revolving)
                 // This flag is needed to resolve the correct risk calculation strategy
                 // before creating the calculation context
+                // Determine revolving flag (used by risk strategies if needed)
                 final Boolean isRevolving = request.getIsRevolving();
-                final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(
-                                requestType, isRevolving, riskCalculationStrategies);
 
                 // Step 3: Create calculation context with all necessary data
                 final RiskMetricsCalculationContext context = new RiskMetricsCalculationContext(
@@ -109,8 +110,8 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                 // - Parallel pre-PD metrics calculation (EAD/LGD)
                 // - Full metrics assembly with ECL and risk grade
                 final var result = metricsCalculationService.calculateRiskMetrics(context);
-                final RiskMetrics fullMetrics = result.getRiskMetrics();
-                final ModelPredictionResult prediction = result.getModelPredictionResult();
+                final RiskMetrics fullMetrics = result.riskMetrics();
+                final ModelPredictionResult prediction = result.modelPredictionResult();
 
                 log.info(LogMessage.MODEL_EXECUTION_RESULT,
                                 "Credit card scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());

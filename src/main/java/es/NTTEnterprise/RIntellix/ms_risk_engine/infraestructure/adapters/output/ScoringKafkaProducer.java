@@ -15,7 +15,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.ScoringResu
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ScoringResultPublisherPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Kafka producer adapter that publishes scoring results to the
@@ -29,8 +30,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-26-2026
  */
 @Component
-@Slf4j
 public class ScoringKafkaProducer implements ScoringResultPublisherPort {
+
+    private static final Logger log = LoggerFactory.getLogger(ScoringKafkaProducer.class);
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ScoringResultMessageDTOMapper scoringResultMessageDTOMapper;

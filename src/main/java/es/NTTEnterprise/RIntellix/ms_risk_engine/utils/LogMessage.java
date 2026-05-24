@@ -93,6 +93,7 @@ public final class LogMessage {
     public static final String STRATEGIES_LIST_CANNOT_BE_NULL = "Strategies list cannot be null";
     public static final String LOAN_PAYMENT_CALCULATOR_CANNOT_BE_NULL = "LoanPaymentCalculator cannot be null";
     public static final String MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL = "ModelPayloadUtilities cannot be null";
+    public static final String BASE_VARIABLES_CANNOT_BE_NULL = "Base variables cannot be null";
     public static final String MODEL_PREDICTION_PORT_CANNOT_BE_NULL = "ModelPredictionPort cannot be null";
     public static final String RISK_GRADE_CALCULATOR_CANNOT_BE_NULL = "RiskGradeCalculator cannot be null";
     public static final String PROBABILITY_OF_DEFAULT_CANNOT_BE_NULL = "Probability of default cannot be null";
@@ -124,4 +125,10 @@ public final class LogMessage {
     public static final String SIMULATION_LTV_RECALCULATED = "Recalculated LTV for mortgage simulation: {} (loanAmount={}, propertyValue={})";
     public static final String SIMULATION_PROPERTY_VALUE_REMOVED = "Removed propertyValue from model input (it is not a model feature, LTV is used instead)";
     public static final String SIMULATION_RISK_INDICATORS_CALCULATION_ERROR = "Error recalculating risk indicators for simulation. Error: {}";
+
+    public static class STRATEGIES_LIST_CANNOT_BE_NULL {
+
+        public STRATEGIES_LIST_CANNOT_BE_NULL() {
+        }
+    }
 }

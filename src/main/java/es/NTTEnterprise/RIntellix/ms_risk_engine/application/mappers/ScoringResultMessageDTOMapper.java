@@ -11,7 +11,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeat
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mapper that converts a Scoring domain entity into a
@@ -21,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-26-2026
  */
 @Component
-@Slf4j
 public class ScoringResultMessageDTOMapper {
+
+    private static final Logger log = LoggerFactory.getLogger(ScoringResultMessageDTOMapper.class);
 
     /**
      * Maps a Scoring domain entity to a ScoringResultMessageDTO.

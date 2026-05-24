@@ -4,9 +4,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  * Centralized constants for model payload transformations.
  * 
  * Contains hardcoded values used when mapping domain objects to model payloads,
- * including boolean representations in Spanish, default values, and other
- * constants
- * specific to the AI model requirements.
+ * including boolean representations expected by the model, default values, and
+ * other constants specific to the AI model requirements.
  *
  * @author Lucía Fernández Mancebo
  * @Date 05-18-2026
@@ -18,13 +17,13 @@ public final class ModelPayloadConstants {
     }
 
     // ============================================================
-    // BOOLEAN REPRESENTATIONS IN MODEL PAYLOAD (Spanish)
+    // BOOLEAN REPRESENTATIONS IN MODEL PAYLOAD (model-expected)
     // ============================================================
 
-    /** Boolean TRUE representation in model payload (Spanish: "Sí"). */
+    /** Boolean TRUE representation in model payload as expected by the model. */
     public static final String BOOLEAN_VALUE_YES = "Si";
 
-    /** Boolean FALSE representation in model payload (Spanish: "No"). */
+    /** Boolean FALSE representation in model payload as expected by the model. */
     public static final String BOOLEAN_VALUE_NO = "No";
 
     // ============================================================

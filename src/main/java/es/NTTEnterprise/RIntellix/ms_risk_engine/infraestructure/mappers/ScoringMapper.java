@@ -60,7 +60,10 @@ public class ScoringMapper {
         // TODO: Tocheck this scoring.setExecutionDate(new
         // Date(scoringDTO.getScoringDate()));
 
-        // TODO: Reuse the spanish conversion for the model inputs.
+        // NOTE: Scoring input snapshot uses model field names (mapped via
+        // LoanOrMortgageModelPayloadMapper during scoring generation).
+        // For simulation draft merges, SimulationModelPayloadMapper handles
+        // transformation of form changes from API to model field names.
         scoring.setModelVersion(scoringDTO.getModelVersion());
         scoring.setResults(mapRiskMetrics(scoringDTO));
         scoring.setExplainability(mapExplainability(scoringDTO.getTopFeatures()));

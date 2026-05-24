@@ -12,6 +12,14 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  */
 public final class RiskCalculationDefaults {
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     * Throws UnsupportedOperationException if called, enforcing
+     * non-instantiability.
+     * This class is intended to be used in a static context only.
+     * 
+     * @throws UnsupportedOperationException always, to prevent instantiation.
+     */
     private RiskCalculationDefaults() {
         throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }

@@ -27,12 +27,14 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
-@Slf4j
 @EnableKafka
 public class KafkaConsumerConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerConfig.class);
 
     private static final String AUTO_OFFSET_RESET_EARLIEST = "earliest";
     private static final String TRUSTED_PACKAGES_ALL = "*";

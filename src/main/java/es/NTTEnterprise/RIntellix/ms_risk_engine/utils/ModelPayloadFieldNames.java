@@ -2,8 +2,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 /**
  * Constants for model payload field names used in mapper classes.
- * Centralizes all Spanish field names expected by ms-model API
- * to prevent hardcoding and enable easy maintenance.
+ * Centralizes all English field names to prevent hardcoding and enable easy
+ * maintenance.
  *
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
@@ -15,53 +15,69 @@ public final class ModelPayloadFieldNames {
     }
 
     // ============================================================
-    // LOAN & MORTGAGE MODEL PAYLOAD FIELDS
+    // DEMOGRAPHIC FIELDS
     // ============================================================
 
     /** Age field name in model payload. */
-    public static final String FIELD_EDAD = "edad";
+    public static final String FIELD_AGE = "age";
 
     /** Gender field name in model payload. */
-    public static final String FIELD_GENERO = "genero";
+    public static final String FIELD_GENDER = "gender";
 
     /** Marital status field name in model payload. */
-    public static final String FIELD_ESTADO_CIVIL = "estado_civil";
+    public static final String FIELD_MARITAL_STATUS = "maritalStatus";
 
     /** Education level field name in model payload. */
-    public static final String FIELD_EDUCACION = "educacion";
+    public static final String FIELD_EDUCATION = "education";
 
     /** Employment status field name in model payload. */
-    public static final String FIELD_SITUACION_LABORAL = "situacion_laboral";
+    public static final String FIELD_EMPLOYMENT_STATUS = "employmentStatus";
 
     /** Occupation sector field name in model payload. */
-    public static final String FIELD_SECTOR_TRABAJO = "sector_trabajo";
+    public static final String FIELD_OCCUPATION_SECTOR = "occupationSector";
 
     /** Number of dependents field name in model payload. */
-    public static final String FIELD_DEPENDIENTES = "dependientes";
+    public static final String FIELD_DEPENDENTS = "dependents";
+
+    // ============================================================
+    // HOUSING & MORTGAGE FIELDS
+    // ============================================================
 
     /** Home ownership type field name in model payload. */
-    public static final String FIELD_VIVIENDA = "vivienda";
+    public static final String FIELD_HOME_OWNERSHIP = "homeOwnership";
 
     /** Has mortgage flag field name in model payload. */
-    public static final String FIELD_TIENE_HIPOTECA = "tiene_hipoteca";
+    public static final String FIELD_HAS_MORTGAGE = "hasMortgage";
+
+    // ============================================================
+    // INCOME FIELDS
+    // ============================================================
 
     /** Annual income field name in model payload. */
-    public static final String FIELD_INGRESOS_ANUALES = "ingresos_anuales";
+    public static final String FIELD_ANNUAL_INCOME = "annualIncome";
+
+    // ============================================================
+    // LOAN FIELDS
+    // ============================================================
 
     /** Loan type field name in model payload. */
-    public static final String FIELD_TIPO_PRESTAMO = "tipo_prestamo";
+    public static final String FIELD_LOAN_TYPE = "loanType";
 
     /** Loan purpose field name in model payload. */
-    public static final String FIELD_PROPOSITO = "proposito";
+    public static final String FIELD_PURPOSE = "purpose";
 
     /** Loan amount field name in model payload. */
-    public static final String FIELD_MONTO_PRESTAMO = "monto_prestamo";
+    public static final String FIELD_LOAN_AMOUNT = "loanAmount";
 
     /** Loan term in months field name in model payload. */
-    public static final String FIELD_PLAZO_MESES = "plazo_meses";
+    public static final String FIELD_TERM_MONTHS = "termMonths";
 
     /** Interest rate field name in model payload. */
-    public static final String FIELD_TASA_INTERES = "tasa_interes";
+    public static final String FIELD_INTEREST_RATE = "interestRate";
+
+    // ============================================================
+    // FINANCIAL METRICS
+    // ============================================================
 
     /** Loan-to-value ratio field name in model payload. */
     public static final String FIELD_LTV = "ltv";
@@ -69,11 +85,15 @@ public final class ModelPayloadFieldNames {
     /** Debt-to-income ratio field name in model payload. */
     public static final String FIELD_DTI = "dti";
 
+    // ============================================================
+    // CREDIT HISTORY FIELDS
+    // ============================================================
+
     /** Number of previous loans field name in model payload. */
-    public static final String FIELD_NUM_PRESTAMOS_PREVIOS = "num_prestamos_previos";
+    public static final String FIELD_PREVIOUS_LOANS_COUNT = "previousLoansCount";
 
     /** Number of previous defaults field name in model payload. */
-    public static final String FIELD_NUM_MORAS_PREVIAS = "num_moras_previas";
+    public static final String FIELD_PREVIOUS_DEFAULTS_COUNT = "previousDefaultsCount";
 
     // ============================================================
     // CREDIT CARD MODEL PAYLOAD FIELDS

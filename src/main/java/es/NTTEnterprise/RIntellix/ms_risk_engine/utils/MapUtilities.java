@@ -34,7 +34,8 @@ public final class MapUtilities {
      * @throws InvalidFormChangesException if value is a String that cannot be
      *                                     parsed as double.
      */
-    public static double getDouble(final Map<String, Object> source, final String key, final double defaultValue) {
+    public static double getDouble(final Map<String, Object> source, final String key, final double defaultValue)
+            throws InvalidFormChangesException {
         if (source == null || !source.containsKey(key) || source.get(key) == null) {
             return defaultValue;
         }
@@ -45,7 +46,8 @@ public final class MapUtilities {
         try {
             return Double.parseDouble(value.toString());
         } catch (NumberFormatException ex) {
-            throw new InvalidFormChangesException("Invalid numeric value for key: " + key);
+            throw new InvalidFormChangesException(
+                    String.format("Invalid numeric value for key '%s': '%s'", key, value), ex);
         }
     }
 }

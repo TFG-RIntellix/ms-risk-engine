@@ -14,7 +14,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProce
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.input.kafka.strategy.ScoringGenerationMessageStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.ScoringKafkaRequestMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Kafka consumer adapter for receiving and processing scoring generation
@@ -28,9 +29,10 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 03-21-2026
  */
 @Component
-@Slf4j
 @Validated
 public class ScoringKafkaConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(ScoringKafkaConsumer.class);
 
     private final ScoringProcessingPortService scoringProcessingService;
     private final List<ScoringGenerationMessageStrategy> strategies;

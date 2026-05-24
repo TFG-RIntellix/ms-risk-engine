@@ -8,7 +8,15 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions;
  */
 public class InvalidFormChangesException extends RuntimeException {
 
+    public InvalidFormChangesException(final String message, NumberFormatException ex) {
+        super(message);
+    }
+
     public InvalidFormChangesException(final String message) {
         super(message);
+    }
+
+    public InvalidFormChangesException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

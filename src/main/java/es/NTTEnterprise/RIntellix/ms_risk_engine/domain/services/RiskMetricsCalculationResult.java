@@ -24,42 +24,13 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
  */
-public class RiskMetricsCalculationResult {
+public record RiskMetricsCalculationResult(
+        ModelPredictionResult modelPredictionResult,
+        RiskMetrics riskMetrics) {
 
-    private final ModelPredictionResult modelPredictionResult;
-    private final RiskMetrics riskMetrics;
-
-    /**
-     * Constructor of the RiskMetricsCalculationResult class.
-     *
-     * @param modelPredictionResult the raw model prediction result.
-     * @param riskMetrics           the fully assembled risk metrics.
-     * @throws NullPointerException if any parameter is null
-     */
-    public RiskMetricsCalculationResult(
-            final ModelPredictionResult modelPredictionResult,
-            final RiskMetrics riskMetrics) {
-        this.modelPredictionResult = Objects.requireNonNull(modelPredictionResult,
-                "Model prediction result cannot be null");
-        this.riskMetrics = Objects.requireNonNull(riskMetrics,
-                "Risk metrics cannot be null");
+    public RiskMetricsCalculationResult {
+        Objects.requireNonNull(modelPredictionResult, "Model prediction result cannot be null");
+        Objects.requireNonNull(riskMetrics, "Risk metrics cannot be null");
     }
 
-    /**
-     * Gets the raw model prediction result from the ML service.
-     *
-     * @return the model prediction result
-     */
-    public ModelPredictionResult getModelPredictionResult() {
-        return modelPredictionResult;
-    }
-
-    /**
-     * Gets the fully assembled risk metrics.
-     *
-     * @return the risk metrics
-     */
-    public RiskMetrics getRiskMetrics() {
-        return riskMetrics;
-    }
 }

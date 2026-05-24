@@ -24,11 +24,11 @@ public final class SimulationFormFieldNames {
 
     /** Allowed simulation form fields that can be modified in what-if scenarios */
     public static final Set<String> ALLOWED_FIELD_NAMES = Set.of(
-            "Tasa_Interes", // Scenario: different interest rates
-            "Plazo_Meses", // Scenario: different loan terms
-            "Monto_Prestamo", // Scenario: different loan amounts
-            "Ingresos_Anuales", // Scenario: different income levels
-            "Situacion_Laboral", // Scenario: employment status changes
-            "Tiene_Hipoteca", // Scenario: mortgage obligation changes
-            "propertyValue"); // Mortgage: property value to calculate LTV (for HIPOTECA only)
+            "interestRate", // Scenario: different interest rates
+            "termMonths", // Scenario: different loan terms
+            "loanAmount", // Scenario: different loan amounts
+            "annualIncome", // Scenario: different income levels
+            "employmentStatus", // Scenario: employment status changes
+            "hasMortgage", // Scenario: mortgage obligation changes
+            "propertyValue"); // Mortgage: property value to calculate LTV (for mortgage only)
 }
