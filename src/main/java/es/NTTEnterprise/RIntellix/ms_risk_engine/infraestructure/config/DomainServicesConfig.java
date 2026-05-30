@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.LoanPaymentCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.FinancialMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
@@ -30,13 +31,24 @@ public class DomainServicesConfig {
     }
 
     /**
+     * Creates a DtiCalculationService bean.
+     *
+     * @return DtiCalculationService instance
+     */
+    @Bean
+    public DtiCalculationService dtiCalculationService() {
+        return new DtiCalculationService();
+    }
+
+    /**
      * Creates a RiskIndicatorCalculationService bean.
      *
      * @return RiskIndicatorCalculationService instance
      */
     @Bean
-    public RiskIndicatorCalculationService riskIndicatorCalculationService() {
-        return new RiskIndicatorCalculationService();
+    public RiskIndicatorCalculationService riskIndicatorCalculationService(
+            final DtiCalculationService dtiCalculationService) {
+        return new RiskIndicatorCalculationService(dtiCalculationService);
     }
 
     /**

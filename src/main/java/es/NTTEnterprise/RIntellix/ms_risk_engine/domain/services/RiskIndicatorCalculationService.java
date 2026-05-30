@@ -1,6 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Map;
+import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
@@ -28,13 +29,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RiskIndicatorCalculationService {
 
+    private final DtiCalculationService dtiCalculationService;
+
+    /**
+     * Constructor for RiskIndicatorCalculationService.
+     *
+     * @param dtiCalculationService domain service for DTI calculations.
+     */
+    public RiskIndicatorCalculationService(final DtiCalculationService dtiCalculationService) {
+        this.dtiCalculationService = Objects.requireNonNull(dtiCalculationService,
+                LogMessage.DTI_CALCULATION_SERVICE_CANNOT_BE_NULL);
+    }
+
     /**
      * Recalculates critical risk indicators (DTI and LTV) before model invocation.
      * 
      * Process:
      * 1. Extract simulated loan parameters from merged variables
      * 2. Calculate new monthly payment based on simulated amount, rate, and term
-     * 3. Calculate new DTI = monthlyPayment / annualIncome
+     * 3. Calculate new DTI = (existingObligations + monthlyPayment) / monthlyIncome
      * 4. Update DTI in merged variables (critical for model)
      * 5. If mortgage (HIPOTECA):
      * - Resolve property value (user override or base value)
@@ -62,11 +75,17 @@ public class RiskIndicatorCalculationService {
                     SimulationConstants.MIN_TERM_MONTHS);
             final double annualIncome = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, 0);
 
-            // Step 1: Recalculate DTI based on new parameters
+            // Step 1: Recalculate DTI based on new parameters and existing obligations
             final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                     loanAmount, interestRate, termMonths);
 
-            final double newDti = MathUtilities.roundFinal(FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome));
+            final double existingObligations = dtiCalculationService
+                    .resolveExistingMonthlyObligations(baseInputSnapshot);
+            final double newDti = MathUtilities.roundFinal(
+                    dtiCalculationService.calculateDtiWithExistingObligations(
+                            monthlyPayment,
+                            annualIncome,
+                            existingObligations));
 
             // Update DTI in merged variables
             mergedVariables.put(ModelPayloadFieldNames.FIELD_DTI, newDti);

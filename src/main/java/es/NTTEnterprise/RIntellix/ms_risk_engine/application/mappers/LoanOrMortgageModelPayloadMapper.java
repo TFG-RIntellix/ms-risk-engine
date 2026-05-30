@@ -7,10 +7,12 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadConstants;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadUtilities;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 
 /**
  * Mapper for transforming loan and mortgage scoring requests into
@@ -25,10 +27,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadUtilities;
 public class LoanOrMortgageModelPayloadMapper {
 
         private final ModelPayloadUtilities payloadUtilities;
+        private final DtiCalculationService dtiCalculationService;
 
-        public LoanOrMortgageModelPayloadMapper(final ModelPayloadUtilities payloadUtilities) {
+        public LoanOrMortgageModelPayloadMapper(final ModelPayloadUtilities payloadUtilities,
+                        final DtiCalculationService dtiCalculationService) {
                 this.payloadUtilities = Objects.requireNonNull(payloadUtilities,
                                 LogMessage.MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL);
+                this.dtiCalculationService = Objects.requireNonNull(dtiCalculationService,
+                                LogMessage.DTI_CALCULATION_SERVICE_CANNOT_BE_NULL);
         }
 
         /**
@@ -76,11 +82,28 @@ public class LoanOrMortgageModelPayloadMapper {
                 // Default LTV to 0.0 if not provided
                 modelPayload.put(ModelPayloadFieldNames.FIELD_LTV,
                                 Objects.requireNonNullElse(request.getLtv(), ModelPayloadConstants.DEFAULT_LTV));
-                modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, request.getDti());
+                modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, calculateModelDti(request));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_LOANS_COUNT, request.getPreviousLoansCount());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_DEFAULTS_COUNT,
                                 request.getPreviousDefaultsCount());
                 return modelPayload;
+        }
+
+        private double calculateModelDti(final ScoringGenerationRequest request) {
+                if (request == null) {
+                        return SimulationConstants.ZERO_VALUE;
+                }
+
+                final double annualIncome = SimulationConstants.getSafe(request.getAnnualIncome());
+                final double existingDtiRatio = SimulationConstants.getSafe(request.getDti());
+                final double loanAmount = SimulationConstants.getSafe(request.getLoanAmount());
+                final double interestRate = SimulationConstants.getSafe(request.getInterestRate());
+                return dtiCalculationService.calculateModelDtiForScoring(
+                                annualIncome,
+                                existingDtiRatio,
+                                loanAmount,
+                                interestRate,
+                                request.getTermMonths());
         }
 
 }

@@ -124,6 +124,7 @@ public final class LogMessage {
     public static final String MODEL_PREDICTION_PORT_CANNOT_BE_NULL = "ModelPredictionPort cannot be null";
     public static final String RISK_GRADE_CALCULATOR_CANNOT_BE_NULL = "RiskGradeCalculator cannot be null";
     public static final String FINANCIAL_METRICS_CALCULATION_SERVICE_CANNOT_BE_NULL = "FinancialMetricsCalculationService cannot be null";
+    public static final String DTI_CALCULATION_SERVICE_CANNOT_BE_NULL = "DtiCalculationService cannot be null";
     public static final String RISK_METRICS_CONTEXT_CANNOT_BE_NULL = "RiskMetricsCalculationContext cannot be null";
     public static final String PROBABILITY_OF_DEFAULT_CANNOT_BE_NULL = "Probability of default cannot be null";
     public static final String PRINCIPAL_AMOUNT_CANNOT_BE_NULL = "Principal amount cannot be null";
