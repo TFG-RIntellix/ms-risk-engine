@@ -27,16 +27,16 @@ public final class FinancialMetricsCalculator {
                 / SimulationConstants.MONTHS_PER_YEAR;
 
         if (monthlyRate == SimulationConstants.ZERO_RATE) {
-            return principal / safeTermMonths;
+            return MathUtilities.roundFinal(principal / safeTermMonths);
         }
 
         final double onePlusRatePowN = Math.pow(1 + monthlyRate, safeTermMonths);
         final double numerator = principal * monthlyRate * onePlusRatePowN;
         final double denominator = onePlusRatePowN - 1;
         if (denominator == SimulationConstants.ZERO_VALUE) {
-            return principal / safeTermMonths;
+            return MathUtilities.roundFinal(principal / safeTermMonths);
         }
-        return numerator / denominator;
+        return MathUtilities.roundFinal(numerator / denominator);
     }
 
     /**
@@ -49,9 +49,9 @@ public final class FinancialMetricsCalculator {
     public static double calculateDti(final double monthlyPayment, final double annualIncome) {
         final double monthlyIncome = annualIncome / SimulationConstants.MONTHS_PER_YEAR;
         if (monthlyIncome <= SimulationConstants.ZERO_VALUE) {
-            return SimulationConstants.ZERO_VALUE;
+            return MathUtilities.roundFinal(SimulationConstants.ZERO_VALUE);
         }
-        return monthlyPayment / monthlyIncome;
+        return MathUtilities.roundFinal(monthlyPayment / monthlyIncome);
     }
 
     /**
@@ -62,7 +62,7 @@ public final class FinancialMetricsCalculator {
      * @return total payment.
      */
     public static double calculateTotalPayment(final double monthlyPayment, final int termMonths) {
-        return monthlyPayment * Math.max(termMonths, SimulationConstants.MIN_TERM_MONTHS);
+        return MathUtilities.roundFinal(monthlyPayment * Math.max(termMonths, SimulationConstants.MIN_TERM_MONTHS));
     }
 
     /**
@@ -73,7 +73,7 @@ public final class FinancialMetricsCalculator {
      * @return total interest.
      */
     public static double calculateTotalInterest(final double totalPayment, final double principal) {
-        return totalPayment - principal;
+        return MathUtilities.roundFinal(totalPayment - principal);
     }
 
     /**
@@ -84,6 +84,6 @@ public final class FinancialMetricsCalculator {
      * @return disposable income.
      */
     public static double calculateDisposableIncome(final double annualIncome, final double monthlyPayment) {
-        return (annualIncome / SimulationConstants.MONTHS_PER_YEAR) - monthlyPayment;
+        return MathUtilities.roundFinal((annualIncome / SimulationConstants.MONTHS_PER_YEAR) - monthlyPayment);
     }
 }

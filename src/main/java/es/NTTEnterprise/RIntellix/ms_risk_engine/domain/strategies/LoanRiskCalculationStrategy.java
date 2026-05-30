@@ -28,6 +28,14 @@ public class LoanRiskCalculationStrategy implements RiskCalculationStrategy {
         }
     }
 
+    /**
+     * Calculates the pre-PD metrics (EAD and LGD) for a personal loan.
+     *
+     * @param requestedAmount the requested loan amount
+     * @param ltv             the loan-to-value ratio (not applicable for loans)
+     * @return the calculated RiskMetrics containing EAD and LGD
+     * @throws IllegalArgumentException if the requested amount is invalid
+     */
     @Override
     public RiskMetrics calculatePrePdMetrics(final Double requestedAmount, final Double ltv)
             throws IllegalArgumentException {

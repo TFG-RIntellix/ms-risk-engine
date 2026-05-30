@@ -7,6 +7,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculato
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -65,7 +66,7 @@ public class RiskIndicatorCalculationService {
             final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                     loanAmount, interestRate, termMonths);
 
-            final double newDti = FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome);
+            final double newDti = MathUtilities.roundFinal(FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome));
 
             // Update DTI in merged variables
             mergedVariables.put(ModelPayloadFieldNames.FIELD_DTI, newDti);
@@ -109,7 +110,7 @@ public class RiskIndicatorCalculationService {
 
         // If we have a valid property value, calculate and set LTV
         if (propertyValue != null && propertyValue > 0) {
-            final double newLtv = loanAmount / propertyValue;
+            final double newLtv = MathUtilities.roundFinal(loanAmount / propertyValue);
             mergedVariables.put(ModelPayloadFieldNames.FIELD_LTV, newLtv);
             log.debug(LogMessage.SIMULATION_LTV_RECALCULATED, newLtv, loanAmount, propertyValue);
         }

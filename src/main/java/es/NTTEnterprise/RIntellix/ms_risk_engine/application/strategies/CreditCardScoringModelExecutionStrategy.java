@@ -1,6 +1,5 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,8 +15,6 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalc
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +39,6 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
 
         private final CreditCardModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
-        private final List<RiskCalculationStrategy> riskCalculationStrategies;
         private final String predictCreditCardPath;
 
         /**
@@ -52,17 +48,14 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
          *                                  payload.
          * @param metricsCalculationService the service that orchestrates risk metric
          *                                  calculation.
-         * @param riskCalculationStrategies the available risk calculation strategies.
          * @param predictCreditCardPath     the model endpoint path for credit cards.
          */
         public CreditCardScoringModelExecutionStrategy(
                         final CreditCardModelPayloadMapper payloadMapper,
                         final RiskMetricsCalculationService metricsCalculationService,
-                        final List<RiskCalculationStrategy> riskCalculationStrategies,
                         @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") final String predictCreditCardPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
-                this.riskCalculationStrategies = Objects.requireNonNull(riskCalculationStrategies);
                 this.predictCreditCardPath = Objects.requireNonNull(predictCreditCardPath);
         }
 

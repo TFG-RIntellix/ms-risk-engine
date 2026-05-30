@@ -2,7 +2,6 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Objects;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.LoanPaymentCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
@@ -24,11 +23,10 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
  */
 public class RiskGradeCalculator {
 
-    private final LoanPaymentCalculator paymentCalculator;
-
-    public RiskGradeCalculator(final LoanPaymentCalculator paymentCalculator) {
-        this.paymentCalculator = Objects.requireNonNull(paymentCalculator,
-                LogMessage.LOAN_PAYMENT_CALCULATOR_CANNOT_BE_NULL);
+    /**
+     * Default constructor for RiskGradeCalculator.
+     */
+    public RiskGradeCalculator() {
     }
 
     /**

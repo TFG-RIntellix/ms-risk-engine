@@ -4,6 +4,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.FinancialMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 
 /**
@@ -36,15 +37,15 @@ public interface RiskCalculationStrategy {
             final Double interestRate,
             final RiskGradeCalculator riskGradeCalculator) {
 
-        final double pd = probabilityOfDefault == null ? 0.0 : probabilityOfDefault;
-        final double ead = prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
+        final double pd = MathUtilities.roundIntermediate(probabilityOfDefault == null ? 0.0 : probabilityOfDefault);
+        final double ead = MathUtilities.roundIntermediate(prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
                 ? 0.0
-                : prePdMetrics.getExposureAtDefault();
-        final double lgd = prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
+                : prePdMetrics.getExposureAtDefault());
+        final double lgd = MathUtilities.roundIntermediate(prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
                 ? 0.0
-                : prePdMetrics.getLossGivenDefault();
+                : prePdMetrics.getLossGivenDefault());
 
-        final double ecl = pd * lgd * ead;
+        final double ecl = MathUtilities.roundFinal(pd * lgd * ead);
 
         final RiskMetrics metrics = new RiskMetrics();
         metrics.setProbabilityOfDefault(pd);

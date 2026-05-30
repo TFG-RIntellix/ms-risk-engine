@@ -8,6 +8,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.FinancialMetric
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
+
 /**
  * Configuration class to wire domain services without Spring stereotypes
  * in the domain layer.
@@ -41,12 +42,11 @@ public class DomainServicesConfig {
     /**
      * Creates a RiskGradeCalculator bean.
      *
-     * @param loanPaymentCalculator loan payment calculator dependency
      * @return RiskGradeCalculator instance
      */
     @Bean
-    public RiskGradeCalculator riskGradeCalculator(final LoanPaymentCalculator loanPaymentCalculator) {
-        return new RiskGradeCalculator(loanPaymentCalculator);
+    public RiskGradeCalculator riskGradeCalculator() {
+        return new RiskGradeCalculator();
     }
 
     /**

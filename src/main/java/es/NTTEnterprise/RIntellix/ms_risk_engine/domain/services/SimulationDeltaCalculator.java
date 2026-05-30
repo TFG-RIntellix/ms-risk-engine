@@ -9,6 +9,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculato
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MapUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 
 /**
  * Domain service for calculating the delta (difference) between base metrics
@@ -79,11 +80,11 @@ public class SimulationDeltaCalculator {
 
         // Build delta
         final SimulationDelta delta = new SimulationDelta();
-        delta.setPdChange(
+        delta.setPdChange(MathUtilities.roundIntermediate(
                 SimulationConstants.getSafe(simulatedMetrics.getProbabilityOfDefault())
-                        - SimulationConstants.getSafe(baseMetrics.getProbabilityOfDefault()));
-        delta.setEclChange(SimulationConstants.getSafe(simulatedMetrics.getExpectedCalculatedLoss())
-                        - SimulationConstants.getSafe(baseMetrics.getExpectedCalculatedLoss()));
+                        - SimulationConstants.getSafe(baseMetrics.getProbabilityOfDefault())));
+        delta.setEclChange(MathUtilities.roundFinal(SimulationConstants.getSafe(simulatedMetrics.getExpectedCalculatedLoss())
+                        - SimulationConstants.getSafe(baseMetrics.getExpectedCalculatedLoss())));
         
         final String baseRiskGradeName = baseMetrics.getRiskLevel() != null ? baseMetrics.getRiskLevel()
                 : SimulationConstants.UNKNOWN_RISK_GRADE;
@@ -92,11 +93,11 @@ public class SimulationDeltaCalculator {
                 : SimulationConstants.UNKNOWN_RISK_GRADE;
                 
         delta.setRiskGradeChange(baseRiskGradeName + SimulationConstants.RISK_GRADE_ARROW + simRiskGradeName);
-        delta.setMonthlyPaymentChange(simMonthlyPayment - baseMonthlyPayment);
-        delta.setDtiChange(simDti - baseDti);
-        delta.setTotalPaymentChange(simTotalPayment - baseTotalPayment);
-        delta.setTotalInterestChange(simTotalInterest - baseTotalInterest);
-        delta.setMonthlyDisposableIncomeChange(simDisposableIncome - baseDisposableIncome);
+        delta.setMonthlyPaymentChange(MathUtilities.roundFinal(simMonthlyPayment - baseMonthlyPayment));
+        delta.setDtiChange(MathUtilities.roundFinal(simDti - baseDti));
+        delta.setTotalPaymentChange(MathUtilities.roundFinal(simTotalPayment - baseTotalPayment));
+        delta.setTotalInterestChange(MathUtilities.roundFinal(simTotalInterest - baseTotalInterest));
+        delta.setMonthlyDisposableIncomeChange(MathUtilities.roundFinal(simDisposableIncome - baseDisposableIncome));
 
         return delta;
     }

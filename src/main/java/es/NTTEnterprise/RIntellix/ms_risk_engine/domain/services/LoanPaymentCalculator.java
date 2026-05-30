@@ -2,7 +2,9 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Objects;
 
+import org.springframework.stereotype.Component;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 
 /**
  * Domain service for calculating loan payment scenarios.
@@ -67,7 +69,7 @@ public class LoanPaymentCalculator {
 
         // Handle zero interest rate: simple division of principal by term
         if (monthlyRate == 0.0) {
-            return amount / terms;
+            return MathUtilities.roundFinal(amount / terms);
         }
 
         // Apply French amortization formula
@@ -76,9 +78,9 @@ public class LoanPaymentCalculator {
 
         // Handle edge case where denominator is zero (should rarely occur)
         if (denominator == 0.0) {
-            return totalAmount / terms;
+            return MathUtilities.roundFinal(totalAmount / terms);
         }
 
-        return totalAmount / denominator;
+        return MathUtilities.roundFinal(totalAmount / denominator);
     }
 }

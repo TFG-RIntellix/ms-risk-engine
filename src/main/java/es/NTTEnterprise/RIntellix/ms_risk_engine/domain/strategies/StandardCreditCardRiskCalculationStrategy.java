@@ -29,6 +29,14 @@ public class StandardCreditCardRiskCalculationStrategy implements RiskCalculatio
         }
     }
 
+    /**
+     * Calculates the pre-PD metrics (EAD and LGD) for a standard credit card.
+     *
+     * @param requestedAmount the requested credit limit
+     * @param ltv             the loan-to-value ratio (not applicable for credit cards)
+     * @return the calculated RiskMetrics containing EAD and LGD
+     * @throws IllegalArgumentException if the requested amount is invalid
+     */
     @Override
     public RiskMetrics calculatePrePdMetrics(final Double requestedAmount, final Double ltv)
             throws IllegalArgumentException {
