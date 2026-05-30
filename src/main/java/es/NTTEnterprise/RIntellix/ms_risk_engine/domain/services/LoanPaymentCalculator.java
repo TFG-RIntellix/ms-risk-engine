@@ -1,35 +1,43 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Objects;
-
-import org.springframework.stereotype.Component;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 
 /**
  * Domain service for calculating loan payment scenarios.
- * Encapsulates amortization and payment calculation logic for various loan types.
+ * Encapsulates amortization and payment calculation logic for various loan
+ * types.
  *
  * Responsibilities:
- * - Calculate fixed monthly payments using French amortization method (annuity)
+ * 
+ * - Calculate fixed monthly payments using French amortization method (ann
+ * ity)
  * - Handle edge cases (zero interest rates, invalid terms)
  * - Provide consistent payment calculations across the application
  *
  * This service applies the following formulas:
  * - French Amortization: P = [r * PV] / [1 - (1 + r)^-n]
- * where: P = monthly payment, r = monthly interest rate, PV = principal, n = number of months
+ * where: P = monthly payment, r = monthly interest rate, PV = principal, n =
+ * number of months
  *
+ * 
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
+ * 
  */
 public class LoanPaymentCalculator {
 
     /**
-     * Calculates the fixed monthly payment for a loan using French amortization method.
-     * French amortization results in a constant monthly payment (principal + interest)
+     * Calculates the fixed monthly payment for a loan using French amortization
+     * method.
+     * French amortization results in a constant monthly payment (principal +
+     * interest)
      * that covers the entire loan over the specified term.
      *
+     * 
      * Formula: P = [r * PV] / [1 - (1 + r)^-n]
+     * 
      * where:
      * - P = monthly payment amount
      * - r = monthly interest rate (annual rate / 12 / 100)

@@ -1,6 +1,5 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
