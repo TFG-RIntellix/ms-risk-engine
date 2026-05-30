@@ -1,9 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,13 +10,11 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.CreditCa
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.CreditCardModelPayloadMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.ScoringModelInvocationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,14 +33,12 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 04-25-2026
  */
-@Component
 @Slf4j
+@Component
 public class CreditCardScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
 
         private final CreditCardModelPayloadMapper payloadMapper;
-        private final ScoringModelInvocationService modelInvocationService;
-        private final List<RiskCalculationStrategy> riskCalculationStrategies;
-        private final RiskGradeCalculator riskGradeCalculator;
+        private final RiskMetricsCalculationService metricsCalculationService;
         private final String predictCreditCardPath;
 
         /**
@@ -52,22 +46,16 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
          *
          * @param payloadMapper             the mapper that prepares credit-card model
          *                                  payload.
-         * @param modelInvocationService    the service that executes model calls.
-         * @param riskCalculationStrategies the available risk calculation strategies.
-         * @param riskGradeCalculator       the domain service for risk grade
+         * @param metricsCalculationService the service that orchestrates risk metric
          *                                  calculation.
          * @param predictCreditCardPath     the model endpoint path for credit cards.
          */
         public CreditCardScoringModelExecutionStrategy(
                         final CreditCardModelPayloadMapper payloadMapper,
-                        final ScoringModelInvocationService modelInvocationService,
-                        final List<RiskCalculationStrategy> riskCalculationStrategies,
-                        final RiskGradeCalculator riskGradeCalculator,
+                        final RiskMetricsCalculationService metricsCalculationService,
                         @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") final String predictCreditCardPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
-                this.modelInvocationService = Objects.requireNonNull(modelInvocationService);
-                this.riskCalculationStrategies = Objects.requireNonNull(riskCalculationStrategies);
-                this.riskGradeCalculator = Objects.requireNonNull(riskGradeCalculator);
+                this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
                 this.predictCreditCardPath = Objects.requireNonNull(predictCreditCardPath);
         }
 
@@ -90,40 +78,40 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                         throw new IllegalArgumentException(LogMessage.CREDIT_CARD_STRATEGY_ERROR_PAYLOAD);
                 }
 
-                // Map payload to model request format.
+                // Step 1: Map payload to model request format
                 final Map<String, Object> modelRequestPayload = payloadMapper.toModelPayload(request, requestType);
 
-                // Call Model.
-                final CompletableFuture<ModelPredictionResult> predictionResultFuture = modelInvocationService
-                                .invokePrediction(
-                                                modelRequestPayload,
-                                                requestId,
-                                                predictCreditCardPath);
-
-                // Compute Pre-PD Metrics.
+                // Step 2: Get isRevolving flag to select correct strategy (Standard vs
+                // Revolving)
+                // This flag is needed to resolve the correct risk calculation strategy
+                // before creating the calculation context
+                // Determine revolving flag (used by risk strategies if needed)
                 final Boolean isRevolving = request.getIsRevolving();
-                final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(
-                                requestType, isRevolving, riskCalculationStrategies);
 
-                final RiskMetrics prePdMetrics = riskStrategy.calculatePrePdMetrics(
-                                request.getCreditLimit(), null);
-                log.debug(LogMessage.PRE_PD_METRICS_COMPUTED, requestId, prePdMetrics.getEad(), prePdMetrics.getLgd());
+                // Step 3: Create calculation context with all necessary data
+                final RiskMetricsCalculationContext context = new RiskMetricsCalculationContext(
+                                modelRequestPayload,
+                                requestId,
+                                predictCreditCardPath,
+                                requestType); // interestRate is not applicable for credit cards
 
-                // Wait until obtaining PD result.
-                final ModelPredictionResult predictionResult = predictionResultFuture.join();
-                log.debug(LogMessage.MODEL_PREDICTION_RESULT, requestId,
-                                predictionResult.getProbabilityOfDefault());
+                // Step 4: DELEGATE core calculation to reusable service
+                // This service handles:
+                // - Async model invocation
+                // - Parallel pre-PD metrics calculation (EAD/LGD)
+                // - Full metrics assembly with ECL and risk grade
+                final var result = metricsCalculationService.calculateRiskMetrics(context);
+                final RiskMetrics fullMetrics = result.riskMetrics();
+                final ModelPredictionResult prediction = result.modelPredictionResult();
 
-                // Assemble full risk metrics with PD, ECL, and RiskGrade.
-                final RiskMetrics fullMetrics = riskStrategy.assembleFullMetricsWithGradeCalculator(
-                                predictionResult.getProbabilityOfDefault(),
-                                prePdMetrics,
-                                request.getCreditLimit(),
-                                request.getAnnualIncome(),
-                                null,
-                                null,
-                                riskGradeCalculator);
+                log.info(LogMessage.MODEL_EXECUTION_RESULT,
+                                "Credit card scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());
 
-                return new ScoringModelExecutionResultDTO(modelRequestPayload, predictionResult, fullMetrics);
+                return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
+        }
+
+        @Override
+        public String modelEndpointPath() {
+                return this.predictCreditCardPath;
         }
 }

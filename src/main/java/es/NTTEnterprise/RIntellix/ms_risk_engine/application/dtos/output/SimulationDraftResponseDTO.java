@@ -1,6 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DTO for representing the response of a simulation draft,
@@ -10,36 +11,32 @@ import java.util.HashMap;
  */
 public class SimulationDraftResponseDTO {
 
-    private String requestId; // Reference to the associated scoring request
-    private String partyId; // Reference to the associated party (customer)
-    private String baseScoringId;
-
-    private HashMap<String, Object> formChanges;
+    private Map<String, Object> formChanges;
     private SimulationMetricsResponseDTO simulatedResults;
     private SimulationDeltaResponseDTO delta;
 
     /**
      * Default constructor for SimulationDraftResponseDTO.
+     * 
      * @return A new instance of SimulationDraftResponseDTO with default values.
      */
-    public SimulationDraftResponseDTO () {
+    public SimulationDraftResponseDTO() {
     }
 
     /**
      * Constructor for SimulationDraftResponseDTO.
-     * @param requestId Reference to the associated scoring request
-     * @param partyId Reference to the associated party (customer)
-     * @param baseScoringId Reference to the base scoring used for the simulation
-     * @param formChanges The changes made to the input features for the simulation
+     * 
+     * @param requestId        Reference to the associated scoring request
+     * @param partyId          Reference to the associated party (customer)
+     * @param baseScoringId    Reference to the base scoring used for the simulation
+     * @param formChanges      The changes made to the input features for the
+     *                         simulation
      * @param simulatedResults The resulting risk metrics from the simulation
-     * @param delta The computed deltas (PD, EL, risk grade) compared to the original scoring
+     * @param delta            The computed deltas (PD, EL, risk grade) compared to
+     *                         the original scoring
      */
-    public SimulationDraftResponseDTO(String requestId, String partyId, String baseScoringId,
-                                      HashMap<String, Object> formChanges, SimulationMetricsResponseDTO simulatedResults,
-                                      SimulationDeltaResponseDTO delta, String simulatedDecision) {
-        this.requestId = requestId;
-        this.partyId = partyId;
-        this.baseScoringId = baseScoringId;
+    public SimulationDraftResponseDTO(Map<String, Object> formChanges, SimulationMetricsResponseDTO simulatedResults,
+            SimulationDeltaResponseDTO delta, String simulatedDecision) {
         this.formChanges = formChanges;
         this.simulatedResults = simulatedResults;
         this.delta = delta;
@@ -47,35 +44,11 @@ public class SimulationDraftResponseDTO {
 
     // Getters and Setters
 
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(final String requestId) {
-        this.requestId = requestId;
-    }
-
-    public String getPartyId() {
-        return partyId;
-    }
-
-    public void setPartyId(final String partyId) {
-        this.partyId = partyId;
-    }
-
-    public String getBaseScoringId() {
-        return baseScoringId;
-    }
-
-    public void setBaseScoringId(final String baseScoringId) {
-        this.baseScoringId = baseScoringId;
-    }
-
-    public HashMap<String, Object> getFormChanges() {
+    public Map<String, Object> getFormChanges() {
         return formChanges;
     }
 
-    public void setFormChanges(final HashMap<String, Object> formChanges) {
+    public void setFormChanges(final Map<String, Object> formChanges) {
         this.formChanges = formChanges;
     }
 
@@ -106,15 +79,6 @@ public class SimulationDraftResponseDTO {
 
         final SimulationDraftResponseDTO that = (SimulationDraftResponseDTO) o;
 
-        if (!requestId.equals(that.requestId)) {
-            return false;
-        }
-        if (!partyId.equals(that.partyId)) {
-            return false;
-        }
-        if (!baseScoringId.equals(that.baseScoringId)) {
-            return false;
-        }
         if (!formChanges.equals(that.formChanges)) {
             return false;
         }
@@ -125,10 +89,7 @@ public class SimulationDraftResponseDTO {
     }
 
     public int hashCode() {
-        int result = requestId.hashCode();
-        result = 31 * result + partyId.hashCode();
-        result = 31 * result + baseScoringId.hashCode();
-        result = 31 * result + formChanges.hashCode();
+        int result = formChanges.hashCode();
         result = 31 * result + simulatedResults.hashCode();
         result = 31 * result + delta.hashCode();
         return result;
@@ -136,9 +97,6 @@ public class SimulationDraftResponseDTO {
 
     public String toString() {
         return "SimulationDraftResponseDTO{" +
-                "requestId='" + requestId + '\'' +
-                ", partyId='" + partyId + '\'' +
-                ", baseScoringId='" + baseScoringId + '\'' +
                 ", formChanges=" + formChanges +
                 ", simulatedResults=" + simulatedResults +
                 ", delta=" + delta +

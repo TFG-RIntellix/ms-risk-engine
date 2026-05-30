@@ -3,6 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 import java.util.List;
 import java.util.Objects;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.factories.GenericStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
@@ -33,14 +34,9 @@ public final class ScoringModelExecutionStrategyFactory {
             final List<ScoringModelExecutionStrategy> strategies) {
         Objects.requireNonNull(requestType, LogMessage.REQUEST_TYPE_CANNOT_BE_NULL);
         Objects.requireNonNull(strategies, LogMessage.STRATEGIES_LIST_CANNOT_BE_NULL);
-
-        for (ScoringModelExecutionStrategy strategy : strategies) {
-            if (strategy.supports(requestType)) {
-                return strategy;
-            }
-        }
-
-        throw new IllegalArgumentException(
+        return GenericStrategyFactory.selectStrategy(
+                strategies,
+                strategy -> strategy.supports(requestType),
                 String.format(LogMessage.REQUEST_TYPE_NOT_FOUND, requestType));
     }
 

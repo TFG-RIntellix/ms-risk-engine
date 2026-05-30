@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
 
 /**
  * Data Transfer Object for the model prediction response from the AI risk

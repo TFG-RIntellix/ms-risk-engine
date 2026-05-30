@@ -18,9 +18,13 @@ public class SimulationDeltaResponseDTO {
     private String riskGradeChange;
     private Double monthlyPaymentChange;
     private Double dtiChange;
+    private Double totalPaymentChange;
+    private Double totalInterestChange;
+    private Double monthlyDisposableIncomeChange;
 
     /**
      * Default constructor for SimulationDeltaResponseDTO.
+     * 
      * @return A new instance of SimulationDeltaResponseDTO with default values.
      */
     public SimulationDeltaResponseDTO() {
@@ -28,14 +32,21 @@ public class SimulationDeltaResponseDTO {
 
     /**
      * Constructor for SimulationDeltaResponseDTO.
-     * @param pdChange The change in Probability of Default (PD) compared to the original scoring
-     * @param eclChange The change in Expected Credit Loss (ECL) compared to the original scoring
-     * @param riskGradeChange The change in risk grade compared to the original scoring (e.g., "Upgraded", "Downgraded", "Unchanged")
-     * @param monthlyPaymentChange The change in monthly payment compared to the original scoring
-     * @param dtiChange The change in Debt-to-Income ratio (DTI) compared to the original scoring
+     * 
+     * @param pdChange             The change in Probability of Default (PD)
+     *                             compared to the original scoring
+     * @param eclChange            The change in Expected Credit Loss (ECL) compared
+     *                             to the original scoring
+     * @param riskGradeChange      The change in risk grade compared to the original
+     *                             scoring (e.g., "Upgraded", "Downgraded",
+     *                             "Unchanged")
+     * @param monthlyPaymentChange The change in monthly payment compared to the
+     *                             original scoring
+     * @param dtiChange            The change in Debt-to-Income ratio (DTI) compared
+     *                             to the original scoring
      */
     public SimulationDeltaResponseDTO(Double pdChange, Double eclChange, String riskGradeChange,
-                                      Double monthlyPaymentChange, Double dtiChange) {
+            Double monthlyPaymentChange, Double dtiChange) {
         this.pdChange = pdChange;
         this.eclChange = eclChange;
         this.riskGradeChange = riskGradeChange;
@@ -84,22 +95,61 @@ public class SimulationDeltaResponseDTO {
         this.dtiChange = dtiChange;
     }
 
+    public Double getTotalPaymentChange() {
+        return totalPaymentChange;
+    }
+
+    public void setTotalPaymentChange(final Double totalPaymentChange) {
+        this.totalPaymentChange = totalPaymentChange;
+    }
+
+    public Double getTotalInterestChange() {
+        return totalInterestChange;
+    }
+
+    public void setTotalInterestChange(final Double totalInterestChange) {
+        this.totalInterestChange = totalInterestChange;
+    }
+
+    public Double getMonthlyDisposableIncomeChange() {
+        return monthlyDisposableIncomeChange;
+    }
+
+    public void setMonthlyDisposableIncomeChange(final Double monthlyDisposableIncomeChange) {
+        this.monthlyDisposableIncomeChange = monthlyDisposableIncomeChange;
+    }
+
     // Equals, hashCode, and toString methods
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         SimulationDeltaResponseDTO that = (SimulationDeltaResponseDTO) o;
 
-        if (pdChange != null ? !pdChange.equals(that.pdChange) : that.pdChange != null) return false;
-        if (eclChange != null ? !eclChange.equals(that.eclChange) : that.eclChange != null) return false;
+        if (pdChange != null ? !pdChange.equals(that.pdChange) : that.pdChange != null)
+            return false;
+        if (eclChange != null ? !eclChange.equals(that.eclChange) : that.eclChange != null)
+            return false;
         if (riskGradeChange != null ? !riskGradeChange.equals(that.riskGradeChange) : that.riskGradeChange != null)
             return false;
-        if (monthlyPaymentChange != null ? !monthlyPaymentChange.equals(that.monthlyPaymentChange) : that.monthlyPaymentChange != null)
+        if (monthlyPaymentChange != null ? !monthlyPaymentChange.equals(that.monthlyPaymentChange)
+                : that.monthlyPaymentChange != null)
             return false;
-        return dtiChange != null ? dtiChange.equals(that.dtiChange) : that.dtiChange == null;
+        if (dtiChange != null ? !dtiChange.equals(that.dtiChange) : that.dtiChange != null)
+            return false;
+        if (totalPaymentChange != null ? !totalPaymentChange.equals(that.totalPaymentChange)
+                : that.totalPaymentChange != null)
+            return false;
+        if (totalInterestChange != null ? !totalInterestChange.equals(that.totalInterestChange)
+                : that.totalInterestChange != null)
+            return false;
+        return monthlyDisposableIncomeChange != null
+                ? monthlyDisposableIncomeChange.equals(that.monthlyDisposableIncomeChange)
+                : that.monthlyDisposableIncomeChange == null;
     }
 
     @Override
@@ -109,6 +159,9 @@ public class SimulationDeltaResponseDTO {
         result = 31 * result + (riskGradeChange != null ? riskGradeChange.hashCode() : 0);
         result = 31 * result + (monthlyPaymentChange != null ? monthlyPaymentChange.hashCode() : 0);
         result = 31 * result + (dtiChange != null ? dtiChange.hashCode() : 0);
+        result = 31 * result + (totalPaymentChange != null ? totalPaymentChange.hashCode() : 0);
+        result = 31 * result + (totalInterestChange != null ? totalInterestChange.hashCode() : 0);
+        result = 31 * result + (monthlyDisposableIncomeChange != null ? monthlyDisposableIncomeChange.hashCode() : 0);
         return result;
     }
 
@@ -120,8 +173,10 @@ public class SimulationDeltaResponseDTO {
                 ", riskGradeChange='" + riskGradeChange + '\'' +
                 ", monthlyPaymentChange=" + monthlyPaymentChange +
                 ", dtiChange=" + dtiChange +
+                ", totalPaymentChange=" + totalPaymentChange +
+                ", totalInterestChange=" + totalInterestChange +
+                ", monthlyDisposableIncomeChange=" + monthlyDisposableIncomeChange +
                 '}';
     }
-
 
 }

@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.FinancialMetricsDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.RiskFeatureDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.RiskMetricsDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringResultMessageDTO;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskFeature;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 04-26-2026
  */
-@Component
 @Slf4j
+@Component
 public class ScoringResultMessageDTOMapper {
 
     /**
@@ -51,6 +53,7 @@ public class ScoringResultMessageDTOMapper {
 
     /**
      * Maps a RiskMetrics domain entity to a RiskMetricsDTO.
+     * Includes mapping of financial metrics if present.
      *
      * @param riskMetrics the riskMetrics domain entity.
      * @return the mapped output DTO, or null if input is null.
@@ -66,6 +69,32 @@ public class ScoringResultMessageDTOMapper {
         dto.setExposureAtDefault(riskMetrics.getExposureAtDefault());
         dto.setExpectedCalculatedLoss(riskMetrics.getExpectedCalculatedLoss());
         dto.setRiskLevel(riskMetrics.getRiskLevel());
+
+        // Map financial metrics if present
+        if (riskMetrics.getFinancialMetrics() != null) {
+            dto.setFinancialMetrics(mapFinancialMetrics(riskMetrics.getFinancialMetrics()));
+        }
+
+        return dto;
+    }
+
+    /**
+     * Maps a FinancialMetrics domain entity to a FinancialMetricsDTO.
+     *
+     * @param financialMetrics the financialMetrics domain entity.
+     * @return the mapped output DTO, or null if input is null.
+     */
+    private FinancialMetricsDTO mapFinancialMetrics(FinancialMetrics financialMetrics) {
+        if (financialMetrics == null) {
+            return null;
+        }
+
+        final FinancialMetricsDTO dto = new FinancialMetricsDTO();
+        dto.setMonthlyPayment(financialMetrics.getMonthlyPayment());
+        dto.setDebtToIncomeRatio(financialMetrics.getDebtToIncomeRatio());
+        dto.setTotalPayment(financialMetrics.getTotalPayment());
+        dto.setTotalInterest(financialMetrics.getTotalInterest());
+        dto.setMonthlyDisposableIncome(financialMetrics.getMonthlyDisposableIncome());
         return dto;
     }
 

@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 05-08-2026
  */
-@Component
 @Slf4j
+@Component
 public class ModelPredictionErrorHandler {
 
     /**

@@ -1,10 +1,9 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output;
 
-import java.util.Map;
 import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringDTO;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.ScoringMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,10 @@ public class MsCoreDataScoringAdapter implements FetchScoringPort {
         final ResponseEntity<ScoringDTO> response = msCoreDataClient.getScoringByRequestId(requestId);
         // If not successfull then we raise an error
         if (response.getStatusCode().isError()) {
-            throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_ERROR + requestId + response.getStatusCode() + response.getBody());
+            throw new ScoringNotFoundException(String.format(
+                    LogMessage.SCORING_RETRIEVING_MESSAGE_ERROR,
+                    requestId,
+                    response.getStatusCode()));
         }
 
         final ScoringDTO retrievedScoringDTO = response.getBody();

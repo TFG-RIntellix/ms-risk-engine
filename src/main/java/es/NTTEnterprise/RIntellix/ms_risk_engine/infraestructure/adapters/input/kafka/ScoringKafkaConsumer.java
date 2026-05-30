@@ -27,8 +27,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 03-21-2026
  */
-@Component
 @Slf4j
+@Component
 @Validated
 public class ScoringKafkaConsumer {
 
@@ -103,7 +103,7 @@ public class ScoringKafkaConsumer {
             }
         }
 
-        throw new IllegalArgumentException(LogMessage.REQUEST_TYPE_NOT_FOUND + " " + requestType);
+        throw new IllegalArgumentException(String.format(LogMessage.REQUEST_TYPE_NOT_FOUND, requestType));
 
     }
 }

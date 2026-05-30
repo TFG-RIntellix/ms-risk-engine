@@ -3,7 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
 import java.util.Map;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 
 /**
  * Encapsulates the complete output of a model execution, including the

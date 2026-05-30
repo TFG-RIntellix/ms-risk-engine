@@ -3,7 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
 import java.util.List;
 import java.util.Objects;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.factories.GenericStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
@@ -18,6 +18,15 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  */
 public final class RiskCalculationStrategyFactory {
 
+    /**
+     * Private constructor to prevent instantiation of this utility factory class.
+     * This class is not meant to be instantiated; it only provides a static factory
+     * method.
+     * If instantiation is attempted, an UnsupportedOperationException is thrown to
+     * indicate that this is a utility class.
+     * 
+     * @throws UnsupportedOperationException always thrown to prevent instantiation.
+     */
     private RiskCalculationStrategyFactory() {
         throw new UnsupportedOperationException(LogMessage.FACTORY_CLASS_NEVER_INSTANTIATE);
     }
@@ -40,13 +49,9 @@ public final class RiskCalculationStrategyFactory {
             final List<RiskCalculationStrategy> strategies) {
         Objects.requireNonNull(requestType, LogMessage.REQUEST_TYPE_CANNOT_BE_NULL);
         Objects.requireNonNull(strategies, LogMessage.STRATEGIES_LIST_CANNOT_BE_NULL);
-
-        for (RiskCalculationStrategy strategy : strategies) {
-            if (strategy.supports(requestType, isRevolving)) {
-                return strategy;
-            }
-        }
-        throw new IllegalArgumentException(
+        return GenericStrategyFactory.selectStrategy(
+                strategies,
+                strategy -> strategy.supports(requestType, isRevolving),
                 String.format(LogMessage.NO_RISK_CALCULATION_STRATEGY_FOUND, requestType, isRevolving));
     }
 }

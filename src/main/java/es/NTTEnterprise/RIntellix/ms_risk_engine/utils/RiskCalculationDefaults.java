@@ -12,6 +12,14 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  */
 public final class RiskCalculationDefaults {
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     * Throws UnsupportedOperationException if called, enforcing
+     * non-instantiability.
+     * This class is intended to be used in a static context only.
+     * 
+     * @throws UnsupportedOperationException always, to prevent instantiation.
+     */
     private RiskCalculationDefaults() {
         throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }
@@ -74,25 +82,27 @@ public final class RiskCalculationDefaults {
 
     // ============================================================
     // RISK GRADE THRESHOLDS
+    // Based on Basilea Principles of having different differentiate riskGrades
+    // Taking account that PD of 20% is a high risk (1 of 5 borrowers defaults).
     // ============================================================
 
     /** PD below this threshold maps to Grade A. */
-    public static final double PD_THRESHOLD_GRADE_A = 0.05;
+    public static final double PD_THRESHOLD_GRADE_A = 0.001;
 
     /** PD below this threshold maps to Grade B. */
-    public static final double PD_THRESHOLD_GRADE_B = 0.12;
+    public static final double PD_THRESHOLD_GRADE_B = 0.005;
 
     /** PD below this threshold maps to Grade C. */
-    public static final double PD_THRESHOLD_GRADE_C = 0.22;
+    public static final double PD_THRESHOLD_GRADE_C = 0.02;
 
-    /** ECL/EAD ratio below this triggers an upgrade in risk grade. */
-    public static final double ECL_RATIO_UPGRADE_THRESHOLD = 0.02;
+    /** PD below this threshold maps to Grade D. */
+    public static final double PD_THRESHOLD_GRADE_D = 0.05;
 
-    /** ECL/EAD ratio above this triggers a downgrade in risk grade. */
-    public static final double ECL_RATIO_DOWNGRADE_THRESHOLD = 0.08;
+    /** PD below this threshold maps to Grade E. */
+    public static final double PD_THRESHOLD_GRADE_E = 0.10;
 
-    /** Payment-to-income ratio above this triggers a grade downgrade. */
-    public static final double PAYMENT_TO_INCOME_STRESS_THRESHOLD = 0.45;
+    /** PD below this threshold maps to Grade F. */
+    public static final double PD_THRESHOLD_GRADE_F = 0.20;
 
     // ============================================================
     // SHARED UTILITY METHODS

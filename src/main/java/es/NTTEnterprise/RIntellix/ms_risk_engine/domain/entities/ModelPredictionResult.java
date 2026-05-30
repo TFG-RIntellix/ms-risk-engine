@@ -3,6 +3,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities;
 import java.util.List;
 import java.util.Objects;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
+
 /**
  * Represents the prediction response returned by the AI risk model.
  * Pure domain entity without any infrastructure library dependencies (Jackson,

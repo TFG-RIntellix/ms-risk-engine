@@ -42,8 +42,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 04-26-2026
  */
-@Component
 @Slf4j
+@Component
 public class ModelPredictionAdapter implements ModelPredictionPort {
 
     private final WebClient webClient;

@@ -29,8 +29,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
-@Configuration
 @Slf4j
+@Configuration
 @EnableKafka
 public class KafkaConsumerConfig {
 
@@ -117,7 +117,7 @@ public class KafkaConsumerConfig {
             if (exception instanceof ListenerExecutionFailedException
                     && exception.getCause() instanceof MethodArgumentNotValidException validationEx) {
                 validationEx.getBindingResult().getAllErrors().forEach(error -> log.warn(
-                        LogMessage.KAFKA_CONSUMER_VALIDATION_REJECTED, // TODO: Add this
+                        LogMessage.KAFKA_CONSUMER_VALIDATION_REJECTED,
                         error.getObjectName(),
                         error.getDefaultMessage()));
             } else {

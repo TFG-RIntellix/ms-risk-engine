@@ -1,10 +1,12 @@
-﻿package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.Scoring;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 
 /**
  * Output port for fetching scoring data from external services.
  * 
- * Provides access to base scoring information needed for simulation calculations
+ * Provides access to base scoring information needed for simulation
+ * calculations
  * and risk assessment. This port is defined at the domain layer to maintain the
  * hexagonal architecture principle.
  * 

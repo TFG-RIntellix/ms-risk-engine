@@ -1,8 +1,8 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
 
 /**
@@ -28,6 +28,14 @@ public class LoanRiskCalculationStrategy implements RiskCalculationStrategy {
         }
     }
 
+    /**
+     * Calculates the pre-PD metrics (EAD and LGD) for a personal loan.
+     *
+     * @param requestedAmount the requested loan amount
+     * @param ltv             the loan-to-value ratio (not applicable for loans)
+     * @return the calculated RiskMetrics containing EAD and LGD
+     * @throws IllegalArgumentException if the requested amount is invalid
+     */
     @Override
     public RiskMetrics calculatePrePdMetrics(final Double requestedAmount, final Double ltv)
             throws IllegalArgumentException {

@@ -1,9 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,13 +10,11 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.LoanOrMortgageModelPayloadMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.ScoringModelInvocationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.RiskCalculationStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,37 +34,29 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 04-25-2026
  */
-@Component
 @Slf4j
+@Component
 public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
 
         private final LoanOrMortgageModelPayloadMapper payloadMapper;
-        private final ScoringModelInvocationService modelInvocationService;
-        private final List<RiskCalculationStrategy> riskCalculationStrategies;
-        private final RiskGradeCalculator riskGradeCalculator;
+        private final RiskMetricsCalculationService metricsCalculationService;
         private final String predictLoanPath;
 
         /**
          * Constructor of the LoanOrMortgageScoringModelExecutionStrategy class.
          *
          * @param payloadMapper             the mapper that prepares loan model payload.
-         * @param modelInvocationService    the service that executes model calls.
-         * @param riskCalculationStrategies the available risk calculation strategies.
-         * @param riskGradeCalculator       the domain service for risk grade
+         * @param metricsCalculationService the service that orchestrates risk metric
          *                                  calculation.
          * @param predictLoanPath           the model endpoint path for loan and
          *                                  mortgage.
          */
         public LoanOrMortgageScoringModelExecutionStrategy(
                         final LoanOrMortgageModelPayloadMapper payloadMapper,
-                        final ScoringModelInvocationService modelInvocationService,
-                        final List<RiskCalculationStrategy> riskCalculationStrategies,
-                        final RiskGradeCalculator riskGradeCalculator,
+                        final RiskMetricsCalculationService metricsCalculationService,
                         @Value("${risk.model.predict-loan-path:/api/v1/risk/predict-loan}") final String predictLoanPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
-                this.modelInvocationService = Objects.requireNonNull(modelInvocationService);
-                this.riskCalculationStrategies = Objects.requireNonNull(riskCalculationStrategies);
-                this.riskGradeCalculator = Objects.requireNonNull(riskGradeCalculator);
+                this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
                 this.predictLoanPath = Objects.requireNonNull(predictLoanPath);
         }
 
@@ -92,39 +80,33 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                         throw new IllegalArgumentException(LogMessage.STRATEGY_ERROR_PAYLOAD);
                 }
 
-                // Map payload to model request format.
+                // Step 1: Map payload to model request format
                 final Map<String, Object> modelRequestPayload = payloadMapper.toModelPayload(request);
 
-                // Call Model
-                final CompletableFuture<ModelPredictionResult> predictionResultFuture = modelInvocationService
-                                .invokePrediction(
-                                                modelRequestPayload,
-                                                requestId,
-                                                predictLoanPath);
+                // Step 2: Create calculation context with all necessary data
+                final RiskMetricsCalculationContext context = new RiskMetricsCalculationContext(
+                                modelRequestPayload,
+                                requestId,
+                                predictLoanPath,
+                                requestType);
 
-                // Compute Pre-PD Metrics
-                final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(
-                                requestType, null, riskCalculationStrategies);
-                final RiskMetrics prePdMetrics = riskStrategy.calculatePrePdMetrics(
-                                request.getLoanAmount(), request.getLtv());
+                // Step 3: DELEGATE core calculation to reusable service
+                // This service handles:
+                // - Async model invocation
+                // - Parallel pre-PD metrics calculation
+                // - Full metrics assembly with ECL and risk grade
+                final var result = metricsCalculationService.calculateRiskMetrics(context);
+                final RiskMetrics fullMetrics = result.riskMetrics();
+                final ModelPredictionResult prediction = result.modelPredictionResult();
 
-                log.info(LogMessage.PRE_PD_METRICS_COMPUTED, requestId, prePdMetrics.getEad(), prePdMetrics.getLgd());
+                log.info(LogMessage.MODEL_EXECUTION_RESULT,
+                                "Loan/Mortgage scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());
 
-                // Wait until obtaining PD result.
-                final ModelPredictionResult predictionResult = predictionResultFuture.join();
-                log.info(LogMessage.MODEL_PREDICTION_RESULT, requestId, predictionResult.getProbabilityOfDefault());
-                log.info(LogMessage.MODEL_PREDICTION_RESULT_TO_STRING, predictionResult.toString());
+                return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
+        }
 
-                // Assemble full risk metrics with PD, ECL, and RiskGrade.
-                final RiskMetrics fullMetrics = riskStrategy.assembleFullMetricsWithGradeCalculator(
-                                predictionResult.getProbabilityOfDefault(),
-                                prePdMetrics,
-                                request.getLoanAmount(),
-                                request.getAnnualIncome(),
-                                request.getTermMonths(),
-                                request.getInterestRate(),
-                                riskGradeCalculator);
-
-                return new ScoringModelExecutionResultDTO(modelRequestPayload, predictionResult, fullMetrics);
+        @Override
+        public String modelEndpointPath() {
+                return this.predictLoanPath;
         }
 }

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringResultMessageDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.ScoringResultMessageDTOMapper;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ScoringResultPublisherPort;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Lucía Fernández Mancebo
  * @Date 04-26-2026
  */
-@Component
 @Slf4j
+@Component
 public class ScoringKafkaProducer implements ScoringResultPublisherPort {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -62,7 +62,7 @@ public class ScoringKafkaProducer implements ScoringResultPublisherPort {
         }
 
         final String requestId = scoring.getRequestId();
-        log.info(LogMessage.SCORING_MESSAGE_PROCESSING, topic, requestId);
+        log.info(LogMessage.SCORING_RESULT_PUBLISH_START, topic, requestId);
 
         final ScoringResultMessageDTO dto = scoringResultMessageDTOMapper.toDTO(scoring);
 
@@ -74,7 +74,7 @@ public class ScoringKafkaProducer implements ScoringResultPublisherPort {
 
         try {
             kafkaTemplate.send(message).get();
-            log.info(LogMessage.SCORING_MESSAGE_PROCESSING, requestId);
+            log.info(LogMessage.SCORING_RESULT_PUBLISH_SUCCESS, requestId);
         } catch (ExecutionException ex) {
             log.error(LogMessage.ERROR_PUBLISHING_SCORING_MESSAGE, requestId, ex.getMessage(), ex);
             throw new RuntimeException(LogMessage.ERROR_PUBLISHING_SCORING_MESSAGE + requestId, ex);
