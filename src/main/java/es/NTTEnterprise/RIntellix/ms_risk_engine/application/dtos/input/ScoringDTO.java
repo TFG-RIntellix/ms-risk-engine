@@ -23,6 +23,11 @@ public class ScoringDTO {
     private Double ead;
     private Double ecl;
     private String riskGrade;
+    private Double monthlyPayment;
+    private Double dti;
+    private Double totalPayment;
+    private Double totalInterest;
+    private Double monthlyDisposableIncome;
     private Double baseValue;
     private List<TopFeatureDTO> topFeatures;
 
@@ -109,6 +114,46 @@ public class ScoringDTO {
 
     public void setRiskGrade(String riskGrade) {
         this.riskGrade = riskGrade;
+    }
+
+    public Double getMonthlyPayment() {
+        return monthlyPayment;
+    }
+
+    public void setMonthlyPayment(Double monthlyPayment) {
+        this.monthlyPayment = monthlyPayment;
+    }
+
+    public Double getDti() {
+        return dti;
+    }
+
+    public void setDti(Double dti) {
+        this.dti = dti;
+    }
+
+    public Double getTotalPayment() {
+        return totalPayment;
+    }
+
+    public void setTotalPayment(Double totalPayment) {
+        this.totalPayment = totalPayment;
+    }
+
+    public Double getTotalInterest() {
+        return totalInterest;
+    }
+
+    public void setTotalInterest(Double totalInterest) {
+        this.totalInterest = totalInterest;
+    }
+
+    public Double getMonthlyDisposableIncome() {
+        return monthlyDisposableIncome;
+    }
+
+    public void setMonthlyDisposableIncome(Double monthlyDisposableIncome) {
+        this.monthlyDisposableIncome = monthlyDisposableIncome;
     }
 
     public Double getBaseValue() {

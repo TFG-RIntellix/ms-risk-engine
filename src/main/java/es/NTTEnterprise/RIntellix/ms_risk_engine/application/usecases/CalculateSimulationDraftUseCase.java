@@ -22,12 +22,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.SimulationDr
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.FetchScoringPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MapUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 
 /**
  * Use case that orchestrates stateless simulation draft calculations.
@@ -43,17 +45,18 @@ import org.slf4j.LoggerFactory;
  * - Returns simulation draft with metrics and deltas
  *
  * @author Lucía Fernández Mancebo
+ * @Date 03-15-2026
  */
+@Slf4j
 @Service
 public class CalculateSimulationDraftUseCase implements SimulationDraftPortService {
-
-        private static final Logger log = LoggerFactory.getLogger(CalculateSimulationDraftUseCase.class);
 
         private final FetchScoringPort fetchScoringPort;
         private final List<ScoringModelExecutionStrategy> scoringModelExecutionStrategies;
         private final RiskMetricsCalculationService metricsCalculationService;
         private final RiskIndicatorCalculationService riskIndicatorCalculationService;
         private final SimulationModelPayloadMapper simulationPayloadMapper;
+        private final SimulationDeltaCalculator simulationDeltaCalculator;
 
         /**
          * Constructor of the CalculateSimulationDraftUseCase class.
@@ -77,12 +80,14 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
                         final List<ScoringModelExecutionStrategy> scoringModelExecutionStrategies,
                         final RiskMetricsCalculationService metricsCalculationService,
                         final RiskIndicatorCalculationService riskIndicatorCalculationService,
-                        final SimulationModelPayloadMapper simulationPayloadMapper) {
+                        final SimulationModelPayloadMapper simulationPayloadMapper,
+                        final SimulationDeltaCalculator simulationDeltaCalculator) {
                 this.fetchScoringPort = Objects.requireNonNull(fetchScoringPort);
                 this.scoringModelExecutionStrategies = Objects.requireNonNull(scoringModelExecutionStrategies);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
                 this.riskIndicatorCalculationService = Objects.requireNonNull(riskIndicatorCalculationService);
                 this.simulationPayloadMapper = Objects.requireNonNull(simulationPayloadMapper);
+                this.simulationDeltaCalculator = Objects.requireNonNull(simulationDeltaCalculator);
         }
 
         /**
@@ -106,45 +111,48 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
 
                 if (formChanges == null || formChanges.getValues() == null || formChanges.getValues().isEmpty()) {
                         throw new InvalidFormChangesException(
-                                        String.format("Form changes are required for requestId: %s", requestId));
+                                        String.format(LogMessage.SIMULATION_FORM_CHANGES_REQUIRED, requestId));
                 }
 
-                // Retrieve base scoring - contains input snapshot and base metrics
+                // 1. Retrieve base scoring - contains input snapshot and base metrics
                 final Scoring baseScoring = fetchScoringPort.fetchByRequestId(requestId);
                 if (baseScoring == null || baseScoring.getResults() == null) {
-                        throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_EXCEPTION + requestId);
+                        throw new ScoringNotFoundException(String.format(
+                                        LogMessage.SCORING_RETRIEVING_MESSAGE_EXCEPTION,
+                                        requestId,
+                                        LogMessage.SIMULATION_BASE_SCORING_NULL));
                 }
 
-                log.info("Retrieved base scoring for requestId {}: {}", requestId, baseScoring.toString());
+                log.info(LogMessage.SIMULATION_BASE_SCORING_RETRIEVED, requestId, baseScoring.toString());
 
-                // Extract base variables for delta calculation
+                // 2. Extract base variables for delta calculation & merge
                 final Map<String, Object> baseVariables = extractBaseVariables(baseScoring);
 
                 final Map<String, Object> mergedVariables = mergeData(baseScoring, formChanges);
 
-                // CRITICAL: Recalculate DTI and LTV BEFORE model invocation
-                // These are critical input features that influence the model prediction
+                // 3. For dynamic calculated fields like dti & ltv, recalculate them and replace
+                // then in the mergeVariables.
                 riskIndicatorCalculationService.recalculateRiskIndicators(
                                 mergedVariables, requestType, baseScoring.getInputSnapshot());
 
-                // Merged variables are already mapped to canonical model field names
-                // Send directly to model without additional transformation
+                // Assign all values to model input class.
                 final RiskMetricsCalculationContext context = new RiskMetricsCalculationContext(
                                 mergedVariables,
                                 requestId,
                                 resolveModelEndpointPath(requestType),
                                 requestType);
 
-                // Calculate simulated metrics using the reusable service
-                // This orchestrates model invocation and all metric calculations in parallel
+                // Reuse scoring calculation service to call model and calculate riskMetrics
+                // based on strategy.
                 final var result = metricsCalculationService.calculateRiskMetrics(context);
                 final RiskMetrics simulatedMetrics = result.riskMetrics();
 
                 // Calculate delta between base and simulated metrics
-                final SimulationDelta delta = buildDelta(baseScoring.getResults(), simulatedMetrics, baseVariables,
+                final SimulationDelta delta = simulationDeltaCalculator.calculateDelta(baseScoring, simulatedMetrics,
+                                baseVariables,
                                 mergedVariables);
 
-                return new SimulationDraft(simulatedMetrics, delta);
+                return new SimulationDraft(formChanges, simulatedMetrics, delta);
         }
 
         /**
@@ -198,93 +206,24 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
         private Map<String, Object> mergeData(final Scoring baseScoring, final FormChanges formChanges) {
                 final Map<String, Object> baseInputs = baseScoring.getInputSnapshot();
                 if (baseInputs == null || baseInputs.isEmpty()) {
-                        throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_EXCEPTION);
+                        throw new ScoringNotFoundException(String.format(
+                                        LogMessage.SCORING_RETRIEVING_INPUT_EMPTY,
+                                        baseScoring.getRequestId()));
                 }
 
-                // Input Snapshot is in name_name format english, we need to translate it to the
-                // following: nameName format in english too.
+                // Normalize scoring variables from snakeCase to camelCase
                 final Map<String, Object> normalizedBase = simulationPayloadMapper
                                 .normalizeBaseVariables(baseInputs);
 
-                // Normalize and merge form changes (convert any casing to lowercase to match
-                // base)
+                // Normalize formChanges values, convert them into camelCase and convert boolean
+                // into yes/no values.
                 final Map<String, Object> normalizedFormChanges = simulationPayloadMapper
-                                .normalizeFormChangesToLowercase(formChanges.getValues());
+                                .normalizeFormChangesToCamelcase(formChanges.getValues());
 
-                // Override with normalized form changes (user modifications take precedence)
+                // Override with normalized form changes
                 normalizedBase.putAll(normalizedFormChanges);
 
                 return normalizedBase;
-        }
-
-        /**
-         * Builds the simulation delta by comparing base metrics with simulated metrics.
-         * Delta represents the change in key metrics between the base scenario and the
-         * simulated scenario.
-         * 
-         * @param baseMetrics      the original risk metrics from base scoring.
-         * @param simulatedMetrics the new metrics from simulation.
-         * @param baseVariables    the original feature values.
-         * @param mergedVariables  the merged feature values (includes form changes).
-         * @return the SimulationDelta with all calculated changes.
-         */
-        private SimulationDelta buildDelta(
-                        final RiskMetrics baseMetrics,
-                        final RiskMetrics simulatedMetrics,
-                        final Map<String, Object> baseVariables,
-                        final Map<String, Object> mergedVariables) {
-
-                final double basePrincipal = MapUtilities.getDouble(baseVariables,
-                                "loanAmount", 0);
-                final double baseAnnualRate = MapUtilities.getDouble(baseVariables,
-                                "interestRate", 0);
-                final int baseTermMonths = (int) MapUtilities.getDouble(baseVariables,
-                                "termMonths",
-                                SimulationConstants.MIN_TERM_MONTHS);
-                final double baseAnnualIncome = MapUtilities.getDouble(baseVariables,
-                                "annualIncome", 0);
-
-                // Calculate simulated financial metrics for comparison
-                final double simPrincipal = MapUtilities.getDouble(mergedVariables,
-                                "loanAmount",
-                                basePrincipal);
-                final double simAnnualRate = MapUtilities.getDouble(mergedVariables,
-                                "interestRate",
-                                baseAnnualRate);
-                final int simTermMonths = (int) MapUtilities.getDouble(mergedVariables,
-                                "termMonths",
-                                baseTermMonths);
-                final double simAnnualIncome = MapUtilities.getDouble(mergedVariables,
-                                "annualIncome",
-                                baseAnnualIncome);
-
-                // Calculate base financial metrics for comparison
-                final double baseMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(basePrincipal,
-                                baseAnnualRate, baseTermMonths);
-                final double baseDti = FinancialMetricsCalculator.calculateDti(baseMonthlyPayment, baseAnnualIncome);
-
-                // Calculate simulated financial metrics for comparison
-                final double simMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(simPrincipal,
-                                simAnnualRate, simTermMonths);
-                final double simDti = FinancialMetricsCalculator.calculateDti(simMonthlyPayment, simAnnualIncome);
-
-                // Build delta
-                final SimulationDelta delta = new SimulationDelta();
-                delta.setPdChange(
-                                SimulationConstants.getSafe(simulatedMetrics.getProbabilityOfDefault())
-                                                - SimulationConstants.getSafe(baseMetrics.getProbabilityOfDefault()));
-                delta.setEclChange(SimulationConstants.getSafe(simulatedMetrics.getExpectedCalculatedLoss())
-                                - SimulationConstants.getSafe(baseMetrics.getExpectedCalculatedLoss()));
-                final String baseRiskGradeName = baseMetrics.getRiskLevel() != null ? baseMetrics.getRiskLevel()
-                                : "UNKNOWN";
-                final String simRiskGradeName = simulatedMetrics.getRiskLevel() != null
-                                ? simulatedMetrics.getRiskLevel()
-                                : "UNKNOWN";
-                delta.setRiskGradeChange(baseRiskGradeName + SimulationConstants.RISK_GRADE_ARROW + simRiskGradeName);
-                delta.setMonthlyPaymentChange(simMonthlyPayment - baseMonthlyPayment);
-                delta.setDtiChange(simDti - baseDti);
-
-                return delta;
         }
 
 }

@@ -3,14 +3,21 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
 import java.util.Map;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.constraints.ValidSimulationFormChanges;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Request DTO for simulation draft calculation.
+ *
+ * @author Lucía Fernández Mancebo
+ * @Date 05-10-2026
+ */
 public class CalculateSimulationDraftRequestDTO {
 
-    @NotBlank(message = "requestId is required")
+    @NotBlank(message = LogMessage.REQUEST_ID_REQUIRED_MESSAGE)
     private String requestId;
 
-    @NotBlank(message = "requestType is required")
+    @NotBlank(message = LogMessage.REQUEST_TYPE_REQUIRED_MESSAGE)
     private String requestType;
 
     @ValidSimulationFormChanges

@@ -32,9 +32,6 @@ public final class ModelPayloadConstants {
 
     /**
      * Default LTV value applied when ms-core-data sends null.
-     * 
-     * TODO: Default LTV applied when ms-core-data sends null. Should be resolved in
-     * ms-core-data.
      */
     public static final double DEFAULT_LTV = 0.0;
 }

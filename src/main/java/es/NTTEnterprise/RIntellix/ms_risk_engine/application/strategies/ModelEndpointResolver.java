@@ -43,38 +43,11 @@ public final class ModelEndpointResolver {
         // Find the strategy that supports this request type
         for (ScoringModelExecutionStrategy strategy : strategies) {
             if (strategy.supports(requestType)) {
-                // Use reflection to get the endpoint path from strategy
-                // (strategies store it as a private field)
-                return extractEndpointPath(strategy);
+                return strategy.modelEndpointPath();
             }
         }
 
         throw new IllegalArgumentException(
                 String.format(LogMessage.REQUEST_TYPE_NOT_FOUND, requestType));
-    }
-
-    /**
-     * Extracts endpoint path from a strategy instance.
-     * 
-     * Strategies store their endpoint paths as private fields:
-     * - LoanOrMortgageScoringModelExecutionStrategy: predictLoanPath
-     * - CreditCardScoringModelExecutionStrategy: predictCreditCardPath
-     */
-    private static String extractEndpointPath(final ScoringModelExecutionStrategy strategy) {
-        try {
-            // Try loan/mortgage endpoint field first
-            var field = strategy.getClass().getDeclaredField("predictLoanPath");
-            field.setAccessible(true);
-            return (String) field.get(strategy);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            try {
-                // Try credit card endpoint field
-                var field = strategy.getClass().getDeclaredField("predictCreditCardPath");
-                field.setAccessible(true);
-                return (String) field.get(strategy);
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                throw new RuntimeException("Cannot extract endpoint path from strategy", ex);
-            }
-        }
     }
 }

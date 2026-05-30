@@ -39,7 +39,7 @@ public class LoanOrMortgageModelPayloadMapper {
          */
         public Map<String, Object> toModelPayload(final ScoringGenerationRequest request) {
                 final Map<String, Object> modelPayload = new LinkedHashMap<>();
-                final String loanType = request.getRequestType();
+                final String loanType = request.getLoanType();
                 modelPayload.put(ModelPayloadFieldNames.FIELD_AGE, request.getAge());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_GENDER,
                                 payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_GENDER,

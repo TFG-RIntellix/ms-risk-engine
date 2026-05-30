@@ -10,8 +10,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.FormChanges;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDelta;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Infrastructure Adapter Mapper for Simulation Draft API Response.
@@ -40,10 +40,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
  */
+@Slf4j
 @Component
 public class SimulationDraftMapper {
-
-    private static final Logger log = LoggerFactory.getLogger(SimulationDraftMapper.class);
 
     /**
      * Maps input API request DTO to domain FormChanges entity.
@@ -56,7 +55,7 @@ public class SimulationDraftMapper {
      */
     public FormChanges toFormChanges(final CalculateSimulationDraftRequestDTO request) {
         if (request == null) {
-            log.debug("Request DTO is null, returning empty FormChanges");
+            log.debug(LogMessage.SIMULATION_REQUEST_DTO_NULL);
             return new FormChanges(null);
         }
         return new FormChanges(request.getFormChanges());
@@ -81,16 +80,17 @@ public class SimulationDraftMapper {
         final SimulationDraftResponseDTO response = new SimulationDraftResponseDTO();
 
         if (draft == null) {
-            log.warn("SimulationDraft is null, returning empty response");
+            log.warn(LogMessage.SIMULATION_DRAFT_NULL);
             return response;
         }
 
         // Delegate nested mappings to preserve single responsibility
         response.setSimulatedResults(mapMetricsToDto(draft.getSimulatedResults()));
         response.setDelta(mapDeltaToDto(draft.getDelta()));
+        response.setFormChanges(draft.getFormChanges().getValues());
 
         if (log.isDebugEnabled()) {
-            log.debug("Successfully mapped SimulationDraft to API response");
+            log.debug(LogMessage.SIMULATION_DRAFT_MAPPED);
         }
 
         return response;
@@ -112,7 +112,7 @@ public class SimulationDraftMapper {
         final SimulationMetricsResponseDTO response = new SimulationMetricsResponseDTO();
 
         if (metrics == null) {
-            log.debug("SimulationMetrics is null, returning empty metrics response");
+            log.debug(LogMessage.SIMULATION_METRICS_NULL);
             return response;
         }
 
@@ -122,11 +122,24 @@ public class SimulationDraftMapper {
         response.setEad(metrics.getExposureAtDefault());
         response.setEcl(metrics.getExpectedCalculatedLoss());
         response.setRiskGrade(metrics.getRiskLevel());
-        response.setMonthlyPayment(0.0);
-        response.setDti(0.0);
-        response.setTotalPayment(0.0);
-        response.setTotalInterest(0.0);
-        response.setDisposableIncome(0.0);
+
+        // Map financial metrics if available
+        if (metrics.getFinancialMetrics() != null) {
+            final var fm = metrics.getFinancialMetrics();
+            response.setMonthlyPayment(fm.getMonthlyPayment() != null ? fm.getMonthlyPayment() : 0.0);
+            response.setDti(fm.getDebtToIncomeRatio() != null ? fm.getDebtToIncomeRatio() : 0.0);
+            response.setTotalPayment(fm.getTotalPayment() != null ? fm.getTotalPayment() : 0.0);
+            response.setTotalInterest(fm.getTotalInterest() != null ? fm.getTotalInterest() : 0.0);
+            response.setDisposableIncome(
+                    fm.getMonthlyDisposableIncome() != null ? fm.getMonthlyDisposableIncome() : 0.0);
+        } else {
+            // Default to 0.0 if no financial metrics available
+            response.setMonthlyPayment(0.0);
+            response.setDti(0.0);
+            response.setTotalPayment(0.0);
+            response.setTotalInterest(0.0);
+            response.setDisposableIncome(0.0);
+        }
 
         return response;
     }
@@ -148,7 +161,7 @@ public class SimulationDraftMapper {
         final SimulationDeltaResponseDTO response = new SimulationDeltaResponseDTO();
 
         if (delta == null) {
-            log.debug("SimulationDelta is null, returning empty delta response");
+            log.debug(LogMessage.SIMULATION_DELTA_NULL);
             return response;
         }
 
@@ -158,6 +171,9 @@ public class SimulationDraftMapper {
         response.setRiskGradeChange(delta.getRiskGradeChange());
         response.setMonthlyPaymentChange(delta.getMonthlyPaymentChange());
         response.setDtiChange(delta.getDtiChange());
+        response.setTotalPaymentChange(delta.getTotalPaymentChange());
+        response.setTotalInterestChange(delta.getTotalInterestChange());
+        response.setMonthlyDisposableIncomeChange(delta.getMonthlyDisposableIncomeChange());
 
         return response;
     }

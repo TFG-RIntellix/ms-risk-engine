@@ -10,6 +10,13 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
+/**
+ * Validation constraint to ensure simulation form changes contain only
+ * supported fields.
+ *
+ * @author Lucía Fernández Mancebo
+ * @Date 05-10-2026
+ */
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ValidSimulationFormChangesValidator.class)

@@ -46,6 +46,9 @@ public final class ModelPayloadFieldNames {
     /** Home ownership type field name in model payload. */
     public static final String FIELD_HOME_OWNERSHIP = "homeOwnership";
 
+    /** Property value field name in model payload. */
+    public static final String FIELD_PROPERTY_VALUE = "valor_propiedad";
+
     /** Has mortgage flag field name in model payload. */
     public static final String FIELD_HAS_MORTGAGE = "hasMortgage";
 

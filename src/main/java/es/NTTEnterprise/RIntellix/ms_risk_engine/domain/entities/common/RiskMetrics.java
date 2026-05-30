@@ -6,11 +6,16 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common;
  * Given Default, Exposure
  * at Default, and Expected Loss, as well as a derived risk level
  * classification.
+ * 
+ * Also includes financial affordability metrics (monthly payment, DTI, etc.)
+ * that provide business and customer insights.
+ * 
  * This class is used as part of the Scoring results to encapsulate all
  * risk-related outputs in a single object.
  *
  * @author: Lucía Fernández Mancebo
  *          Date: 03-02-2026
+ *          Updated: 05-26-2026 - Added FinancialMetrics
  */
 public class RiskMetrics {
 
@@ -19,6 +24,7 @@ public class RiskMetrics {
     private Double exposureAtDefault;
     private Double expectedCalculatedLoss;
     private String riskLevel;
+    private FinancialMetrics financialMetrics;
 
     /**
      * Default constructor for RiskMetrics.
@@ -28,6 +34,38 @@ public class RiskMetrics {
 
     /**
      * Parameterized constructor for RiskMetrics. Allows setting all fields at once.
+     *
+     * @param probabilityOfDefault   The probability that the borrower will default
+     *                               on the contract, expressed as a percentage
+     *                               (0-100).
+     * @param lossGivenDefault       The percentage of the exposure that would be
+     *                               lost if a default occurs (0-100).
+     * @param exposureAtDefault      The total value at risk at the time of default,
+     *                               typically the outstanding balance of the
+     *                               contract.
+     * @param expectedCalculatedLoss The expected loss calculated as (Probability of
+     *                               Default * Loss Given Default * Exposure at
+     *                               Default).
+     * @param riskLevel              A categorical classification of risk (e.g.,
+     *                               "Low", "Medium", "High") derived from the
+     *                               calculated metrics, used for easier
+     *                               interpretation by end-users.
+     * @param financialMetrics       Financial affordability metrics (payment, DTI,
+     *                               etc.)
+     */
+    public RiskMetrics(Double probabilityOfDefault, Double lossGivenDefault, Double exposureAtDefault,
+            Double expectedCalculatedLoss, String riskLevel, FinancialMetrics financialMetrics) {
+        this.probabilityOfDefault = probabilityOfDefault;
+        this.lossGivenDefault = lossGivenDefault;
+        this.exposureAtDefault = exposureAtDefault;
+        this.expectedCalculatedLoss = expectedCalculatedLoss;
+        this.riskLevel = riskLevel;
+        this.financialMetrics = financialMetrics;
+    }
+
+    /**
+     * Parameterized constructor for RiskMetrics (legacy, without financial
+     * metrics).
      *
      * @param probabilityOfDefault   The probability that the borrower will default
      *                               on the contract, expressed as a percentage
@@ -96,12 +134,20 @@ public class RiskMetrics {
         this.riskLevel = riskLevel;
     }
 
+    public FinancialMetrics getFinancialMetrics() {
+        return financialMetrics;
+    }
+
+    public void setFinancialMetrics(FinancialMetrics financialMetrics) {
+        this.financialMetrics = financialMetrics;
+    }
+
     // toString, hashCode and equals
     @Override
     public String toString() {
         return "RiskMetrics [probabilityOfDefault=" + probabilityOfDefault + ", lossGivenDefault=" + lossGivenDefault
                 + ", exposureAtDefault=" + exposureAtDefault + ", expectedCalculatedLoss=" + expectedCalculatedLoss
-                + ", riskLevel=" + riskLevel + "]";
+                + ", riskLevel=" + riskLevel + ", financialMetrics=" + financialMetrics + "]";
     }
 
     @Override
@@ -113,6 +159,7 @@ public class RiskMetrics {
         result = prime * result + ((exposureAtDefault == null) ? 0 : exposureAtDefault.hashCode());
         result = prime * result + ((expectedCalculatedLoss == null) ? 0 : expectedCalculatedLoss.hashCode());
         result = prime * result + ((riskLevel == null) ? 0 : riskLevel.hashCode());
+        result = prime * result + ((financialMetrics == null) ? 0 : financialMetrics.hashCode());
         return result;
     }
 
@@ -149,6 +196,11 @@ public class RiskMetrics {
             if (other.riskLevel != null)
                 return false;
         } else if (!riskLevel.equals(other.riskLevel))
+            return false;
+        if (financialMetrics == null) {
+            if (other.financialMetrics != null)
+                return false;
+        } else if (!financialMetrics.equals(other.financialMetrics))
             return false;
         return true;
     }

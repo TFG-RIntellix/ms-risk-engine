@@ -2,15 +2,12 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Domain service for calculating critical risk indicators (DTI and LTV).
@@ -27,10 +24,8 @@ import org.slf4j.LoggerFactory;
  * @author Lucía Fernández Mancebo
  * @Date 05-18-2026
  */
-@Component
+@Slf4j
 public class RiskIndicatorCalculationService {
-
-    private static final Logger log = LoggerFactory.getLogger(RiskIndicatorCalculationService.class);
 
     /**
      * Recalculates critical risk indicators (DTI and LTV) before model invocation.
@@ -58,8 +53,8 @@ public class RiskIndicatorCalculationService {
             final Map<String, Object> baseInputSnapshot) {
 
         try {
-            // Extract simulated parameters (using English field names from
-            // ModelPayloadFieldNames)
+
+            // Extract new parameters needed.
             final double loanAmount = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 0);
             final double interestRate = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_INTEREST_RATE, 0);
             final int termMonths = (int) getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_TERM_MONTHS,
@@ -69,27 +64,25 @@ public class RiskIndicatorCalculationService {
             // Step 1: Recalculate DTI based on new parameters
             final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                     loanAmount, interestRate, termMonths);
+
             final double newDti = FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome);
 
-            // Update DTI in merged variables (critical for model)
+            // Update DTI in merged variables
             mergedVariables.put(ModelPayloadFieldNames.FIELD_DTI, newDti);
-            log.debug(LogMessage.SIMULATION_DTI_RECALCULATED, newDti, monthlyPayment, annualIncome);
+            log.info(LogMessage.SIMULATION_DTI_RECALCULATED, newDti, monthlyPayment, annualIncome);
 
             // Step 2: Handle LTV for mortgages (HIPOTECA)
             if (isMortgage(requestType)) {
                 recalculateLtvForMortgage(mergedVariables, baseInputSnapshot, loanAmount);
             }
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | ClassCastException | NullPointerException e) {
             log.warn(LogMessage.SIMULATION_RISK_INDICATORS_CALCULATION_ERROR, e.getMessage());
-            // Don't fail the simulation if recalculation has issues
-            // The original/merged values will be used
         }
     }
 
     /**
      * Recalculates LTV (Loan-to-Value) for mortgage requests.
-     * 
      * Process:
      * 1. Resolve property value (user-provided or from base snapshot)
      * 2. Calculate LTV = loanAmount / propertyValue
@@ -109,9 +102,9 @@ public class RiskIndicatorCalculationService {
         // Determine property value to use for LTV calculation:
         // Priority 1: User-provided propertyValue in form changes (via mergedVariables)
         // Priority 2: Property value from base input snapshot
-        Double propertyValue = (Double) mergedVariables.get("valor_propiedad");
+        Double propertyValue = (Double) mergedVariables.get(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
         if (propertyValue == null && baseInputSnapshot != null) {
-            propertyValue = (Double) baseInputSnapshot.get("valor_propiedad");
+            propertyValue = (Double) baseInputSnapshot.get(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
         }
 
         // If we have a valid property value, calculate and set LTV
@@ -123,7 +116,7 @@ public class RiskIndicatorCalculationService {
 
         // CRITICAL: Remove propertyValue from model input
         // propertyValue is NOT a model feature, only LTV is
-        mergedVariables.remove("valor_propiedad");
+        mergedVariables.remove(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
         log.debug(LogMessage.SIMULATION_PROPERTY_VALUE_REMOVED);
     }
 

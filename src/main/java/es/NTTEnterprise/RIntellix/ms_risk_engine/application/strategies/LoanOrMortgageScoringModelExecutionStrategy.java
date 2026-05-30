@@ -16,8 +16,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Strategy for loan and mortgage model execution with parallelized risk
@@ -35,10 +34,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucía Fernández Mancebo
  * @Date 04-25-2026
  */
+@Slf4j
 @Component
 public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
-
-        private static final Logger log = LoggerFactory.getLogger(LoanOrMortgageScoringModelExecutionStrategy.class);
 
         private final LoanOrMortgageModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
@@ -105,5 +103,10 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                                 "Loan/Mortgage scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());
 
                 return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
+        }
+
+        @Override
+        public String modelEndpointPath() {
+                return this.predictLoanPath;
         }
 }

@@ -27,14 +27,12 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @EnableKafka
 public class KafkaConsumerConfig {
-
-    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerConfig.class);
 
     private static final String AUTO_OFFSET_RESET_EARLIEST = "earliest";
     private static final String TRUSTED_PACKAGES_ALL = "*";
@@ -119,7 +117,7 @@ public class KafkaConsumerConfig {
             if (exception instanceof ListenerExecutionFailedException
                     && exception.getCause() instanceof MethodArgumentNotValidException validationEx) {
                 validationEx.getBindingResult().getAllErrors().forEach(error -> log.warn(
-                        LogMessage.KAFKA_CONSUMER_VALIDATION_REJECTED, // TODO: Add this
+                        LogMessage.KAFKA_CONSUMER_VALIDATION_REJECTED,
                         error.getObjectName(),
                         error.getDefaultMessage()));
             } else {

@@ -1,15 +1,12 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.application.services;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import java.util.Objects;
-
-import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
- * Application service for calculating loan payment scenarios.
- * Encapsulates amortization and payment calculation logic for various loan
- * types.
+ * Domain service for calculating loan payment scenarios.
+ * Encapsulates amortization and payment calculation logic for various loan types.
  *
  * Responsibilities:
  * - Calculate fixed monthly payments using French amortization method (annuity)
@@ -18,22 +15,16 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  *
  * This service applies the following formulas:
  * - French Amortization: P = [r * PV] / [1 - (1 + r)^-n]
- * where: P = monthly payment, r = monthly interest rate, PV = principal, n =
- * number of months
+ * where: P = monthly payment, r = monthly interest rate, PV = principal, n = number of months
  *
- * // TODO: Tocheck this calculations.
- * 
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
  */
-@Component
 public class LoanPaymentCalculator {
 
     /**
-     * Calculates the fixed monthly payment for a loan using French amortization
-     * method.
-     * French amortization results in a constant monthly payment (principal +
-     * interest)
+     * Calculates the fixed monthly payment for a loan using French amortization method.
+     * French amortization results in a constant monthly payment (principal + interest)
      * that covers the entire loan over the specified term.
      *
      * Formula: P = [r * PV] / [1 - (1 + r)^-n]
@@ -65,7 +56,7 @@ public class LoanPaymentCalculator {
         Objects.requireNonNull(termMonths, LogMessage.TERM_MONTHS_CANNOT_BE_NULL);
 
         // Validate and normalize principal
-        final double principal = principalAmount <= 0.0 ? 0.0 : principalAmount;
+        final double amount = principalAmount <= 0.0 ? 0.0 : principalAmount;
 
         // Validate and normalize term
         final int terms = termMonths <= 0 ? 1 : termMonths;
@@ -76,18 +67,18 @@ public class LoanPaymentCalculator {
 
         // Handle zero interest rate: simple division of principal by term
         if (monthlyRate == 0.0) {
-            return principal / terms;
+            return amount / terms;
         }
 
         // Apply French amortization formula
-        final double numerator = principal * monthlyRate;
+        final double totalAmount = amount * monthlyRate;
         final double denominator = 1.0 - Math.pow(1.0 + monthlyRate, -terms);
 
         // Handle edge case where denominator is zero (should rarely occur)
         if (denominator == 0.0) {
-            return principal / terms;
+            return totalAmount / terms;
         }
 
-        return numerator / denominator;
+        return totalAmount / denominator;
     }
 }

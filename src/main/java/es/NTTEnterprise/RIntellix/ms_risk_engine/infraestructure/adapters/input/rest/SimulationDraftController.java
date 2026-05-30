@@ -12,7 +12,9 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.Simulat
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.CalculateSimulationDraftUseCase;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.SimulationDraftMapper;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST controller for handling simulation draft calculations.
@@ -25,6 +27,7 @@ import jakarta.validation.Valid;
  * @author Lucía Fernández Mancebo
  * @Date 03-15-2026
  */
+@Slf4j
 @RestController
 @Validated
 @RequestMapping("/api/v1/simulations")
@@ -50,6 +53,7 @@ public class SimulationDraftController {
     @PostMapping("/draft")
     public ResponseEntity<SimulationDraftResponseDTO> calculateDraft(
             @Valid @RequestBody final CalculateSimulationDraftRequestDTO request) {
+        log.info(LogMessage.SIMULATIONDRAFT_PETITION_RECEIVED, request.getRequestId(), request.getRequestType());
         final SimulationDraft draft = calculateSimulationDraftUseCase.calculateDraft(
                 request.getRequestId(), request.getRequestType(),
                 simulationDraftMapper.toFormChanges(request));

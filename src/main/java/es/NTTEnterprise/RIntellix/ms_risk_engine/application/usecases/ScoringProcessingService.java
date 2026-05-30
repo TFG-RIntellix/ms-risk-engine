@@ -15,8 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringM
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProcessingPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Application service that orchestrates scoring message processing.
@@ -30,10 +29,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucia Fernandez Mancebo
  * @Date 04-25-2026
  */
+@Slf4j
 @Service
 public class ScoringProcessingService implements ScoringProcessingPortService {
-
-    private static final Logger log = LoggerFactory.getLogger(ScoringProcessingService.class);
 
     private final List<ScoringModelExecutionStrategy> scoringModelExecutionStrategies;
     private final ScoringResultMapper scoringResultMapper;

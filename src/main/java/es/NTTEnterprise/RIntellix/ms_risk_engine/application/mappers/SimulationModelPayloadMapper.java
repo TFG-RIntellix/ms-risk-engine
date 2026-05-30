@@ -34,7 +34,7 @@ public class SimulationModelPayloadMapper {
             final NamingConverter namingConverter) {
         this.payloadUtilities = Objects.requireNonNull(payloadUtilities,
                 LogMessage.MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL);
-        this.namingConverter = Objects.requireNonNull(namingConverter, "NamingConverter cannot be null");
+        this.namingConverter = Objects.requireNonNull(namingConverter, LogMessage.NAMING_CONVERTER_CANNOT_BE_NULL);
     }
 
     public Map<String, Object> normalizeBaseVariables(final Map<String, Object> baseVariables) {
@@ -51,7 +51,7 @@ public class SimulationModelPayloadMapper {
         return normalized;
     }
 
-    public Map<String, Object> normalizeFormChangesToLowercase(final Map<String, Object> formChanges) {
+    public Map<String, Object> normalizeFormChangesToCamelcase(final Map<String, Object> formChanges) {
         if (formChanges == null || formChanges.isEmpty()) {
             return new HashMap<>();
         }

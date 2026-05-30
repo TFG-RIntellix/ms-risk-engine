@@ -18,6 +18,7 @@ public final class SimulationConstants {
     public static final double ZERO_VALUE = 0.0;
     public static final int MIN_TERM_MONTHS = 1;
     public static final String RISK_GRADE_ARROW = " -> ";
+    public static final String UNKNOWN_RISK_GRADE = "UNKNOWN";
 
     /**
      * Safely returns the value of a Double or ZERO_VALUE if null.

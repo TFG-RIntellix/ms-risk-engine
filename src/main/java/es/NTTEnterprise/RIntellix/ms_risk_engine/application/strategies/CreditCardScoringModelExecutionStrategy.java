@@ -19,8 +19,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Strategy for credit card model execution with parallelized risk calculation.
@@ -37,10 +36,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucía Fernández Mancebo
  * @Date 04-25-2026
  */
+@Slf4j
 @Component
 public class CreditCardScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
-
-        private static final Logger log = LoggerFactory.getLogger(CreditCardScoringModelExecutionStrategy.class);
 
         private final CreditCardModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
@@ -117,5 +115,10 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                                 "Credit card scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());
 
                 return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
+        }
+
+        @Override
+        public String modelEndpointPath() {
+                return this.predictCreditCardPath;
         }
 }

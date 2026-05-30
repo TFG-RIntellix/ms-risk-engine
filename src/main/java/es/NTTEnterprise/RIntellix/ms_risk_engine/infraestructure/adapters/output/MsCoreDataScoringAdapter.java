@@ -32,8 +32,10 @@ public class MsCoreDataScoringAdapter implements FetchScoringPort {
         final ResponseEntity<ScoringDTO> response = msCoreDataClient.getScoringByRequestId(requestId);
         // If not successfull then we raise an error
         if (response.getStatusCode().isError()) {
-            throw new ScoringNotFoundException(LogMessage.SCORING_RETRIEVING_MESSAGE_ERROR + requestId
-                    + response.getStatusCode() + response.getBody());
+            throw new ScoringNotFoundException(String.format(
+                    LogMessage.SCORING_RETRIEVING_MESSAGE_ERROR,
+                    requestId,
+                    response.getStatusCode()));
         }
 
         final ScoringDTO retrievedScoringDTO = response.getBody();

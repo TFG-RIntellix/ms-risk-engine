@@ -3,6 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.TopFeatureDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.ModelInputs;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
@@ -57,8 +58,9 @@ public class ScoringMapper {
         scoring.setId(scoringDTO.getScoringId());
         scoring.setRequestId(scoringDTO.getRequestId());
         scoring.setBaseValue(scoringDTO.getBaseValue());
-        // TODO: Tocheck this scoring.setExecutionDate(new
-        // Date(scoringDTO.getScoringDate()));
+        if (scoringDTO.getScoringDate() != null) {
+            scoring.setExecutionDate(new Date(scoringDTO.getScoringDate()));
+        }
 
         // NOTE: Scoring input snapshot uses model field names (mapped via
         // LoanOrMortgageModelPayloadMapper during scoring generation).
@@ -88,6 +90,18 @@ public class ScoringMapper {
         riskMetrics.setExposureAtDefault(scoringDTO.getEad());
         riskMetrics.setExpectedCalculatedLoss(scoringDTO.getEcl());
         riskMetrics.setRiskLevel(scoringDTO.getRiskGrade());
+
+        // Map financial metrics if available
+        if (scoringDTO.getMonthlyPayment() != null) {
+            FinancialMetrics financialMetrics = new FinancialMetrics();
+            financialMetrics.setMonthlyPayment(scoringDTO.getMonthlyPayment());
+            financialMetrics.setDebtToIncomeRatio(scoringDTO.getDti());
+            financialMetrics.setTotalPayment(scoringDTO.getTotalPayment());
+            financialMetrics.setTotalInterest(scoringDTO.getTotalInterest());
+            financialMetrics.setMonthlyDisposableIncome(scoringDTO.getMonthlyDisposableIncome());
+            riskMetrics.setFinancialMetrics(financialMetrics);
+        }
+
         return riskMetrics;
     }
 

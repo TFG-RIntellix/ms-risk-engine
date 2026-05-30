@@ -1,7 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 /**
- * Centralized log messages for the ms-core-data microservice.
+ * Centralized log messages for the ms-risk-engine microservice.
  * This class provides consistent and reusable log message templates
  * to ensure uniform logging across all layers of the application.
  * 
@@ -24,7 +24,7 @@ public final class LogMessage {
     public static final String KAFKA_MESSAGE_PROCESSING_FAILED = "Kafka message failed to process";
 
     public static final String REQUEST_TYPE_IS_REQUIRED = "requestType is required to resolve scoring mapping strategy";
-    public static final String REQUEST_TYPE_NOT_FOUND = "No scoring mapping strategy found for type: {}";
+    public static final String REQUEST_TYPE_NOT_FOUND = "No scoring mapping strategy found for type: %s";
 
     public static final String SCORING_PAYLOAD_NULL = "Scoring received payload is null";
     public static final String SCORING_MESSAGE_PROCESSING = "Started processing scoring message. requestId={}, requestType={}";
@@ -54,8 +54,11 @@ public final class LogMessage {
     public static final String SCORING_PROCESSED_SUCCESSFULLY = "Scoring processed successfully. requestId={}, pd={}, riskLevel={}, explainabilityCount={}";
     public static final String ERROR_PROCESSING_SCORING_MESSAGE = "Error processing scoring message. requestId={}, requestType={}, error={}";
 
+    public static final String CONTROLLER_VALIDATION_ERROR = "Validation error: {}";
+
     public static final String PUBLISH_SCORING_NULL_PAYLOAD = "PublishScoringResult called with null scoring, skipping publish";
-    public static final String SCORING_MESSAGE_PUBLISH = "Started publishing scoring message. topic={}, requestId={}";
+    public static final String SCORING_RESULT_PUBLISH_START = "Started publishing scoring result. topic={}, requestId={}";
+    public static final String SCORING_RESULT_PUBLISH_SUCCESS = "Scoring result published. requestId={}";
 
     public static final String ERROR_PUBLISHING_SCORING_MESSAGE = "Failed to publish scoring result for requestId={}, error={}";
     public static final String SCORING_RESULT_PUBLISH_INTERRUPTED = "Scoring result publish interrupted. requestId={}";
@@ -76,8 +79,30 @@ public final class LogMessage {
 
     // Simulation Exceptions
 
-    public static final String SCORING_RETRIEVING_MESSAGE_ERROR = "Failed to retrieve scoring for requestId={}. Status code:{}";
-    public static final String SCORING_RETRIEVING_MESSAGE_EXCEPTION = "Exception occurred while retrieving scoring for requestId={}. Error: {}";
+    public static final String SCORING_RETRIEVING_MESSAGE_ERROR = "Failed to retrieve scoring for requestId=%s. Status code:%s";
+    public static final String SCORING_RETRIEVING_MESSAGE_EXCEPTION = "Exception occurred while retrieving scoring for requestId=%s. Error: %s";
+    public static final String SCORING_RETRIEVING_INPUT_EMPTY = "Scoring input snapshot is missing for requestId: %s";
+
+    // Simulation Draft
+    public static final String SIMULATION_BASE_SCORING_RETRIEVED = "Retrieved base scoring for requestId {}: {}";
+    public static final String SIMULATION_BASE_SCORING_NULL = "Base scoring is null";
+    public static final String SIMULATION_FORM_CHANGES_REQUIRED = "Form changes are required for requestId: %s";
+    public static final String SIMULATION_REQUEST_DTO_NULL = "Request DTO is null, returning empty FormChanges";
+    public static final String SIMULATION_DRAFT_NULL = "SimulationDraft is null, returning empty response";
+    public static final String SIMULATION_DRAFT_MAPPED = "Successfully mapped SimulationDraft to API response";
+    public static final String SIMULATION_METRICS_NULL = "SimulationMetrics is null, returning empty metrics response";
+    public static final String SIMULATION_DELTA_NULL = "SimulationDelta is null, returning empty delta response";
+
+    // Financial Metrics Calculation
+    public static final String FINANCIAL_METRICS_CALCULATION_START = "Calculating financial metrics - Principal: {}, Rate: {}%, Term: {} months, Annual Income: {}, Existing Obligations: {}";
+    public static final String FINANCIAL_METRICS_CALCULATION_COMPLETE = "Financial metrics calculated - Monthly Payment: {}, DTI: {}, Total Payment: {}, Total Interest: {}, Disposable Income: {}";
+    public static final String FINANCIAL_METRICS_ATTACHED = "Financial metrics calculated and attached - Monthly Payment: {}, DTI: {}";
+
+    // Global Exception Handling
+    public static final String EXCEPTION_SCORING_NOT_FOUND = "Scoring not found: {}";
+    public static final String EXCEPTION_INVALID_FORM_CHANGES = "Invalid form changes: {}";
+    public static final String EXCEPTION_MODEL_SERVICE_ERROR = "Model service error: {}";
+    public static final String EXCEPTION_UNEXPECTED = "Unexpected error: {}";
 
     // ============================================================
     // VALIDATION AND EXCEPTION MESSAGES
@@ -93,17 +118,27 @@ public final class LogMessage {
     public static final String STRATEGIES_LIST_CANNOT_BE_NULL = "Strategies list cannot be null";
     public static final String LOAN_PAYMENT_CALCULATOR_CANNOT_BE_NULL = "LoanPaymentCalculator cannot be null";
     public static final String MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL = "ModelPayloadUtilities cannot be null";
+    public static final String ENUM_NORMALIZER_CANNOT_BE_NULL = "EnumNormalizer cannot be null";
+    public static final String BOOLEAN_CONVERTER_CANNOT_BE_NULL = "BooleanConverter cannot be null";
     public static final String BASE_VARIABLES_CANNOT_BE_NULL = "Base variables cannot be null";
     public static final String MODEL_PREDICTION_PORT_CANNOT_BE_NULL = "ModelPredictionPort cannot be null";
     public static final String RISK_GRADE_CALCULATOR_CANNOT_BE_NULL = "RiskGradeCalculator cannot be null";
+    public static final String FINANCIAL_METRICS_CALCULATION_SERVICE_CANNOT_BE_NULL = "FinancialMetricsCalculationService cannot be null";
+    public static final String RISK_METRICS_CONTEXT_CANNOT_BE_NULL = "RiskMetricsCalculationContext cannot be null";
     public static final String PROBABILITY_OF_DEFAULT_CANNOT_BE_NULL = "Probability of default cannot be null";
     public static final String PRINCIPAL_AMOUNT_CANNOT_BE_NULL = "Principal amount cannot be null";
+    public static final String ANNUAL_INTEREST_RATE_CANNOT_BE_NULL = "Annual interest rate cannot be null";
     public static final String TERM_MONTHS_CANNOT_BE_NULL = "Term months cannot be null";
+    public static final String ANNUAL_INCOME_CANNOT_BE_NULL = "Annual income cannot be null";
+    public static final String EXISTING_OBLIGATIONS_CANNOT_BE_NULL = "Existing obligations cannot be null";
+    public static final String NAMING_CONVERTER_CANNOT_BE_NULL = "NamingConverter cannot be null";
 
     // Business Rule Validation Messages
     public static final String REQUESTED_AMOUNT_MUST_BE_GREATER_THAN_ZERO = "Requested amount must be greater than 0";
     public static final String NO_RISK_CALCULATION_STRATEGY_FOUND = "No risk calculation strategy found for requestType=%s, isRevolving=%s";
     public static final String FORM_CHANGES_CONTAIN_UNSUPPORTED_FIELDS = "Form changes contain unsupported fields";
+    public static final String REQUEST_ID_REQUIRED_MESSAGE = "requestId is required";
+    public static final String REQUEST_TYPE_REQUIRED_MESSAGE = "requestType is required";
 
     // Utility Class Messages
     public static final String UTILITY_CLASS_NEVER_INSTANTIATE = "Utility class — never instantiate";
@@ -121,14 +156,10 @@ public final class LogMessage {
     // SIMULATION CALCULATION MESSAGES
     // ============================================================
 
+    public static final String SIMULATIONDRAFT_PETITION_RECEIVED = "Starting to calculate simulation draft for requestId: {} & requestType: {}";
     public static final String SIMULATION_DTI_RECALCULATED = "Recalculated DTI for simulation: {} (monthlyPayment={}, annualIncome={})";
     public static final String SIMULATION_LTV_RECALCULATED = "Recalculated LTV for mortgage simulation: {} (loanAmount={}, propertyValue={})";
     public static final String SIMULATION_PROPERTY_VALUE_REMOVED = "Removed propertyValue from model input (it is not a model feature, LTV is used instead)";
     public static final String SIMULATION_RISK_INDICATORS_CALCULATION_ERROR = "Error recalculating risk indicators for simulation. Error: {}";
 
-    public static class STRATEGIES_LIST_CANNOT_BE_NULL {
-
-        public STRATEGIES_LIST_CANNOT_BE_NULL() {
-        }
-    }
 }

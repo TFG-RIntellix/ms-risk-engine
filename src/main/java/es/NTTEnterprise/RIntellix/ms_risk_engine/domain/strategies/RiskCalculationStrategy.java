@@ -1,7 +1,9 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.FinancialMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 
 /**
@@ -9,6 +11,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
  *
  * Moved to domain.strategies to reflect that this is a domain internal
  * strategy, not an external output port.
+ * 
+ * Updated: 05-26-2026 - Added financial metrics calculation support
  */
 public interface RiskCalculationStrategy {
 
@@ -49,18 +53,75 @@ public interface RiskCalculationStrategy {
         metrics.setExpectedCalculatedLoss(ecl);
 
         try {
-            final RiskGrade grade = riskGradeCalculator.calculateRiskGrade(pd, ecl, ead,
-                    amount == null ? 0.0 : amount,
-                    annualIncome,
-                    termMonths,
-                    interestRate);
-            metrics.setRiskLevel(grade == null ? null : grade.name());
+            final RiskGrade grade = riskGradeCalculator.calculateRiskGrade(pd);
+            metrics.setRiskLevel(grade.name());
         } catch (Exception ex) {
             // In case of any grade calculation issue, leave risk level null
             metrics.setRiskLevel(null);
         }
 
         return metrics;
+    }
+
+    /**
+     * Assemble full RiskMetrics with both risk and financial metrics.
+     * 
+     * Combines model PD with pre-PD metrics (EAD, LGD), calculates ECL and risk
+     * grade,
+     * and also computes financial affordability metrics (payment, DTI, etc.).
+     *
+     * This is the preferred method for comprehensive scoring/simulation that
+     * includes
+     * both risk assessment and affordability analysis.
+     *
+     * @param probabilityOfDefault               the PD from the model prediction
+     * @param prePdMetrics                       pre-calculated EAD and LGD metrics
+     * @param amount                             the loan/mortgage principal amount
+     * @param annualIncome                       the customer's annual income
+     * @param termMonths                         the loan term in months
+     * @param interestRate                       the annual nominal interest rate
+     * @param existingObligations                the customer's existing monthly
+     *                                           financial obligations (optional)
+     * @param riskGradeCalculator                the calculator for risk grade
+     *                                           determination
+     * @param financialMetricsCalculationService the service for calculating
+     *                                           financial metrics
+     * @return complete RiskMetrics with both risk and financial metrics
+     */
+    default RiskMetrics assembleFullMetricsWithFinancialMetrics(
+            final Double probabilityOfDefault,
+            final RiskMetrics prePdMetrics,
+            final Double amount,
+            final Double annualIncome,
+            final Integer termMonths,
+            final Double interestRate,
+            final Double existingObligations,
+            final RiskGradeCalculator riskGradeCalculator,
+            final FinancialMetricsCalculationService financialMetricsCalculationService) {
+
+        // Step 1: Assemble risk metrics (PD, EAD, LGD, ECL, RiskGrade)
+        final RiskMetrics riskMetrics = assembleFullMetricsWithGradeCalculator(
+                probabilityOfDefault,
+                prePdMetrics,
+                amount,
+                annualIncome,
+                termMonths,
+                interestRate,
+                riskGradeCalculator);
+
+        // Step 2: Calculate financial metrics
+        final Double safeExistingObligations = existingObligations != null ? existingObligations : 0.0;
+        final FinancialMetrics financialMetrics = financialMetricsCalculationService.calculateFinancialMetrics(
+                amount,
+                interestRate,
+                termMonths,
+                annualIncome,
+                safeExistingObligations);
+
+        // Step 3: Attach financial metrics to risk metrics
+        riskMetrics.setFinancialMetrics(financialMetrics);
+
+        return riskMetrics;
     }
 
 }

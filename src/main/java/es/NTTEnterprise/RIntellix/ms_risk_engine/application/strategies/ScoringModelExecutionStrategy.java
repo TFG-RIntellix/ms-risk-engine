@@ -31,4 +31,11 @@ public interface ScoringModelExecutionStrategy {
             ScoringGenerationPayload payload,
             String requestType,
             String requestId);
+
+    /**
+     * Returns the model endpoint path for the specific execution strategy.
+     *
+     * @return the endpoint path string.
+     */
+    String modelEndpointPath();
 }

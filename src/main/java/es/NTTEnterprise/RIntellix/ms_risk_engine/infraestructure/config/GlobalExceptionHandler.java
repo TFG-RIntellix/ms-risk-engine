@@ -12,18 +12,17 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ErrorRe
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.InvalidFormChangesException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelServiceException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ScoringNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-        private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
         @ExceptionHandler(ScoringNotFoundException.class)
         public ResponseEntity<ErrorResponseDTO> handleScoringNotFound(ScoringNotFoundException ex,
                         HttpServletRequest request) {
-                log.warn("Scoring not found: {}", ex.getMessage());
+                log.warn(LogMessage.EXCEPTION_SCORING_NOT_FOUND, ex.getMessage());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(new ErrorResponseDTO("SCORING_NOT_FOUND", ex.getMessage(), 404,
                                                 LocalDateTime.now()));
@@ -32,7 +31,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(InvalidFormChangesException.class)
         public ResponseEntity<ErrorResponseDTO> handleInvalidFormChanges(InvalidFormChangesException ex,
                         HttpServletRequest request) {
-                log.warn("Invalid form changes: {}", ex.getMessage());
+                log.warn(LogMessage.EXCEPTION_INVALID_FORM_CHANGES, ex.getMessage());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                 .body(new ErrorResponseDTO("INVALID_FORM_CHANGES", ex.getMessage(), 400,
                                                 LocalDateTime.now()));
@@ -41,7 +40,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(ModelServiceException.class)
         public ResponseEntity<ErrorResponseDTO> handleModelService(ModelServiceException ex,
                         HttpServletRequest request) {
-                log.error("Model service error: {}", ex.getMessage(), ex);
+                log.error(LogMessage.EXCEPTION_MODEL_SERVICE_ERROR, ex.getMessage(), ex);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponseDTO("MODEL_ERROR", "Error processing model request", 500,
                                                 LocalDateTime.now()));
@@ -49,7 +48,7 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex, HttpServletRequest request) {
-                log.error("Unexpected error: {}", ex.getMessage(), ex);
+                log.error(LogMessage.EXCEPTION_UNEXPECTED, ex.getMessage(), ex);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .body(new ErrorResponseDTO("INTERNAL_ERROR", "An unexpected error occurred", 500,
                                                 LocalDateTime.now()));

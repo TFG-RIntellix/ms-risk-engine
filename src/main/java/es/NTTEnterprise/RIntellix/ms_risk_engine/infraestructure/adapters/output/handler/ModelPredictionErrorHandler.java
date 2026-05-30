@@ -9,8 +9,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelServiceException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelValidationException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Error handler for model prediction service responses.
@@ -30,10 +29,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucía Fernández Mancebo
  * @Date 05-08-2026
  */
+@Slf4j
 @Component
 public class ModelPredictionErrorHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(ModelPredictionErrorHandler.class);
 
     /**
      * Handles errors from model prediction WebClient calls.

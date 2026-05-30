@@ -15,8 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.handler.ModelPredictionErrorHandler;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.util.ModelPayloadUtil;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Output adapter that invokes the ms-model AI prediction service
@@ -43,10 +42,9 @@ import org.slf4j.LoggerFactory;
  * @author Lucía Fernández Mancebo
  * @Date 04-26-2026
  */
+@Slf4j
 @Component
 public class ModelPredictionAdapter implements ModelPredictionPort {
-
-    private static final Logger log = LoggerFactory.getLogger(ModelPredictionAdapter.class);
 
     private final WebClient webClient;
     private final ModelPredictionErrorHandler errorHandler;

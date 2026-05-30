@@ -1,7 +1,8 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Utility component for handling model payload transformations.
@@ -22,10 +23,9 @@ public class ModelPayloadUtilities {
     private final EnumNormalizer enumNormalizer;
     private final BooleanConverter booleanConverter;
 
-    @Autowired
     public ModelPayloadUtilities(final EnumNormalizer enumNormalizer, final BooleanConverter booleanConverter) {
-        this.enumNormalizer = enumNormalizer;
-        this.booleanConverter = booleanConverter;
+        this.enumNormalizer = Objects.requireNonNull(enumNormalizer, LogMessage.ENUM_NORMALIZER_CANNOT_BE_NULL);
+        this.booleanConverter = Objects.requireNonNull(booleanConverter, LogMessage.BOOLEAN_CONVERTER_CANNOT_BE_NULL);
     }
 
     public String normalizeEnumToField(final String value, final boolean withSpaces) {
