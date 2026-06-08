@@ -70,14 +70,25 @@ public class RiskIndicatorCalculationService {
 
             // Extract new parameters needed.
             final double loanAmount = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 0);
+            final double creditLimit = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT, 0);
             final double interestRate = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_INTEREST_RATE, 0);
             final int termMonths = (int) getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_TERM_MONTHS,
                     SimulationConstants.MIN_TERM_MONTHS);
             final double annualIncome = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, 0);
 
             // Step 1: Recalculate DTI based on new parameters and existing obligations
-            final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
-                    loanAmount, interestRate, termMonths);
+            double monthlyPayment = 0.0;
+            if (isCreditCard(requestType)) {
+                final Boolean isRevolving = (Boolean) mergedVariables.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
+                if (Boolean.TRUE.equals(isRevolving)) {
+                    monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateRevolvingMonthlyPayment(creditLimit);
+                } else {
+                    monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateStandardMonthlyPayment(creditLimit);
+                }
+            } else {
+                monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
+                        loanAmount, interestRate, termMonths);
+            }
 
             final double existingObligations = dtiCalculationService
                     .resolveExistingMonthlyObligations(baseInputSnapshot);
@@ -152,6 +163,23 @@ public class RiskIndicatorCalculationService {
         }
         try {
             return RequestType.fromValue(requestType) == RequestType.HIPOTECA;
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the request type is a credit card (TARJETA_CREDITO).
+     *
+     * @param requestType the request type string.
+     * @return true if the request type represents a credit card.
+     */
+    private boolean isCreditCard(final String requestType) {
+        if (requestType == null) {
+            return false;
+        }
+        try {
+            return RequestType.fromValue(requestType) == RequestType.TARJETA_CREDITO;
         } catch (IllegalArgumentException ex) {
             return false;
         }

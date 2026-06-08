@@ -1,5 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +11,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationS
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategy;
 
 /**
  * Configuration class to wire domain services without Spring stereotypes
@@ -23,11 +26,12 @@ public class DomainServicesConfig {
     /**
      * Creates a FinancialMetricsCalculationService bean.
      *
+     * @param strategies the list of financial metrics strategies
      * @return FinancialMetricsCalculationService instance
      */
     @Bean
-    public FinancialMetricsCalculationService financialMetricsCalculationService() {
-        return new FinancialMetricsCalculationService();
+    public FinancialMetricsCalculationService financialMetricsCalculationService(List<FinancialMetricsStrategy> strategies) {
+        return new FinancialMetricsCalculationService(strategies);
     }
 
     /**
@@ -74,10 +78,11 @@ public class DomainServicesConfig {
     /**
      * Creates a SimulationDeltaCalculator bean.
      *
+     * @param strategies the list of financial metrics strategies
      * @return SimulationDeltaCalculator instance
      */
     @Bean
-    public SimulationDeltaCalculator simulationDeltaCalculator() {
-        return new SimulationDeltaCalculator();
+    public SimulationDeltaCalculator simulationDeltaCalculator(List<FinancialMetricsStrategy> strategies) {
+        return new SimulationDeltaCalculator(strategies);
     }
 }

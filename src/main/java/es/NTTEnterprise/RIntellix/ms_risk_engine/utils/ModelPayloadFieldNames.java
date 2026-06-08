@@ -107,4 +107,23 @@ public final class ModelPayloadFieldNames {
 
     /** Request ID field name in credit card model payload. */
     public static final String FIELD_REQUEST_ID = "request_id";
+
+    /** Employment seniority years field name in credit card model payload. */
+    public static final String FIELD_EMPLOYMENT_SENIORITY_YEARS = "employmentSeniorityYears";
+
+    /** Employment seniority months field name in credit card model payload. */
+    public static final String FIELD_EMPLOYMENT_SENIORITY_MONTHS = "employmentSeniorityMonths";
+
+    /** Income type field name in credit card model payload. */
+    public static final String FIELD_INCOME_TYPE = "incomeType";
+
+    /** Credit limit field name in credit card model payload. */
+    public static final String FIELD_CREDIT_LIMIT = "creditLimit";
+
+    /** Is revolving credit card field name in credit card model payload. */
+    public static final String FIELD_IS_REVOLVING = "isRevolving";
+
+    /** LTI field name in credit card model payload. */
+    public static final String FIELD_LTI = "lti";
+
 }

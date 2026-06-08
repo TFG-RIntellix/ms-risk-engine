@@ -38,6 +38,16 @@ public final class SimulationFieldNames {
     public static final String MODEL_FIELD_LTV = "ltv";
 
     // ============================================================
+    // CREDIT CARD MODEL INPUT FIELDS (model naming convention)
+    // ============================================================
+
+    /** Credit limit field name in model input. */
+    public static final String MODEL_FIELD_CREDIT_LIMIT = "creditLimit";
+
+    /** Is revolving flag field name in model input. */
+    public static final String MODEL_FIELD_IS_REVOLVING = "isRevolving";
+
+    // ============================================================
     // FORM INPUT FIELDS (for simulation form changes)
     // ============================================================
 

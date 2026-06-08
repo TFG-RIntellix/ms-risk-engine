@@ -9,6 +9,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeat
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +61,8 @@ public class ScoringMapper {
         scoring.setRequestId(scoringDTO.getRequestId());
         scoring.setBaseValue(scoringDTO.getBaseValue());
         if (scoringDTO.getScoringDate() != null) {
-            scoring.setExecutionDate(new Date(scoringDTO.getScoringDate()));
+            scoring.setExecutionDate(Date.from(LocalDateTime.parse(scoringDTO.getScoringDate())
+                    .atZone(ZoneId.systemDefault()).toInstant()));
         }
 
         // NOTE: Scoring input snapshot uses model field names (mapped via

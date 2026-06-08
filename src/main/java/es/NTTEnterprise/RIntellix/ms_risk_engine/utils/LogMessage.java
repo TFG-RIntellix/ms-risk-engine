@@ -162,5 +162,10 @@ public final class LogMessage {
     public static final String SIMULATION_LTV_RECALCULATED = "Recalculated LTV for mortgage simulation: {} (loanAmount={}, propertyValue={})";
     public static final String SIMULATION_PROPERTY_VALUE_REMOVED = "Removed propertyValue from model input (it is not a model feature, LTV is used instead)";
     public static final String SIMULATION_RISK_INDICATORS_CALCULATION_ERROR = "Error recalculating risk indicators for simulation. Error: {}";
+    public static final String CC_FINANCIAL_METRICS_CALCULATION_START = "Calculating credit card financial metrics...";
+    public static final String CC_REVOLVING_SIMULATION_COMPLETE = "Revolving simulation complete. Iterations={}, Balance={}, TotalInterest={}, TotalPayment={}";
+    public static final String CC_DTI_RECALCULATED = "Recalculated credit card DTI for simulation: {} (monthlyPayment={}, annualIncome={})";
+    public static final String FINANCIAL_METRICS_STRATEGIES_CANNOT_BE_NULL = "Financial metrics strategies cannot be null";
+    public static final String NO_FINANCIAL_METRICS_STRATEGY_FOUND = "No financial metrics strategy found for requestType=%s, isRevolving=%s";
 
 }

@@ -93,7 +93,7 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                                 modelRequestPayload,
                                 requestId,
                                 predictCreditCardPath,
-                                requestType); // interestRate is not applicable for credit cards
+                                requestType);
 
                 // Step 4: DELEGATE core calculation to reusable service
                 // This service handles:

@@ -32,8 +32,23 @@ public class CreditCardModelPayloadMapper {
             final CreditCardScoringGenerationRequest request,
             final String normalizedRequestType) {
         final Map<String, Object> modelPayload = new LinkedHashMap<>();
-        modelPayload.put(ModelPayloadFieldNames.FIELD_REQUEST_TYPE, normalizedRequestType);
-        modelPayload.put(ModelPayloadFieldNames.FIELD_REQUEST_ID, request.getRequestId());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_AGE, request.getAge());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_GENDER, request.getGender());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_MARITAL_STATUS, request.getMaritalStatus());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_EMPLOYMENT_STATUS, request.getEmploymentStatus());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_EMPLOYMENT_SENIORITY_YEARS,
+                request.getEmploymentSeniorityYears());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, request.getAnnualIncome());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_INCOME_TYPE, request.getIncomeType());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP, request.getHomeOwnership());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_DEPENDENTS, request.getDependents());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT, request.getCreditLimit());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_IS_REVOLVING, request.getIsRevolving());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, request.getInterestRate());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_LTI, request.getLti());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, request.getDti());
+        modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_DEFAULTS_COUNT, request.getPreviousDefaultsCount());
+
         return modelPayload;
     }
 }

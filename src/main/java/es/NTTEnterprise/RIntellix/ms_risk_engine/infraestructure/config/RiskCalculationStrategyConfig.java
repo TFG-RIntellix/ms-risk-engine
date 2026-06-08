@@ -10,6 +10,10 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.LoanRiskCalcu
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.MortgageRiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RevolvingCreditCardRiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.StandardCreditCardRiskCalculationStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.LoanFinancialMetricsStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.StandardCreditCardFinancialMetricsStrategy;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RevolvingCreditCardFinancialMetricsStrategy;
 
 /**
  * Infrastructure configuration that registers domain risk calculation
@@ -81,5 +85,40 @@ public class RiskCalculationStrategyConfig {
             final StandardCreditCardRiskCalculationStrategy standard,
             final RevolvingCreditCardRiskCalculationStrategy revolving) {
         return List.of(loan, mortgage, standard, revolving);
+    }
+
+    /**
+     * Creates the loan financial metrics strategy bean.
+     */
+    @Bean
+    public LoanFinancialMetricsStrategy loanFinancialMetricsStrategy() {
+        return new LoanFinancialMetricsStrategy();
+    }
+
+    /**
+     * Creates the standard credit card financial metrics strategy bean.
+     */
+    @Bean
+    public StandardCreditCardFinancialMetricsStrategy standardCreditCardFinancialMetricsStrategy() {
+        return new StandardCreditCardFinancialMetricsStrategy();
+    }
+
+    /**
+     * Creates the revolving credit card financial metrics strategy bean.
+     */
+    @Bean
+    public RevolvingCreditCardFinancialMetricsStrategy revolvingCreditCardFinancialMetricsStrategy() {
+        return new RevolvingCreditCardFinancialMetricsStrategy();
+    }
+
+    /**
+     * Aggregates all financial metrics strategies into an ordered list.
+     */
+    @Bean
+    public List<FinancialMetricsStrategy> financialMetricsStrategies(
+            final LoanFinancialMetricsStrategy loan,
+            final StandardCreditCardFinancialMetricsStrategy standard,
+            final RevolvingCreditCardFinancialMetricsStrategy revolving) {
+        return List.of(loan, standard, revolving);
     }
 }

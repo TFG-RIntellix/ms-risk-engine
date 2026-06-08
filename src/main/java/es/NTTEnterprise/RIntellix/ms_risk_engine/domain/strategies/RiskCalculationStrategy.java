@@ -38,12 +38,14 @@ public interface RiskCalculationStrategy {
             final RiskGradeCalculator riskGradeCalculator) {
 
         final double pd = MathUtilities.roundIntermediate(probabilityOfDefault == null ? 0.0 : probabilityOfDefault);
-        final double ead = MathUtilities.roundIntermediate(prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
-                ? 0.0
-                : prePdMetrics.getExposureAtDefault());
-        final double lgd = MathUtilities.roundIntermediate(prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
-                ? 0.0
-                : prePdMetrics.getLossGivenDefault());
+        final double ead = MathUtilities
+                .roundIntermediate(prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
+                        ? 0.0
+                        : prePdMetrics.getExposureAtDefault());
+        final double lgd = MathUtilities
+                .roundIntermediate(prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
+                        ? 0.0
+                        : prePdMetrics.getLossGivenDefault());
 
         final double ecl = MathUtilities.roundFinal(pd * lgd * ead);
 

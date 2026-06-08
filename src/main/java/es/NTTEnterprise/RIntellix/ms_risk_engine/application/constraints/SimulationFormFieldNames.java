@@ -30,5 +30,6 @@ public final class SimulationFormFieldNames {
             "annualIncome", // Scenario: different income levels
             "employmentStatus", // Scenario: employment status changes
             "hasMortgage", // Scenario: mortgage obligation changes
-            "propertyValue"); // Mortgage: property value to calculate LTV (for mortgage only)
+            "propertyValue", // Mortgage: property value to calculate LTV (for mortgage only)
+            "creditLimit"); // Credit card: credit limit field
 }

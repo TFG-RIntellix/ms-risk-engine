@@ -21,15 +21,26 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
 
     private String partyId;
 
+    // Socio-demographic features
     private Integer age;
     private String gender;
     private String maritalStatus;
     private String employmentStatus;
-
+    private Double employmentSeniorityYears;
+    private Integer dependents;
+    // Financial features
     private Double annualIncome;
+    private String incomeType;
+    private String homeOwnership;
 
+    // Credit card specific features
+    private String requestType;
     private Double creditLimit;
     private Boolean isRevolving;
+    private Double interestRate;
+    private Double lti;
+    private Double dti;
+    private Integer previousDefaultsCount;
 
     /**
      * Default constructor for CreditCardScoringGenerationRequest.
@@ -141,11 +152,87 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
         this.isRevolving = isRevolving;
     }
 
+    public Double getEmploymentSeniorityYears() {
+        return employmentSeniorityYears;
+    }
+
+    public void setEmploymentSeniorityYears(Double employmentSeniorityYears) {
+        this.employmentSeniorityYears = employmentSeniorityYears;
+    }
+
+    public Integer getDependents() {
+        return dependents;
+    }
+
+    public void setDependents(Integer dependents) {
+        this.dependents = dependents;
+    }
+
+    public String getIncomeType() {
+        return incomeType;
+    }
+
+    public void setIncomeType(String incomeType) {
+        this.incomeType = incomeType;
+    }
+
+    public String getHomeOwnership() {
+        return homeOwnership;
+    }
+
+    public void setHomeOwnership(String homeOwnership) {
+        this.homeOwnership = homeOwnership;
+    }
+
+    public String getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
+    }
+
+    public Double getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(Double interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public Double getLti() {
+        return lti;
+    }
+
+    public void setLti(Double lti) {
+        this.lti = lti;
+    }
+
+    public Double getDti() {
+        return dti;
+    }
+
+    public void setDti(Double dti) {
+        this.dti = dti;
+    }
+
+    public Integer getPreviousDefaultsCount() {
+        return previousDefaultsCount;
+    }
+
+    public void setPreviousDefaultsCount(Integer previousDefaultsCount) {
+        this.previousDefaultsCount = previousDefaultsCount;
+    }
+
     @Override
     public String toString() {
         return "CreditCardScoringGenerationRequest [partyId=" + partyId + ", age=" + age + ", gender=" + gender
-                + ", maritalStatus=" + maritalStatus + ", employmentStatus=" + employmentStatus + ", annualIncome="
-                + annualIncome + ", creditLimit=" + creditLimit + ", isRevolving=" + isRevolving
-                + ", getRequestId()=" + getRequestId() + ", getRequestType()=" + getRequestType() + "]";
+                + ", maritalStatus=" + maritalStatus + ", employmentStatus=" + employmentStatus
+                + ", employmentSeniorityYears=" + employmentSeniorityYears + ", dependents=" + dependents
+                + ", annualIncome=" + annualIncome + ", incomeType=" + incomeType + ", homeOwnership=" + homeOwnership
+                + ", requestType=" + requestType + ", creditLimit=" + creditLimit + ", isRevolving=" + isRevolving
+                + ", interestRate=" + interestRate + ", lti=" + lti + ", dti=" + dti + ", previousDefaultsCount="
+                + previousDefaultsCount + "]";
     }
+
 }

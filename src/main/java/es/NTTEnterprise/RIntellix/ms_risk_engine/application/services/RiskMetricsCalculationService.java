@@ -114,14 +114,21 @@ public class RiskMetricsCalculationService {
 
                 log.debug(LogMessage.ASYNCHRONOUS_MODEL_INVOCATION, context.requestId());
 
+                Double amount = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT);
+                if (amount == null) {
+                        amount = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT);
+                }
+                
+                Boolean isRevolving = (Boolean) modelPayload.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
+
                 // Step 2: While model processes, pre-compute EAD/LGD in parallel
                 final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(
                                 context.requestType(),
-                                null,
+                                isRevolving,
                                 riskCalculationStrategies);
 
                 final RiskMetrics prePdMetrics = riskStrategy.calculatePrePdMetrics(
-                                (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT),
+                                amount,
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LTV));
 
                 log.debug(LogMessage.PRE_PD_METRICS_COMPUTED,
@@ -139,7 +146,7 @@ public class RiskMetricsCalculationService {
                 final RiskMetrics fullMetrics = riskStrategy.assembleFullMetricsWithGradeCalculator(
                                 prediction.getProbabilityOfDefault(),
                                 prePdMetrics,
-                                (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT),
+                                amount,
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME),
                                 (Integer) modelPayload.get(ModelPayloadFieldNames.FIELD_TERM_MONTHS),
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE),
@@ -155,7 +162,9 @@ public class RiskMetricsCalculationService {
 
                 // Step 5: Calculate and attach financial metrics
                 final FinancialMetrics financialMetrics = financialMetricsCalculationService.calculateFinancialMetrics(
-                                (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT),
+                                context.requestType(),
+                                isRevolving,
+                                amount,
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE),
                                 (Integer) modelPayload.get(ModelPayloadFieldNames.FIELD_TERM_MONTHS),
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME),

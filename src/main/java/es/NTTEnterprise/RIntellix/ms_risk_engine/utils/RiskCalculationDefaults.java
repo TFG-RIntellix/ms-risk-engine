@@ -54,12 +54,12 @@ public final class RiskCalculationDefaults {
     // ============================================================
 
     /** Credit Conversion Factor for standard credit cards (Basel Standard). */
-    public static final double CC_STANDARD_CCF = 0.50;
+    public static final double CC_STANDARD_CCF = 0.30;
 
     /**
      * LGD for standard credit cards (higher due to revolving balance difficulty).
      */
-    public static final double CC_STANDARD_LGD = 0.80;
+    public static final double CC_STANDARD_LGD = 0.60;
 
     // ============================================================
     // CREDIT CARD — REVOLVING DEFAULTS
@@ -72,6 +72,16 @@ public final class RiskCalculationDefaults {
      * LGD for revolving credit cards (extremely low recovery rates in EU market).
      */
     public static final double CC_REVOLVING_LGD = 0.90;
+
+    // ============================================================
+    // CREDIT CARD — FINANCIAL METRICS CONSTANTS
+    // ============================================================
+    public static final double CC_DTI_PAYMENT_PERCENTAGE = 0.04;
+    public static final double CC_FIXED_COSTS_INCOME_PERCENTAGE = 0.50;
+    public static final double CC_AVERAGE_UTILIZATION_RATE = 0.50;
+    public static final double CC_AVERAGE_PAYMENT_PERCENTAGE = 0.10;
+    public static final double CC_MINIMUM_ABSOLUTE_PAYMENT = 25.0;
+    public static final int CC_MAX_SIMULATION_MONTHS = 48;
 
     // ============================================================
     // ECL / DISCOUNT FACTOR
