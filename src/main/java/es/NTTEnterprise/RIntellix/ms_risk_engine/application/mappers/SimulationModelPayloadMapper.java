@@ -79,6 +79,14 @@ public class SimulationModelPayloadMapper {
             return payloadUtilities.toModelBoolean((Boolean) value);
         }
 
+        if (ModelPayloadFieldNames.FIELD_INTEREST_RATE.equals(fieldName) && value instanceof Number numValue) {
+            return payloadUtilities.normalizeInterestRateToFraction(numValue.doubleValue());
+        }
+
+        if (ModelPayloadFieldNames.FIELD_IS_REVOLVING.equals(fieldName) && value instanceof Boolean boolValue) {
+            return String.valueOf(boolValue);
+        }
+
         if (value instanceof String stringValue && isEnumField(fieldName)) {
             return payloadUtilities.normalizeEnumForField(fieldName, stringValue);
         }
