@@ -77,6 +77,8 @@ public interface RiskCalculationStrategy {
      * includes
      * both risk assessment and affordability analysis.
      *
+     * @param requestType                        the type of credit request
+     * @param isRevolving                        whether the product is revolving
      * @param probabilityOfDefault               the PD from the model prediction
      * @param prePdMetrics                       pre-calculated EAD and LGD metrics
      * @param amount                             the loan/mortgage principal amount
@@ -92,6 +94,8 @@ public interface RiskCalculationStrategy {
      * @return complete RiskMetrics with both risk and financial metrics
      */
     default RiskMetrics assembleFullMetricsWithFinancialMetrics(
+            final String requestType,
+            final Boolean isRevolving,
             final Double probabilityOfDefault,
             final RiskMetrics prePdMetrics,
             final Double amount,
@@ -115,6 +119,8 @@ public interface RiskCalculationStrategy {
         // Step 2: Calculate financial metrics
         final Double safeExistingObligations = existingObligations != null ? existingObligations : 0.0;
         final FinancialMetrics financialMetrics = financialMetricsCalculationService.calculateFinancialMetrics(
+                requestType,
+                isRevolving,
                 amount,
                 interestRate,
                 termMonths,

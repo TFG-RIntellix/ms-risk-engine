@@ -15,7 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 public enum RequestType {
     PRESTAMO("PRESTAMO"),
     HIPOTECA("HIPOTECA"),
-    TARJETA_CREDITO("TARJETA DE CREDITO");
+    TARJETA_CREDITO("TARJETA_CREDITO");
 
     private final String value;
 
@@ -30,7 +30,7 @@ public enum RequestType {
 
     /**
      * Parses a string value to the corresponding RequestType enum.
-     * Handles both JSON format ("TARJETA DE CREDITO") and enum name format
+     * Handles both JSON format ("TARJETA_CREDITO") and enum name format
      * (TARJETA_CREDITO).
      * 
      * @param value the string value to parse

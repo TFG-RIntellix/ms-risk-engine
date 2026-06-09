@@ -18,7 +18,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.Scoring
 public class CreditCardScoringGenerationMessageStrategy implements ScoringGenerationMessageStrategy {
 
     private static final Set<String> SUPPORTED_REQUEST_TYPES = Set.of(
-            "CREDIT_CARD");
+            "TARJETA_CREDITO");
 
     /**
      * Determines if this strategy supports the given request type.

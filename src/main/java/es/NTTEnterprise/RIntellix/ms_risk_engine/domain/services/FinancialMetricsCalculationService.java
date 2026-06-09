@@ -31,7 +31,8 @@ public class FinancialMetricsCalculationService {
     }
 
     /**
-     * Calculates complete financial metrics for a credit product dynamically via strategies.
+     * Calculates complete financial metrics for a credit product dynamically via
+     * strategies.
      *
      * @param requestType         the request type (e.g. PRESTAMO, TARJETA_CREDITO)
      * @param isRevolving         the revolving status (for credit cards)
@@ -39,7 +40,8 @@ public class FinancialMetricsCalculationService {
      * @param annualInterestRate  the annual nominal interest rate
      * @param termMonths          the loan term in months
      * @param annualIncome        the customer's annual income
-     * @param existingObligations the customer's existing monthly financial obligations
+     * @param existingObligations the customer's existing monthly financial
+     *                            obligations
      * @return a complete FinancialMetrics object
      */
     public FinancialMetrics calculateFinancialMetrics(
@@ -51,8 +53,10 @@ public class FinancialMetricsCalculationService {
             final Double annualIncome,
             final Double existingObligations) {
 
-        final FinancialMetricsStrategy strategy = FinancialMetricsStrategyFactory.createStrategy(requestType, isRevolving, strategies);
-        return strategy.calculateFinancialMetrics(amount, annualInterestRate, annualIncome, existingObligations, termMonths);
+        final FinancialMetricsStrategy strategy = FinancialMetricsStrategyFactory.createStrategy(requestType,
+                isRevolving, strategies);
+        return strategy.calculateFinancialMetrics(amount, annualInterestRate, annualIncome, existingObligations,
+                termMonths);
     }
 
     /**
@@ -66,19 +70,7 @@ public class FinancialMetricsCalculationService {
             final Integer termMonths,
             final Double annualIncome) {
 
-        return calculateFinancialMetrics(requestType, isRevolving, amount, annualInterestRate, termMonths, annualIncome, 0.0);
-    }
-
-    // BACKWARD COMPATIBILITY for callers that don't pass requestType (defaulting to LOAN)
-    // This allows existing callers to compile until they are refactored.
-    @Deprecated
-    public FinancialMetrics calculateFinancialMetrics(
-            final Double principal,
-            final Double annualInterestRate,
-            final Integer termMonths,
-            final Double annualIncome,
-            final Double existingObligations) {
-        
-        return calculateFinancialMetrics("PRESTAMO", false, principal, annualInterestRate, termMonths, annualIncome, existingObligations);
+        return calculateFinancialMetrics(requestType, isRevolving, amount, annualInterestRate, termMonths, annualIncome,
+                0.0);
     }
 }
