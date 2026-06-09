@@ -25,7 +25,7 @@ import org.springframework.util.backoff.FixedBackOff;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.input.dtos.ScoringGenerationDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +71,7 @@ public class KafkaConsumerConfig {
         configProps.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS,
                 "org.springframework.kafka.support.serializer.JsonDeserializer");
         configProps.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class.getName());
-        configProps.put("spring.json.value.default.type", ScoringGenerationRequest.class.getName());
+        configProps.put("spring.json.value.default.type", ScoringGenerationDTO.class.getName());
         configProps.put("spring.json.trusted.packages", TRUSTED_PACKAGES_ALL);
         configProps.put("spring.json.use.type.headers", false);
 
