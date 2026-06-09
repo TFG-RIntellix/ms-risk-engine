@@ -78,7 +78,8 @@ public class LoanOrMortgageModelPayloadMapper {
                                                 request.getPurpose()));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, request.getLoanAmount());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_TERM_MONTHS, request.getTermMonths());
-                modelPayload.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, request.getInterestRate());
+                modelPayload.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE,
+                                payloadUtilities.normalizeInterestRateToFraction(request.getInterestRate()));
                 // Default LTV to 0.0 if not provided
                 modelPayload.put(ModelPayloadFieldNames.FIELD_LTV,
                                 Objects.requireNonNullElse(request.getLtv(), ModelPayloadConstants.DEFAULT_LTV));

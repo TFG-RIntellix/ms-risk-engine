@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
+
 /**
  * Utility component for handling model payload transformations.
  * Consolidates enum normalization and field name translation logic used by
@@ -47,6 +49,20 @@ public class ModelPayloadUtilities {
         }
         final boolean withSpaces = value.contains(" ");
         return enumNormalizer.normalizeToTitleCase(value, withSpaces);
+    }
+
+    /**
+     * Converts an interest rate from percentage format (e.g. 24.91)
+     * to decimal fraction (e.g. 0.2491) as expected by the model.
+     *
+     * @param interestRate the interest rate in percentage format.
+     * @return the interest rate as a decimal fraction, or null if input is null.
+     */
+    public Double normalizeInterestRateToFraction(final Double interestRate) {
+        if (interestRate == null) {
+            return null;
+        }
+        return interestRate / SimulationConstants.PERCENTAGE_DIVISOR;
     }
 
 }
