@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 
 /**
+ * // TODO: need to do it as hexagonal don't know why it is not being done.
  * Use case that orchestrates stateless simulation draft calculations.
  *
  * Implements the SimulationDraftPortService (domain input port) to properly

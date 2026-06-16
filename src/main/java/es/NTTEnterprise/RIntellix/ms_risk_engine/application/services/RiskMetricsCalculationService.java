@@ -118,8 +118,9 @@ public class RiskMetricsCalculationService {
                 if (amount == null) {
                         amount = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT);
                 }
-                
-                Boolean isRevolving = (Boolean) modelPayload.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
+
+                Boolean isRevolving = ("Si")
+                                .equals((String) modelPayload.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING));
 
                 // Step 2: While model processes, pre-compute EAD/LGD in parallel
                 final RiskCalculationStrategy riskStrategy = RiskCalculationStrategyFactory.createStrategy(

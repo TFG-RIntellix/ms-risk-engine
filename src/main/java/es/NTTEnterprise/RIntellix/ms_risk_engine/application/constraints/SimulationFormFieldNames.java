@@ -31,5 +31,7 @@ public final class SimulationFormFieldNames {
             "employmentStatus", // Scenario: employment status changes
             "hasMortgage", // Scenario: mortgage obligation changes
             "propertyValue", // Mortgage: property value to calculate LTV (for mortgage only)
-            "creditLimit"); // Credit card: credit limit field
+            "creditLimit", // Credit card: credit limit field
+            "isRevolving" // Revolving Credit: revolving field
+    );
 }

@@ -11,6 +11,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.Calculat
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.SimulationDraftResponseDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.CalculateSimulationDraftUseCase;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.SimulationDraftPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.SimulationDraftMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import jakarta.validation.Valid;
@@ -33,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/simulations")
 public class SimulationDraftController {
 
-    private final CalculateSimulationDraftUseCase calculateSimulationDraftUseCase;
+    private final SimulationDraftPortService calculateSimulationDraftUseCase;
     private final SimulationDraftMapper simulationDraftMapper;
 
     public SimulationDraftController(
-            final CalculateSimulationDraftUseCase calculateSimulationDraftUseCase,
+            final SimulationDraftPortService calculateSimulationDraftUseCase,
             final SimulationDraftMapper simulationDraftMapper) {
         this.calculateSimulationDraftUseCase = calculateSimulationDraftUseCase;
         this.simulationDraftMapper = simulationDraftMapper;
