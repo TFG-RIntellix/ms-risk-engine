@@ -26,7 +26,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
  */
 public record RiskMetricsCalculationResult(
         ModelPredictionResult modelPredictionResult,
-        RiskMetrics riskMetrics) {
+        RiskMetrics riskMetrics,
+        boolean isHardCutoff) {
 
     public RiskMetricsCalculationResult {
         Objects.requireNonNull(modelPredictionResult, "Model prediction result cannot be null");

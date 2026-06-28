@@ -124,14 +124,7 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
         }
     }
 
-    // TODO: Analyze if this doesn't break single responsability principle.
     private boolean isHardCutoffResult(final ScoringModelExecutionResultDTO executionResult) {
-        return executionResult != null
-                && executionResult.getPredictionResult() != null
-                && executionResult.getPredictionResult().getShapExplanations() != null
-                && !executionResult.getPredictionResult().getShapExplanations().isEmpty()
-                && executionResult.getPredictionResult().getShapExplanations().get(0).getDescription() != null
-                && executionResult.getPredictionResult().getShapExplanations().get(0).getDescription()
-                        .startsWith("Hard-cutoff rule");
+        return executionResult != null && executionResult.isHardCutoff();
     }
 }

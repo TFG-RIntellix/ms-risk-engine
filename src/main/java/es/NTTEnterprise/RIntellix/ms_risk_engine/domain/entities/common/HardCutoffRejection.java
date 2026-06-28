@@ -13,7 +13,6 @@ public class HardCutoffRejection {
 
     private final String featureName;
     private final Double featureValue;
-    private final RiskMetrics riskMetrics;
     private final List<RiskFeature> explainability;
 
     /**
@@ -21,17 +20,14 @@ public class HardCutoffRejection {
      *
      * @param featureName    the name of the triggering ratio field.
      * @param featureValue   the value of the triggering ratio.
-     * @param riskMetrics    the Basel II calculated risk metrics.
      * @param explainability the single-item explainability record.
      */
     public HardCutoffRejection(
             final String featureName,
             final Double featureValue,
-            final RiskMetrics riskMetrics,
             final List<RiskFeature> explainability) {
         this.featureName = featureName;
         this.featureValue = featureValue;
-        this.riskMetrics = riskMetrics;
         this.explainability = explainability;
     }
 
@@ -41,10 +37,6 @@ public class HardCutoffRejection {
 
     public Double getFeatureValue() {
         return featureValue;
-    }
-
-    public RiskMetrics getRiskMetrics() {
-        return riskMetrics;
     }
 
     public List<RiskFeature> getExplainability() {

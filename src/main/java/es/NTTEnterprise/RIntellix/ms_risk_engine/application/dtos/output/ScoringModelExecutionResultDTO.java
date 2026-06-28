@@ -18,6 +18,7 @@ public class ScoringModelExecutionResultDTO {
     private Map<String, Object> modelRequestPayload;
     private ModelPredictionResult predictionResult;
     private RiskMetrics riskMetrics;
+    private boolean isHardCutoff;
 
     /**
      * Constructor of the ScoringModelExecutionResultDTO class.
@@ -31,14 +32,17 @@ public class ScoringModelExecutionResultDTO {
      * @param modelRequestPayload the prepared payload sent to the model endpoint.
      * @param predictionResult    the prediction response returned by the model.
      * @param riskMetrics         the fully computed risk metrics.
+     * @param isHardCutoff        whether this result bypassed the AI model due to hard-cutoff rule.
      */
     public ScoringModelExecutionResultDTO(
             final Map<String, Object> modelRequestPayload,
             final ModelPredictionResult predictionResult,
-            final RiskMetrics riskMetrics) {
+            final RiskMetrics riskMetrics,
+            final boolean isHardCutoff) {
         this.modelRequestPayload = modelRequestPayload;
         this.predictionResult = predictionResult;
         this.riskMetrics = riskMetrics;
+        this.isHardCutoff = isHardCutoff;
     }
 
     // Getters and setters.
@@ -67,10 +71,19 @@ public class ScoringModelExecutionResultDTO {
         this.riskMetrics = riskMetrics;
     }
 
+    public boolean isHardCutoff() {
+        return isHardCutoff;
+    }
+
+    public void setHardCutoff(boolean isHardCutoff) {
+        this.isHardCutoff = isHardCutoff;
+    }
+
     @Override
     public String toString() {
         return "ScoringModelExecutionResultDTO [modelRequestPayload=" + modelRequestPayload
-                + ", predictionResult=" + predictionResult + ", riskMetrics=" + riskMetrics + "]";
+                + ", predictionResult=" + predictionResult + ", riskMetrics=" + riskMetrics + ", isHardCutoff="
+                + isHardCutoff + "]";
     }
 
 }

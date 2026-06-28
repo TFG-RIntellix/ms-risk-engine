@@ -2,6 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.services;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Component;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Component;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.HardCutoffRejection;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.FinancialMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.HardCutoffRuleEvaluator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
@@ -53,6 +56,7 @@ public class RiskMetricsCalculationService {
         private final List<RiskCalculationStrategy> riskCalculationStrategies;
         private final RiskGradeCalculator riskGradeCalculator;
         private final FinancialMetricsCalculationService financialMetricsCalculationService;
+        private final HardCutoffRuleEvaluator hardCutoffRuleEvaluator;
 
         /**
          * Constructor of the RiskMetricsCalculationService class.
@@ -65,12 +69,14 @@ public class RiskMetricsCalculationService {
          *                                           calculation.
          * @param financialMetricsCalculationService the domain service for financial
          *                                           metrics calculation.
+         * @param hardCutoffRuleEvaluator            the domain service for hard-cutoff rule evaluation.
          */
         public RiskMetricsCalculationService(
                         final ModelPredictionPort modelPredictionPort,
                         final List<RiskCalculationStrategy> riskCalculationStrategies,
                         final RiskGradeCalculator riskGradeCalculator,
-                        final FinancialMetricsCalculationService financialMetricsCalculationService) {
+                        final FinancialMetricsCalculationService financialMetricsCalculationService,
+                        final HardCutoffRuleEvaluator hardCutoffRuleEvaluator) {
                 this.modelPredictionPort = Objects.requireNonNull(modelPredictionPort,
                                 LogMessage.MODEL_PREDICTION_PORT_CANNOT_BE_NULL);
                 this.riskCalculationStrategies = Objects.requireNonNull(riskCalculationStrategies,
@@ -79,6 +85,8 @@ public class RiskMetricsCalculationService {
                                 LogMessage.RISK_GRADE_CALCULATOR_CANNOT_BE_NULL);
                 this.financialMetricsCalculationService = Objects.requireNonNull(financialMetricsCalculationService,
                                 LogMessage.FINANCIAL_METRICS_CALCULATION_SERVICE_CANNOT_BE_NULL);
+                this.hardCutoffRuleEvaluator = Objects.requireNonNull(hardCutoffRuleEvaluator,
+                                "HardCutoffRuleEvaluator cannot be null");
         }
 
         /**
@@ -106,13 +114,32 @@ public class RiskMetricsCalculationService {
 
                 log.info(LogMessage.RISK_METRICS_CALCULATION_STARTED, context.requestId());
 
-                // Step 1: Fire async model call (returns immediately)
-                final CompletableFuture<ModelPredictionResult> modelFuture = modelPredictionPort.predictAsync(
+                // Step 0.5: Evaluate hard-cutoff rules
+                final Optional<HardCutoffRejection> rejectionOpt = hardCutoffRuleEvaluator.evaluateRules(
                                 context.modelPayload(),
-                                context.requestId(),
-                                context.modelEndpointPath());
+                                context.requestType(),
+                                context.requestId());
 
-                log.debug(LogMessage.ASYNCHRONOUS_MODEL_INVOCATION, context.requestId());
+                // Step 1: Fire async model call (returns immediately) or complete instantly if cutoff triggered
+                final CompletableFuture<ModelPredictionResult> modelFuture;
+                final boolean isHardCutoff = rejectionOpt.isPresent();
+
+                if (isHardCutoff) {
+                        final HardCutoffRejection rejection = rejectionOpt.get();
+                        final ModelPredictionResult bypassedPrediction = new ModelPredictionResult(
+                                        1.0,
+                                        "HIGH", // This will be set properly later by RiskGradeCalculator anyway
+                                        0.0,
+                                        rejection.getExplainability());
+                        modelFuture = CompletableFuture.completedFuture(bypassedPrediction);
+                        log.warn(LogMessage.RISK_METRICS_HARD_CUTOFF_TRIGGERED, context.requestId());
+                } else {
+                        modelFuture = modelPredictionPort.predictAsync(
+                                        context.modelPayload(),
+                                        context.requestId(),
+                                        context.modelEndpointPath());
+                        log.debug(LogMessage.ASYNCHRONOUS_MODEL_INVOCATION, context.requestId());
+                }
 
                 Double amount = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT);
                 if (amount == null) {
@@ -182,6 +209,6 @@ public class RiskMetricsCalculationService {
                                 financialMetrics.getMonthlyPayment(),
                                 financialMetrics.getDebtToIncomeRatio());
 
-                return new RiskMetricsCalculationResult(prediction, fullMetrics);
+                return new RiskMetricsCalculationResult(prediction, fullMetrics, isHardCutoff);
         }
 }

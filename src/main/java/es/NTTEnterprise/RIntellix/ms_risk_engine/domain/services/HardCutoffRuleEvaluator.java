@@ -4,11 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.HardCutoffRejection;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculationDefaults;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.utils.MapUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
@@ -28,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 06-28-2026
  */
 @Slf4j
-@Service
 public class HardCutoffRuleEvaluator {
 
     /**
@@ -110,30 +106,12 @@ public class HardCutoffRuleEvaluator {
             final String featureName,
             final Double featureValue) {
 
-        final double ead = extractEad(modelPayload, requestType);
-        final double lgd = RiskCalculationDefaults.HARD_CUTOFF_UNSECURED_LGD;
-        final double ecl = lgd * ead;
-
-        final RiskMetrics riskMetrics = new RiskMetrics(
-                1.0, // PD = 1.0
-                lgd,
-                ead,
-                ecl,
-                RiskCalculationDefaults.HARD_CUTOFF_RISK_GRADE);
-
         final RiskFeature topFeature = new RiskFeature(
                 featureName,
                 String.valueOf(featureValue),
                 1.0, // maximum SHAP contribution
                 String.format(EXPLAINABILITY_MESSAGE, featureName.toUpperCase(), featureValue));
 
-        return new HardCutoffRejection(featureName, featureValue, riskMetrics, List.of(topFeature));
-    }
-
-    private double extractEad(final Map<String, Object> modelPayload, final RequestType requestType) {
-        if (RequestType.TARJETA_CREDITO == requestType) {
-            return MapUtilities.getDouble(modelPayload, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT, 0.0);
-        }
-        return MapUtilities.getDouble(modelPayload, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 0.0);
+        return new HardCutoffRejection(featureName, featureValue, List.of(topFeature));
     }
 }

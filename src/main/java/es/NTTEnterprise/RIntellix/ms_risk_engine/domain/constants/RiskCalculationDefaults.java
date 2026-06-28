@@ -31,7 +31,7 @@ public final class RiskCalculationDefaults {
     // ============================================================
 
     /** DTI > 50 % triggers automatic rejection for all request types. */
-    public static final double HARD_CUTOFF_DTI_THRESHOLD = 0.50;
+    public static final double HARD_CUTOFF_DTI_THRESHOLD = 0.55;
 
     /** LTV > 80 % triggers automatic rejection for mortgage requests. */
     public static final double HARD_CUTOFF_LTV_THRESHOLD = 0.80;

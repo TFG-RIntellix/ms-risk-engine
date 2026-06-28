@@ -11,6 +11,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationS
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.HardCutoffRuleEvaluator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategy;
 
 /**
@@ -84,5 +85,15 @@ public class DomainServicesConfig {
     @Bean
     public SimulationDeltaCalculator simulationDeltaCalculator(List<FinancialMetricsStrategy> strategies) {
         return new SimulationDeltaCalculator(strategies);
+    }
+
+    /**
+     * Creates a HardCutoffRuleEvaluator bean.
+     *
+     * @return HardCutoffRuleEvaluator instance
+     */
+    @Bean
+    public HardCutoffRuleEvaluator hardCutoffRuleEvaluator() {
+        return new HardCutoffRuleEvaluator();
     }
 }

@@ -1,7 +1,5 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
@@ -23,7 +21,6 @@ public enum RequestType {
         this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
         return value;
     }

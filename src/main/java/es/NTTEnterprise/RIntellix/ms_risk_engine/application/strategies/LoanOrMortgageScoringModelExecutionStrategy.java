@@ -13,10 +13,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.Scoring
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.LoanOrMortgageModelPayloadMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.HardCutoffRejection;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.HardCutoffRuleEvaluator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +41,6 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
 
         private final LoanOrMortgageModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
-        private final HardCutoffRuleEvaluator hardCutoffRuleEvaluator;
         private final String predictLoanPath;
 
         /**
@@ -52,19 +49,14 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
          * @param payloadMapper             the mapper that prepares loan model payload.
          * @param metricsCalculationService the service that orchestrates risk metric
          *                                  calculation.
-         * @param hardCutoffRuleEvaluator   the domain service for hard-cutoff rule
-         *                                  evaluation.
-         * @param predictLoanPath           the model endpoint path for loan and
          *                                  mortgage.
          */
         public LoanOrMortgageScoringModelExecutionStrategy(
                         final LoanOrMortgageModelPayloadMapper payloadMapper,
                         final RiskMetricsCalculationService metricsCalculationService,
-                        final HardCutoffRuleEvaluator hardCutoffRuleEvaluator,
                         @Value("${risk.model.predict-loan-path:/api/v1/risk/predict-loan}") final String predictLoanPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
-                this.hardCutoffRuleEvaluator = Objects.requireNonNull(hardCutoffRuleEvaluator);
                 this.predictLoanPath = Objects.requireNonNull(predictLoanPath);
         }
 
@@ -91,22 +83,6 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                 // Step 1: Map payload to model request format
                 final Map<String, Object> modelRequestPayload = payloadMapper.toModelPayload(request);
 
-                // Step 1.5: Evaluate mapped hard-cutoff rules
-                final Optional<HardCutoffRejection> rejectionOpt = hardCutoffRuleEvaluator.evaluateRules(
-                                modelRequestPayload,
-                                requestType,
-                                requestId);
-                if (rejectionOpt.isPresent()) {
-                        final HardCutoffRejection rejection = rejectionOpt.get();
-                        final ModelPredictionResult prediction = new ModelPredictionResult(
-                                        1.0,
-                                        "HIGH",
-                                        0.0,
-                                        rejection.getExplainability());
-                        return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction,
-                                        rejection.getRiskMetrics());
-                }
-
                 // Step 2: Create calculation context with all necessary data
                 final RiskMetricsCalculationContext context = new RiskMetricsCalculationContext(
                                 modelRequestPayload,
@@ -126,7 +102,7 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
                 log.info(LogMessage.MODEL_EXECUTION_RESULT_LOAN_MORTGAGE,
                                 fullMetrics.getProbabilityOfDefault());
 
-                return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
+                return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics, result.isHardCutoff());
         }
 
         @Override

@@ -68,6 +68,11 @@ public final class LogMessage {
         public static final String REQUEST_TYPE_NULL = "RequestType value cannot be null";
         public static final String UNKNOWN_REQUEST_TYPE = "Unknown RequestType value: {}";
 
+        public static final String RISK_METRICS_HARD_CUTOFF_TRIGGERED = "Hard cutoff rule triggered for request {}, bypassing model call";
+        public static final String EXCEPTION_EMPTY_MODEL_RESPONSE = "Empty model response for requestId: %s";
+        public static final String EXCEPTION_PD_VALUE_MISSING = "PD value missing in model response for requestId: %s";
+        public static final String EXCEPTION_FAILED_TO_PREDICT_PD = "Failed to predict PD for requestId: %s";
+
         // Model Prediction Error Messages (Logging)
         public static final String MODEL_VALIDATION_ERROR = "Model validation failed for requestId={}. Status={}, Error: {}";
         public static final String MODEL_SERVICE_ERROR = "Model service error for requestId={}. Status={}, Error: {}";
