@@ -1,6 +1,9 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
 import lombok.extern.slf4j.Slf4j;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculationDefaults;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 
 /**
  * Utility class for calculating credit card specific financial metrics.
@@ -34,6 +37,20 @@ public final class CreditCardFinancialMetricsCalculator {
      */
     public static double calculateRevolvingMonthlyPayment(double creditLimit) {
         return creditLimit * RiskCalculationDefaults.CC_DTI_PAYMENT_PERCENTAGE;
+    }
+
+    /**
+     * Calculates the monthly payment for a credit card based on whether it is revolving or standard.
+     *
+     * @param creditLimit the credit limit
+     * @param isRevolving true if revolving, false/null if standard
+     * @return the calculated monthly payment
+     */
+    public static double calculateMonthlyPayment(double creditLimit, Boolean isRevolving) {
+        if (Boolean.TRUE.equals(isRevolving)) {
+            return calculateRevolvingMonthlyPayment(creditLimit);
+        }
+        return calculateStandardMonthlyPayment(creditLimit);
     }
 
     /**

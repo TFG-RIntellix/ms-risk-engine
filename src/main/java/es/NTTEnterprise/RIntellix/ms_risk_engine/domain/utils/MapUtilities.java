@@ -1,8 +1,9 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.utils;
 
 import java.util.Map;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.InvalidFormChangesException;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
  * Utility class for safe operations on Map data structures.

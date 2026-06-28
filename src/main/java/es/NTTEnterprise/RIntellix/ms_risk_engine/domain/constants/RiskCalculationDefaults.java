@@ -1,4 +1,6 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants;
+
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**
  * Centralized holder for risk calculation constants and shared utility methods.
@@ -23,6 +25,25 @@ public final class RiskCalculationDefaults {
     private RiskCalculationDefaults() {
         throw new UnsupportedOperationException(LogMessage.UTILITY_CLASS_NEVER_INSTANTIATE);
     }
+
+    // ============================================================
+    // HARD-CUTOFF DEFAULTS
+    // ============================================================
+
+    /** DTI > 50 % triggers automatic rejection for all request types. */
+    public static final double HARD_CUTOFF_DTI_THRESHOLD = 0.50;
+
+    /** LTV > 80 % triggers automatic rejection for mortgage requests. */
+    public static final double HARD_CUTOFF_LTV_THRESHOLD = 0.80;
+
+    /** LTI > 40 % triggers automatic rejection for credit-card requests. */
+    public static final double HARD_CUTOFF_LTI_THRESHOLD = 0.40;
+
+    /** Risk grade assigned for hard-cutoff rejection. */
+    public static final String HARD_CUTOFF_RISK_GRADE = "HIGH";
+
+    /** Basel II standard unsecured LGD (loans, credit cards without collateral). */
+    public static final double HARD_CUTOFF_UNSECURED_LGD = 0.45;
 
     // ============================================================
     // LOAN DEFAULTS

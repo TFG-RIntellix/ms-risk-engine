@@ -83,6 +83,7 @@ public class LoanOrMortgageModelPayloadMapper {
                 // Default LTV to 0.0 if not provided
                 modelPayload.put(ModelPayloadFieldNames.FIELD_LTV,
                                 Objects.requireNonNullElse(request.getLtv(), ModelPayloadConstants.DEFAULT_LTV));
+                modelPayload.put(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS, request.getExistingObligations());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, calculateModelDti(request));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_LOANS_COUNT, request.getPreviousLoansCount());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_DEFAULTS_COUNT,
@@ -96,12 +97,12 @@ public class LoanOrMortgageModelPayloadMapper {
                 }
 
                 final double annualIncome = SimulationConstants.getSafe(request.getAnnualIncome());
-                final double existingDtiRatio = SimulationConstants.getSafe(request.getDti());
+                final double existingObligations = SimulationConstants.getSafe(request.getExistingObligations());
                 final double loanAmount = SimulationConstants.getSafe(request.getLoanAmount());
                 final double interestRate = SimulationConstants.getSafe(request.getInterestRate());
                 return dtiCalculationService.calculateModelDtiForScoring(
                                 annualIncome,
-                                existingDtiRatio,
+                                existingObligations,
                                 loanAmount,
                                 interestRate,
                                 request.getTermMonths());

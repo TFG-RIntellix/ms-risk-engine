@@ -4,9 +4,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.utils.MapUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 import lombok.extern.slf4j.Slf4j;
@@ -80,18 +81,17 @@ public class RiskIndicatorCalculationService {
             double monthlyPayment = 0.0;
             if (isCreditCard(requestType)) {
                 final Boolean isRevolving = (Boolean) mergedVariables.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
-                if (Boolean.TRUE.equals(isRevolving)) {
-                    monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateRevolvingMonthlyPayment(creditLimit);
-                } else {
-                    monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateStandardMonthlyPayment(creditLimit);
-                }
+                monthlyPayment = CreditCardFinancialMetricsCalculator.calculateMonthlyPayment(creditLimit, isRevolving);
             } else {
+                // TODO: Not hardcoding values, do it properly, also check how will be
+                // interestRate populated.
                 monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
-                        loanAmount, interestRate, termMonths);
+                        loanAmount, interestRate * 100.0, termMonths);
             }
 
-            final double existingObligations = dtiCalculationService
-                    .resolveExistingMonthlyObligations(baseInputSnapshot);
+            final double existingObligationsAnnual = MapUtilities.getDouble(
+                    baseInputSnapshot, ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS, 0.0);
+            final double existingObligations = existingObligationsAnnual / SimulationConstants.MONTHS_PER_YEAR;
             final double newDti = MathUtilities.roundFinal(
                     dtiCalculationService.calculateDtiWithExistingObligations(
                             monthlyPayment,

@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.input;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.FormChanges;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;

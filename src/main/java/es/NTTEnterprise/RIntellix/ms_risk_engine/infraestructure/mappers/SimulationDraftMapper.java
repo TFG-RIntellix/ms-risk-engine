@@ -55,7 +55,7 @@ public class SimulationDraftMapper {
      */
     public FormChanges toFormChanges(final CalculateSimulationDraftRequestDTO request) {
         if (request == null) {
-            log.debug(LogMessage.SIMULATION_REQUEST_DTO_NULL);
+            log.warn(LogMessage.SIMULATION_REQUEST_DTO_NULL);
             return new FormChanges(null);
         }
         return new FormChanges(request.getFormChanges());
@@ -112,7 +112,7 @@ public class SimulationDraftMapper {
         final SimulationMetricsResponseDTO response = new SimulationMetricsResponseDTO();
 
         if (metrics == null) {
-            log.debug(LogMessage.SIMULATION_METRICS_NULL);
+            log.warn(LogMessage.SIMULATION_METRICS_NULL);
             return response;
         }
 
@@ -161,7 +161,7 @@ public class SimulationDraftMapper {
         final SimulationDeltaResponseDTO response = new SimulationDeltaResponseDTO();
 
         if (delta == null) {
-            log.debug(LogMessage.SIMULATION_DELTA_NULL);
+            log.warn(LogMessage.SIMULATION_DELTA_NULL);
             return response;
         }
 

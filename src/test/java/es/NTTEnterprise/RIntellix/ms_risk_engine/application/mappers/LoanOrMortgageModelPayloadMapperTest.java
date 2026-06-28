@@ -32,14 +32,14 @@ class LoanOrMortgageModelPayloadMapperTest {
         request.setLoanAmount(12000.0);
         request.setInterestRate(6.0);
         request.setTermMonths(24);
-        request.setDti(0.25);
+        request.setExistingObligations(6000.0); // 500/month (0.25 DTI ratio)
 
         Map<String, Object> payload = mapper.toModelPayload(request);
 
         double monthlyIncome = request.getAnnualIncome() / SimulationConstants.MONTHS_PER_YEAR;
         double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                 request.getLoanAmount(), request.getInterestRate(), request.getTermMonths());
-        double expectedDti = MathUtilities.roundFinal((request.getDti() * monthlyIncome + monthlyPayment)
+        double expectedDti = MathUtilities.roundFinal((request.getExistingObligations() / 12.0 + monthlyPayment)
                 / monthlyIncome);
 
         assertThat(payload.get(ModelPayloadFieldNames.FIELD_DTI)).isEqualTo(expectedDti);

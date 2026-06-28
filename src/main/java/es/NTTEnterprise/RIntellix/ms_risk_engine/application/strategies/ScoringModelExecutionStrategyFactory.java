@@ -3,7 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 import java.util.List;
 import java.util.Objects;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.factories.GenericStrategyFactory;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.factories.GenericStrategyFactory;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
 /**

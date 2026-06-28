@@ -32,6 +32,7 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
     private Double annualIncome;
     private String incomeType;
     private String homeOwnership;
+    private Double existingObligations;
 
     // Credit card specific features
     private String requestType;
@@ -184,6 +185,14 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
         this.homeOwnership = homeOwnership;
     }
 
+    public Double getExistingObligations() {
+        return existingObligations;
+    }
+
+    public void setExistingObligations(Double existingObligations) {
+        this.existingObligations = existingObligations;
+    }
+
     public String getRequestType() {
         return requestType;
     }
@@ -230,9 +239,9 @@ public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload
                 + ", maritalStatus=" + maritalStatus + ", employmentStatus=" + employmentStatus
                 + ", employmentSeniorityYears=" + employmentSeniorityYears + ", dependents=" + dependents
                 + ", annualIncome=" + annualIncome + ", incomeType=" + incomeType + ", homeOwnership=" + homeOwnership
-                + ", requestType=" + requestType + ", creditLimit=" + creditLimit + ", isRevolving=" + isRevolving
-                + ", interestRate=" + interestRate + ", lti=" + lti + ", dti=" + dti + ", previousDefaultsCount="
-                + previousDefaultsCount + "]";
+                + ", existingObligations=" + existingObligations + ", requestType=" + requestType
+                + ", creditLimit=" + creditLimit + ", isRevolving=" + isRevolving + ", interestRate=" + interestRate
+                + ", lti=" + lti + ", dti=" + dti + ", previousDefaultsCount=" + previousDefaultsCount + "]";
     }
 
 }

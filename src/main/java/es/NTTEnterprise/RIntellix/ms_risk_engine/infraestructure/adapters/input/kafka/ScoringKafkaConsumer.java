@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProcessingPortService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.input.ScoringProcessingPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.input.kafka.strategy.ScoringGenerationMessageStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.mappers.ScoringKafkaRequestMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
@@ -74,6 +74,7 @@ public class ScoringKafkaConsumer {
         // Map the incoming message to the appropiate domain request using the strategy
         // pattern
         ScoringGenerationPayload mappedMessage = mapWithStrategy(message);
+        log.info(LogMessage.RECEIVED_REQUEST, mappedMessage.toString());
 
         final boolean processed = scoringProcessingService.processScoringMessage(mappedMessage);
         if (!processed) {
@@ -85,6 +86,8 @@ public class ScoringKafkaConsumer {
 
     }
 
+    // TODO: Tocheck if we need to extract this into a factory like its done in
+    // other sides of the code.
     /**
      * Auxiliar method that extracts the real message received by kafka
      * queue by converting all the message content in different

@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculationDefaults;
 
 /**
  * Domain service for calculating risk grades based on multiple risk factors.

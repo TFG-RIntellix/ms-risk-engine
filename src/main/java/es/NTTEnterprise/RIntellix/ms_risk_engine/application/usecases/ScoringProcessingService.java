@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.ScoringResultMapper;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.input.ScoringProcessingPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ScoringResultPublisherPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategyFactory;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.ScoringProcessingPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
  * Application service that orchestrates scoring message processing.
  *
  * Responsibilities:
+ * - Evaluate hard-cutoff financial-ratio rules (DTI / LTV / LTI) before the
+ * AI model is invoked. If a rule fires, a rejected Scoring with PD=1 is
+ * published directly and the model call is skipped entirely.
  * - Obtain and normalize request type from scoring payload.
  * - Select a request-type strategy and trigger model execution.
  * - Map strategy execution result into a Scoring domain entity.
@@ -74,6 +77,8 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
         log.info(LogMessage.SCORING_MESSAGE_PROCESSING, requestId, requestType);
 
         try {
+            final long startTime = System.currentTimeMillis();
+
             // We get the strategy based on the request type.
             final ScoringModelExecutionStrategy strategy = ScoringModelExecutionStrategyFactory.createStrategy(
                     requestType,
@@ -83,22 +88,35 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
                     requestType,
                     requestId);
 
-            log.debug(LogMessage.MODEL_EXECUTION_RESULT, executionResult.toString());
+            final boolean isCutoff = isHardCutoffResult(executionResult);
+            final String actualModelVersion = isCutoff ? "RULE_ENGINE_v1" : modelVersion;
 
             final Scoring scoring = scoringResultMapper.toScoring(
                     requestId,
-                    modelVersion,
+                    actualModelVersion,
                     executionResult.getModelRequestPayload(),
                     executionResult.getPredictionResult(),
                     executionResult.getRiskMetrics());
 
             scoringResultPublisher.publishScoringResult(scoring);
 
-            log.info(LogMessage.SCORING_PROCESSED_SUCCESSFULLY,
-                    requestId,
-                    scoring.getResults() == null ? null : scoring.getResults().getProbabilityOfDefault(),
-                    scoring.getResults() == null ? null : scoring.getResults().getRiskLevel(),
-                    scoring.getExplainability() == null ? 0 : scoring.getExplainability().size());
+            final long endTime = System.currentTimeMillis();
+            log.info(LogMessage.SCORING_EXECUTION_TIME, (endTime - startTime), requestId);
+
+            // Log different messages based on whether the result is a hard cutoff
+            if (isCutoff) {
+                log.info(LogMessage.SCORING_HARD_CUTOFF_PERSISTED,
+                        requestId,
+                        scoring.getResults() != null ? scoring.getResults().getExposureAtDefault() : 0.0,
+                        scoring.getResults() != null ? scoring.getResults().getLossGivenDefault() : 0.0,
+                        scoring.getResults() != null ? scoring.getResults().getExpectedCalculatedLoss() : 0.0);
+            } else {
+                log.info(LogMessage.SCORING_PROCESSED_SUCCESSFULLY,
+                        requestId,
+                        scoring.getResults() == null ? null : scoring.getResults().getProbabilityOfDefault(),
+                        scoring.getResults() == null ? null : scoring.getResults().getRiskLevel(),
+                        scoring.getExplainability() == null ? 0 : scoring.getExplainability().size());
+            }
             return true;
         } catch (RuntimeException ex) {
             log.error(LogMessage.ERROR_PROCESSING_SCORING_MESSAGE, requestId, requestType, ex.getMessage(), ex);
@@ -106,4 +124,14 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
         }
     }
 
+    // TODO: Analyze if this doesn't break single responsability principle.
+    private boolean isHardCutoffResult(final ScoringModelExecutionResultDTO executionResult) {
+        return executionResult != null
+                && executionResult.getPredictionResult() != null
+                && executionResult.getPredictionResult().getShapExplanations() != null
+                && !executionResult.getPredictionResult().getShapExplanations().isEmpty()
+                && executionResult.getPredictionResult().getShapExplanations().get(0).getDescription() != null
+                && executionResult.getPredictionResult().getShapExplanations().get(0).getDescription()
+                        .startsWith("Hard-cutoff rule");
+    }
 }

@@ -32,6 +32,7 @@ public class ScoringGenerationRequest extends ScoringGenerationPayload {
 
     // Financial features
     private Double annualIncome;
+    private Double existingObligations;
 
     // Loan/Request features
     private String purpose;
@@ -83,7 +84,7 @@ public class ScoringGenerationRequest extends ScoringGenerationPayload {
             final Integer age, final String gender,
             final String maritalStatus, final String education, final Integer dependents,
             final String homeOwnership, final Boolean hasMortgage, final String employmentStatus,
-            final String occupationSector, final Double annualIncome, final String purpose,
+            final String occupationSector, final Double annualIncome, final Double existingObligations, final String purpose,
             final Double loanAmount, String loanType, final Integer termMonths, final Double interestRate,
             final Double ltv, final Double dti, final Integer previousLoansCount,
             final Integer previousDefaultsCount) {
@@ -99,6 +100,7 @@ public class ScoringGenerationRequest extends ScoringGenerationPayload {
         this.employmentStatus = employmentStatus;
         this.occupationSector = occupationSector;
         this.annualIncome = annualIncome;
+        this.existingObligations = existingObligations;
         this.purpose = purpose;
         this.loanAmount = loanAmount;
         this.termMonths = termMonths;
@@ -200,6 +202,14 @@ public class ScoringGenerationRequest extends ScoringGenerationPayload {
         this.annualIncome = annualIncome;
     }
 
+    public Double getExistingObligations() {
+        return existingObligations;
+    }
+
+    public void setExistingObligations(Double existingObligations) {
+        this.existingObligations = existingObligations;
+    }
+
     public String getPurpose() {
         return purpose;
     }
@@ -286,6 +296,7 @@ public class ScoringGenerationRequest extends ScoringGenerationPayload {
                 ", employmentStatus='" + employmentStatus + '\'' +
                 ", occupationSector='" + occupationSector + '\'' +
                 ", annualIncome=" + annualIncome +
+                ", existingObligations=" + existingObligations +
                 ", purpose='" + purpose + '\'' +
                 ", loanAmount=" + loanAmount +
                 ", termMonths=" + termMonths +

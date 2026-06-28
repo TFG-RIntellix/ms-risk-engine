@@ -162,14 +162,20 @@ public class RiskMetricsCalculationService {
                                 fullMetrics.getRiskLevel());
 
                 // Step 5: Calculate and attach financial metrics
+                Double existingObligations = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
+                double existingMonthly = existingObligations != null ? existingObligations / 12.0 : 0.0;
+
+                Double rawRate = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE);
+                double simRate = rawRate != null ? rawRate * 100.0 : 0.0;
+
                 final FinancialMetrics financialMetrics = financialMetricsCalculationService.calculateFinancialMetrics(
                                 context.requestType(),
                                 isRevolving,
                                 amount,
-                                (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE),
+                                simRate,
                                 (Integer) modelPayload.get(ModelPayloadFieldNames.FIELD_TERM_MONTHS),
                                 (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME),
-                                0.0);
+                                existingMonthly);
 
                 fullMetrics.setFinancialMetrics(financialMetrics);
                 log.debug(LogMessage.FINANCIAL_METRICS_ATTACHED,

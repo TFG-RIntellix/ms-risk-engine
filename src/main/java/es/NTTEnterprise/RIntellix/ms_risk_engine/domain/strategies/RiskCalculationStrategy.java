@@ -22,51 +22,6 @@ public interface RiskCalculationStrategy {
     RiskMetrics calculatePrePdMetrics(Double requestedAmount, Double ltv);
 
     /**
-     * Assemble full RiskMetrics combining model PD with pre-PD metrics (EAD, LGD)
-     * and calculating ECL and risk grade using the provided calculator.
-     *
-     * A default implementation is provided so concrete strategies only need to
-     * implement pre-PD computation and support resolution.
-     */
-    default RiskMetrics assembleFullMetricsWithGradeCalculator(
-            final Double probabilityOfDefault,
-            final RiskMetrics prePdMetrics,
-            final Double amount,
-            final Double annualIncome,
-            final Integer termMonths,
-            final Double interestRate,
-            final RiskGradeCalculator riskGradeCalculator) {
-
-        final double pd = MathUtilities.roundIntermediate(probabilityOfDefault == null ? 0.0 : probabilityOfDefault);
-        final double ead = MathUtilities
-                .roundIntermediate(prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
-                        ? 0.0
-                        : prePdMetrics.getExposureAtDefault());
-        final double lgd = MathUtilities
-                .roundIntermediate(prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
-                        ? 0.0
-                        : prePdMetrics.getLossGivenDefault());
-
-        final double ecl = MathUtilities.roundFinal(pd * lgd * ead);
-
-        final RiskMetrics metrics = new RiskMetrics();
-        metrics.setProbabilityOfDefault(pd);
-        metrics.setExposureAtDefault(ead);
-        metrics.setLossGivenDefault(lgd);
-        metrics.setExpectedCalculatedLoss(ecl);
-
-        try {
-            final RiskGrade grade = riskGradeCalculator.calculateRiskGrade(pd);
-            metrics.setRiskLevel(grade.name());
-        } catch (Exception ex) {
-            // In case of any grade calculation issue, leave risk level null
-            metrics.setRiskLevel(null);
-        }
-
-        return metrics;
-    }
-
-    /**
      * Assemble full RiskMetrics with both risk and financial metrics.
      * 
      * Combines model PD with pre-PD metrics (EAD, LGD), calculates ECL and risk
@@ -131,6 +86,51 @@ public interface RiskCalculationStrategy {
         riskMetrics.setFinancialMetrics(financialMetrics);
 
         return riskMetrics;
+    }
+
+    /**
+     * Assemble full RiskMetrics combining model PD with pre-PD metrics (EAD, LGD)
+     * and calculating ECL and risk grade using the provided calculator.
+     *
+     * A default implementation is provided so concrete strategies only need to
+     * implement pre-PD computation and support resolution.
+     */
+    default RiskMetrics assembleFullMetricsWithGradeCalculator(
+            final Double probabilityOfDefault,
+            final RiskMetrics prePdMetrics,
+            final Double amount,
+            final Double annualIncome,
+            final Integer termMonths,
+            final Double interestRate,
+            final RiskGradeCalculator riskGradeCalculator) {
+
+        final double pd = MathUtilities.roundIntermediate(probabilityOfDefault == null ? 0.0 : probabilityOfDefault);
+        final double ead = MathUtilities
+                .roundIntermediate(prePdMetrics == null || prePdMetrics.getExposureAtDefault() == null
+                        ? 0.0
+                        : prePdMetrics.getExposureAtDefault());
+        final double lgd = MathUtilities
+                .roundIntermediate(prePdMetrics == null || prePdMetrics.getLossGivenDefault() == null
+                        ? 0.0
+                        : prePdMetrics.getLossGivenDefault());
+
+        final double ecl = MathUtilities.roundFinal(pd * lgd * ead);
+
+        final RiskMetrics metrics = new RiskMetrics();
+        metrics.setProbabilityOfDefault(pd);
+        metrics.setExposureAtDefault(ead);
+        metrics.setLossGivenDefault(lgd);
+        metrics.setExpectedCalculatedLoss(ecl);
+
+        try {
+            final RiskGrade grade = riskGradeCalculator.calculateRiskGrade(pd);
+            metrics.setRiskLevel(grade.name());
+        } catch (Exception ex) {
+            // In case of any grade calculation issue, leave risk level null
+            metrics.setRiskLevel(null);
+        }
+
+        return metrics;
     }
 
 }

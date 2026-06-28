@@ -2,7 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.RiskCalculationDefaults;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculationDefaults;
 
 /**
  * Risk calculation strategy for revolving credit cards.

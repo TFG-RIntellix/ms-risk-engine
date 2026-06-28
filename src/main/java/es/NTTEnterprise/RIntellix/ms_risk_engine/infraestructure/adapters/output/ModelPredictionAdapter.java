@@ -15,6 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.handler.ModelPredictionErrorHandler;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infraestructure.adapters.output.util.ModelPayloadUtil;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -79,10 +80,13 @@ public class ModelPredictionAdapter implements ModelPredictionPort {
 
             log.info(LogMessage.INVOKING_MODEL_PREDICTION, requestId, modelEndpointPath);
 
+            final Map<String, Object> cleanedPayload = new java.util.HashMap<>(modelPayload);
+            cleanedPayload.remove(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
+
             return webClient.post()
                     .uri(modelEndpointPath)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(modelPayload)
+                    .bodyValue(cleanedPayload)
                     .retrieve()
                     .bodyToMono(ModelPredictionResponseDTO.class)
                     .toFuture()

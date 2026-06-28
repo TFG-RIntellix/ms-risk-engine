@@ -1,4 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.application.factories;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.utils.factories;
 
 import java.util.List;
 

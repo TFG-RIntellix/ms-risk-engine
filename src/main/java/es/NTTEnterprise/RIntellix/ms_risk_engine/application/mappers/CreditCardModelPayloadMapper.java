@@ -7,9 +7,11 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.CreditCardScoringGenerationRequest;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadUtilities;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 
 /**
  * Mapper for transforming credit card scoring requests into
@@ -25,10 +27,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadUtilities;
 public class CreditCardModelPayloadMapper {
 
         private final ModelPayloadUtilities payloadUtilities;
+        private final DtiCalculationService dtiCalculationService;
 
-        public CreditCardModelPayloadMapper(final ModelPayloadUtilities payloadUtilities) {
+        public CreditCardModelPayloadMapper(final ModelPayloadUtilities payloadUtilities,
+                        final DtiCalculationService dtiCalculationService) {
                 this.payloadUtilities = Objects.requireNonNull(payloadUtilities,
                                 LogMessage.MODEL_PAYLOAD_UTILITIES_CANNOT_BE_NULL);
+                this.dtiCalculationService = Objects.requireNonNull(dtiCalculationService,
+                                LogMessage.DTI_CALCULATION_SERVICE_CANNOT_BE_NULL);
         }
 
         /**
@@ -59,6 +65,7 @@ public class CreditCardModelPayloadMapper {
                 modelPayload.put(ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP,
                                 payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP,
                                                 request.getHomeOwnership()));
+                modelPayload.put(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS, request.getExistingObligations());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_DEPENDENTS, request.getDependents());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT, request.getCreditLimit());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_IS_REVOLVING,
@@ -66,10 +73,26 @@ public class CreditCardModelPayloadMapper {
                 modelPayload.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE,
                                 payloadUtilities.normalizeInterestRateToFraction(request.getInterestRate()));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_LTI, request.getLti());
-                modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, request.getDti());
+                modelPayload.put(ModelPayloadFieldNames.FIELD_DTI, calculateModelDti(request));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PREVIOUS_DEFAULTS_COUNT,
                                 request.getPreviousDefaultsCount());
 
                 return modelPayload;
+        }
+
+        // TODO: Move it to the class that corresponds. Breaks single responsability
+        // principle.
+        private double calculateModelDti(final CreditCardScoringGenerationRequest request) {
+                if (request == null) {
+                        return SimulationConstants.ZERO_VALUE;
+                }
+                final double annualIncome = SimulationConstants.getSafe(request.getAnnualIncome());
+                final double existingObligations = SimulationConstants.getSafe(request.getExistingObligations());
+                final double creditLimit = SimulationConstants.getSafe(request.getCreditLimit());
+                return dtiCalculationService.calculateModelDtiForCreditCardScoring(
+                                annualIncome,
+                                existingObligations,
+                                creditLimit,
+                                request.getIsRevolving());
         }
 }

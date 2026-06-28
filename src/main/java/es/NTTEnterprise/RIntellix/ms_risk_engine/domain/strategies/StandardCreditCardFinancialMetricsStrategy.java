@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.CreditCardFinancialMetricsCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,14 +43,14 @@ public class StandardCreditCardFinancialMetricsStrategy implements FinancialMetr
         // For standard cards, monthly payment is the full credit limit
         final double monthlyPayment = CreditCardFinancialMetricsCalculator.calculateStandardMonthlyPayment(amount);
         
-        // DTI does not include existing obligations here because they are added later in DtiCalculationService for new scoring
-        // However, for simulations, we calculate purely the new DTI based on this new payment
-        final double dti = CreditCardFinancialMetricsCalculator.calculateCreditCardDti(monthlyPayment, annualIncome);
+        final double safeExisting = existingObligations != null ? existingObligations : 0.0;
+        final double totalMonthlyObligations = safeExisting + monthlyPayment;
+        final double dti = CreditCardFinancialMetricsCalculator.calculateCreditCardDti(totalMonthlyObligations, annualIncome);
         
         final double totalPayment = amount; // Always pays exactly the limit
         final double totalInterest = 0.0; // Standard cards don't accrue interest if paid in full
         
-        final double disposableIncome = CreditCardFinancialMetricsCalculator.calculateCreditCardDisposableIncome(annualIncome, monthlyPayment);
+        final double disposableIncome = CreditCardFinancialMetricsCalculator.calculateCreditCardDisposableIncome(annualIncome, totalMonthlyObligations);
 
         log.debug(LogMessage.FINANCIAL_METRICS_CALCULATION_COMPLETE,
                 monthlyPayment, dti, totalPayment, totalInterest, disposableIncome);

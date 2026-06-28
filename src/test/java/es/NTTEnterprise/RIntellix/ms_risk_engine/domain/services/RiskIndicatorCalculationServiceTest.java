@@ -23,23 +23,19 @@ class RiskIndicatorCalculationServiceTest {
         Map<String, Object> baseSnapshot = new HashMap<>();
         baseSnapshot.put(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, 24000.0);
         baseSnapshot.put(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 10000.0);
-        baseSnapshot.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, 4.5);
+        baseSnapshot.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, 0.045);
         baseSnapshot.put(ModelPayloadFieldNames.FIELD_TERM_MONTHS, 24);
-        baseSnapshot.put(ModelPayloadFieldNames.FIELD_DTI, 0.4);
+        baseSnapshot.put(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS, 4362.24); // 363.52 * 12
 
         Map<String, Object> mergedVariables = new HashMap<>();
         mergedVariables.put(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, 36000.0);
         mergedVariables.put(ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 20000.0);
-        mergedVariables.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, 6.0);
+        mergedVariables.put(ModelPayloadFieldNames.FIELD_INTEREST_RATE, 0.06);
         mergedVariables.put(ModelPayloadFieldNames.FIELD_TERM_MONTHS, 36);
 
         service.recalculateRiskIndicators(mergedVariables, "PRESTAMO", baseSnapshot);
 
-        double baseMonthlyIncome = 24000.0 / SimulationConstants.MONTHS_PER_YEAR;
-        double baseMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(10000.0, 4.5, 24);
-        double baseTotalMonthlyObligations = 0.4 * baseMonthlyIncome;
-        double existingObligations = Math.max(baseTotalMonthlyObligations - baseMonthlyPayment,
-                SimulationConstants.ZERO_VALUE);
+        double existingObligations = 4362.24 / SimulationConstants.MONTHS_PER_YEAR;
 
         double newMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(20000.0, 6.0, 36);
         double newMonthlyIncome = 36000.0 / SimulationConstants.MONTHS_PER_YEAR;

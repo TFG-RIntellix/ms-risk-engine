@@ -3,6 +3,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 import java.util.Map;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.utils.MapUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
@@ -32,7 +33,7 @@ public class DtiCalculationService {
      */
     public double calculateModelDtiForScoring(
             final double annualIncome,
-            final double existingDtiRatio,
+            final double existingObligationsAnnual,
             final double loanAmount,
             final double interestRate,
             final Integer termMonths) {
@@ -40,43 +41,41 @@ public class DtiCalculationService {
             return SimulationConstants.ZERO_VALUE;
         }
 
+        final double existingMonthly = existingObligationsAnnual / SimulationConstants.MONTHS_PER_YEAR;
         final int safeTermMonths = termMonths == null ? SimulationConstants.MIN_TERM_MONTHS : termMonths;
         final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                 loanAmount,
                 interestRate,
                 safeTermMonths);
-        final double newLoanDtiRatio = FinancialMetricsCalculator.calculateDti(monthlyPayment, annualIncome);
-        return MathUtilities.roundFinal(existingDtiRatio + newLoanDtiRatio);
+        final double monthlyIncome = annualIncome / SimulationConstants.MONTHS_PER_YEAR;
+        return MathUtilities.roundFinal((existingMonthly + monthlyPayment) / monthlyIncome);
     }
 
     /**
-     * Calculates the model DTI for credit card scoring requests by adding existing DTI
+     * Calculates the model DTI for credit card scoring requests by adding existing
+     * DTI
      * and the new credit card DTI derived from the request parameters.
      *
-     * @param annualIncome     annual income used for DTI normalization.
-     * @param existingDtiRatio existing DTI ratio from the request payload.
-     * @param creditLimit      credit limit for the new card.
-     * @param isRevolving      whether the credit card is revolving.
+     * @param annualIncome              annual income used for DTI normalization.
+     * @param existingObligationsAnnual existing annual obligations.
+     * @param creditLimit               credit limit for the new card.
+     * @param isRevolving               whether the credit card is revolving.
      * @return the model DTI ratio to send to the AI model.
      */
     public double calculateModelDtiForCreditCardScoring(
             final double annualIncome,
-            final double existingDtiRatio,
+            final double existingObligationsAnnual,
             final double creditLimit,
             final Boolean isRevolving) {
         if (annualIncome <= SimulationConstants.ZERO_VALUE) {
             return SimulationConstants.ZERO_VALUE;
         }
 
-        double monthlyPayment;
-        if (Boolean.TRUE.equals(isRevolving)) {
-            monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateRevolvingMonthlyPayment(creditLimit);
-        } else {
-            monthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateStandardMonthlyPayment(creditLimit);
-        }
-        
-        final double newCcDtiRatio = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateCreditCardDti(monthlyPayment, annualIncome);
-        return MathUtilities.roundFinal(existingDtiRatio + newCcDtiRatio);
+        final double existingMonthly = existingObligationsAnnual / SimulationConstants.MONTHS_PER_YEAR;
+        final double monthlyPayment = CreditCardFinancialMetricsCalculator.calculateMonthlyPayment(creditLimit, isRevolving);
+
+        final double monthlyIncome = annualIncome / SimulationConstants.MONTHS_PER_YEAR;
+        return MathUtilities.roundFinal((existingMonthly + monthlyPayment) / monthlyIncome);
     }
 
     /**
@@ -110,54 +109,39 @@ public class DtiCalculationService {
             return SimulationConstants.ZERO_VALUE;
         }
 
-        final double baseAnnualIncome = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_ANNUAL_INCOME,
+        final double baseAnnualIncome = MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_ANNUAL_INCOME,
                 SimulationConstants.ZERO_VALUE);
         final double baseMonthlyIncome = baseAnnualIncome / SimulationConstants.MONTHS_PER_YEAR;
         if (baseMonthlyIncome <= SimulationConstants.ZERO_VALUE) {
             return SimulationConstants.ZERO_VALUE;
         }
 
-        final double baseLoanAmount = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT,
+        final double baseLoanAmount = MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT,
                 SimulationConstants.ZERO_VALUE);
-        final double baseCreditLimit = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT,
+        final double baseCreditLimit = MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT,
                 SimulationConstants.ZERO_VALUE);
-                
+
         double baseMonthlyPayment = 0.0;
-        
+
         // If it's a loan/mortgage
         if (baseLoanAmount > 0) {
-            final double baseInterestRate = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_INTEREST_RATE,
+            final double baseInterestRate = MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_INTEREST_RATE,
                     SimulationConstants.ZERO_VALUE);
-            final int baseTermMonths = (int) getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_TERM_MONTHS,
+            final int baseTermMonths = (int) MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_TERM_MONTHS,
                     SimulationConstants.MIN_TERM_MONTHS);
             baseMonthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                     baseLoanAmount, baseInterestRate, baseTermMonths);
-        } 
+        }
         // If it's a credit card
         else if (baseCreditLimit > 0) {
             final Boolean isRevolving = (Boolean) baseInputSnapshot.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
-            if (Boolean.TRUE.equals(isRevolving)) {
-                baseMonthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateRevolvingMonthlyPayment(baseCreditLimit);
-            } else {
-                baseMonthlyPayment = es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.calculateStandardMonthlyPayment(baseCreditLimit);
-            }
+            baseMonthlyPayment = CreditCardFinancialMetricsCalculator.calculateMonthlyPayment(baseCreditLimit, isRevolving);
         }
 
-        final double baseDti = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_DTI,
+        final double baseDti = MapUtilities.getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_DTI,
                 SimulationConstants.ZERO_VALUE);
         final double baseTotalMonthlyObligations = baseDti * baseMonthlyIncome;
         final double existingObligations = baseTotalMonthlyObligations - baseMonthlyPayment;
         return Math.max(existingObligations, SimulationConstants.ZERO_VALUE);
-    }
-
-    private double getDouble(final Map<String, Object> map, final String key, final double defaultValue) {
-        if (map == null || !map.containsKey(key)) {
-            return defaultValue;
-        }
-        final Object value = map.get(key);
-        if (value instanceof Number) {
-            return ((Number) value).doubleValue();
-        }
-        return defaultValue;
     }
 }

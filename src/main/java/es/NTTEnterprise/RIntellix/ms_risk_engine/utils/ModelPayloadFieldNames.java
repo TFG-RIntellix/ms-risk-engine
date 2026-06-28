@@ -88,6 +88,9 @@ public final class ModelPayloadFieldNames {
     /** Debt-to-income ratio field name in model payload. */
     public static final String FIELD_DTI = "dti";
 
+    /** Existing obligations field name in model payload. */
+    public static final String FIELD_EXISTING_OBLIGATIONS = "existingObligations";
+
     // ============================================================
     // CREDIT HISTORY FIELDS
     // ============================================================

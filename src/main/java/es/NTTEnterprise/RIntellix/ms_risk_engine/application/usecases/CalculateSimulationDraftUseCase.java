@@ -18,21 +18,15 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.Simu
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDraft;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.InvalidFormChangesException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ScoringNotFoundException;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.input.SimulationDraftPortService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.ports.input.SimulationDraftPortService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.FetchScoringPort;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.FinancialMetricsCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MapUtilities;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 import lombok.extern.slf4j.Slf4j;
 
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
-
 /**
- * // TODO: need to do it as hexagonal don't know why it is not being done.
  * Use case that orchestrates stateless simulation draft calculations.
  *
  * Implements the SimulationDraftPortService (domain input port) to properly

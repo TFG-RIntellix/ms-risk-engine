@@ -42,4 +42,16 @@ public final class MathUtilities {
         }
         return BigDecimal.valueOf(value).setScale(4, RoundingMode.HALF_UP).doubleValue();
     }
+
+    /**
+     * Calculates the absolute difference between two values and rounds to 2 decimal places.
+     * Useful for computing simulation deltas cleanly.
+     * 
+     * @param simValue the simulated value
+     * @param baseValue the base value
+     * @return the absolute rounded difference
+     */
+    public static double calculateAbsoluteDelta(final double simValue, final double baseValue) {
+        return Math.abs(roundFinal(simValue - baseValue));
+    }
 }

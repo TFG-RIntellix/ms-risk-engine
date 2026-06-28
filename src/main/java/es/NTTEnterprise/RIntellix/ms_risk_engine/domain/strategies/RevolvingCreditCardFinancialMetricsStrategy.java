@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.CreditCardFinancialMetricsCalculator.RevolvingSimulationResult;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.CreditCardFinancialMetricsCalculator;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.CreditCardFinancialMetricsCalculator.RevolvingSimulationResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,12 +45,14 @@ public class RevolvingCreditCardFinancialMetricsStrategy implements FinancialMet
         // For revolving cards, monthly payment estimated using standard DTI heuristic
         final double monthlyPayment = CreditCardFinancialMetricsCalculator.calculateRevolvingMonthlyPayment(amount);
         
-        final double dti = CreditCardFinancialMetricsCalculator.calculateCreditCardDti(monthlyPayment, annualIncome);
+        final double safeExisting = existingObligations != null ? existingObligations : 0.0;
+        final double totalMonthlyObligations = safeExisting + monthlyPayment;
+        final double dti = CreditCardFinancialMetricsCalculator.calculateCreditCardDti(totalMonthlyObligations, annualIncome);
         
         // Calculate total interest and total payment using the iterative algorithm
         final RevolvingSimulationResult simulationResult = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(amount, interestRate);
         
-        final double disposableIncome = CreditCardFinancialMetricsCalculator.calculateCreditCardDisposableIncome(annualIncome, monthlyPayment);
+        final double disposableIncome = CreditCardFinancialMetricsCalculator.calculateCreditCardDisposableIncome(annualIncome, totalMonthlyObligations);
 
         log.debug(LogMessage.FINANCIAL_METRICS_CALCULATION_COMPLETE,
                 monthlyPayment, dti, simulationResult.totalPayment(), simulationResult.totalInterest(), disposableIncome);

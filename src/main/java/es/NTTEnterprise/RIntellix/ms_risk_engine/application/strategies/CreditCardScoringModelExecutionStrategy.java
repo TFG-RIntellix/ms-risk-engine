@@ -1,5 +1,6 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies;
 
+import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
 
@@ -11,8 +12,10 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.CreditCardModelPayloadMapper;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.HardCutoffRuleEvaluator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.HardCutoffRejection;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
@@ -39,6 +42,7 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
 
         private final CreditCardModelPayloadMapper payloadMapper;
         private final RiskMetricsCalculationService metricsCalculationService;
+        private final HardCutoffRuleEvaluator hardCutoffRuleEvaluator;
         private final String predictCreditCardPath;
 
         /**
@@ -48,14 +52,18 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
          *                                  payload.
          * @param metricsCalculationService the service that orchestrates risk metric
          *                                  calculation.
+         * @param hardCutoffRuleEvaluator   the domain service for hard-cutoff rule
+         *                                  evaluation.
          * @param predictCreditCardPath     the model endpoint path for credit cards.
          */
         public CreditCardScoringModelExecutionStrategy(
                         final CreditCardModelPayloadMapper payloadMapper,
                         final RiskMetricsCalculationService metricsCalculationService,
+                        final HardCutoffRuleEvaluator hardCutoffRuleEvaluator,
                         @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") final String predictCreditCardPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
+                this.hardCutoffRuleEvaluator = Objects.requireNonNull(hardCutoffRuleEvaluator);
                 this.predictCreditCardPath = Objects.requireNonNull(predictCreditCardPath);
         }
 
@@ -81,6 +89,22 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                 // Step 1: Map payload to model request format
                 final Map<String, Object> modelRequestPayload = payloadMapper.toModelPayload(request, requestType);
 
+                // Step 1.5: Evaluate mapped hard-cutoff rules
+                final Optional<HardCutoffRejection> rejectionOpt = hardCutoffRuleEvaluator.evaluateRules(
+                                modelRequestPayload,
+                                requestType,
+                                requestId);
+                if (rejectionOpt.isPresent()) {
+                        final HardCutoffRejection rejection = rejectionOpt.get();
+                        final ModelPredictionResult prediction = new ModelPredictionResult(
+                                        1.0,
+                                        "HIGH",
+                                        0.0,
+                                        rejection.getExplainability());
+                        return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction,
+                                        rejection.getRiskMetrics());
+                }
+
                 // Step 2: Get isRevolving flag to select correct strategy (Standard vs
                 // Revolving)
                 // This flag is needed to resolve the correct risk calculation strategy
@@ -104,8 +128,8 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
                 final RiskMetrics fullMetrics = result.riskMetrics();
                 final ModelPredictionResult prediction = result.modelPredictionResult();
 
-                log.info(LogMessage.MODEL_EXECUTION_RESULT,
-                                "Credit card scoring completed with PD=" + fullMetrics.getProbabilityOfDefault());
+                log.info(LogMessage.MODEL_EXECUTION_RESULT_CREDIT_CARD,
+                                fullMetrics.getProbabilityOfDefault());
 
                 return new ScoringModelExecutionResultDTO(modelRequestPayload, prediction, fullMetrics);
         }
