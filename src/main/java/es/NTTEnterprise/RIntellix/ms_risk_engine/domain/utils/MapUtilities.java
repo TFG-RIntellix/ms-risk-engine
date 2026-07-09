@@ -51,4 +51,28 @@ public final class MapUtilities {
                     String.format("Invalid numeric value for key '%s': '%s'", key, value), ex);
         }
     }
+
+    /**
+     * Safely extracts a boolean value from a map with a default fallback.
+     * Handles Boolean types and "Si"/"true" string representations.
+     *
+     * @param source       the map to extract from.
+     * @param key          the key to look up.
+     * @param defaultValue the default value if key not found or value is null.
+     * @return the boolean value.
+     */
+    public static boolean getBoolean(final Map<String, Object> source, final String key, final boolean defaultValue) {
+        if (source == null || !source.containsKey(key) || source.get(key) == null) {
+            return defaultValue;
+        }
+        final Object value = source.get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            final String str = (String) value;
+            return "true".equalsIgnoreCase(str) || "si".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str);
+        }
+        return defaultValue;
+    }
 }

@@ -84,7 +84,7 @@ public class SimulationModelPayloadMapper {
         }
 
         if (ModelPayloadFieldNames.FIELD_IS_REVOLVING.equals(fieldName) && value instanceof Boolean boolValue) {
-            return String.valueOf(boolValue);
+            return payloadUtilities.toModelBoolean(boolValue);
         }
 
         if (value instanceof String stringValue && isEnumField(fieldName)) {
@@ -104,6 +104,7 @@ public class SimulationModelPayloadMapper {
                 || "occupationSector".equals(fieldName)
                 || "homeOwnership".equals(fieldName)
                 || "loanType".equals(fieldName)
-                || "purpose".equals(fieldName);
+                || "purpose".equals(fieldName)
+                || "incomeType".equals(fieldName);
     }
 }

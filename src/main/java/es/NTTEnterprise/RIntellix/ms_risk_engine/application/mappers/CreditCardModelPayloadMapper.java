@@ -61,7 +61,9 @@ public class CreditCardModelPayloadMapper {
                 modelPayload.put(ModelPayloadFieldNames.FIELD_EMPLOYMENT_SENIORITY_YEARS,
                                 request.getEmploymentSeniorityYears());
                 modelPayload.put(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, request.getAnnualIncome());
-                modelPayload.put(ModelPayloadFieldNames.FIELD_INCOME_TYPE, request.getIncomeType());
+                modelPayload.put(ModelPayloadFieldNames.FIELD_INCOME_TYPE,
+                                payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_INCOME_TYPE,
+                                                request.getIncomeType()));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP,
                                 payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP,
                                                 request.getHomeOwnership()));

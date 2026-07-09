@@ -13,6 +13,19 @@ public class ValidSimulationFormChangesValidator
         if (value == null || value.isEmpty()) {
             return true;
         }
-        return value.keySet().stream().allMatch(SimulationFormFieldNames.ALLOWED_FIELD_NAMES::contains);
+        java.util.List<String> unsupportedFields = value.keySet().stream()
+                .filter(key -> !SimulationFormFieldNames.ALLOWED_FIELD_NAMES.contains(key))
+                .collect(java.util.stream.Collectors.toList());
+
+        if (unsupportedFields.isEmpty()) {
+            return true;
+        }
+
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+                context.getDefaultConstraintMessageTemplate() + ": " + unsupportedFields)
+                .addConstraintViolation();
+
+        return false;
     }
 }

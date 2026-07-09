@@ -80,7 +80,7 @@ public class RiskIndicatorCalculationService {
             // Step 1: Recalculate DTI based on new parameters and existing obligations
             double monthlyPayment = 0.0;
             if (isCreditCard(requestType)) {
-                final Boolean isRevolving = (Boolean) mergedVariables.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
+                final Boolean isRevolving = MapUtilities.getBoolean(mergedVariables, ModelPayloadFieldNames.FIELD_IS_REVOLVING, false);
                 monthlyPayment = CreditCardFinancialMetricsCalculator.calculateMonthlyPayment(creditLimit, isRevolving);
             } else {
                 // TODO: Not hardcoding values, do it properly, also check how will be
