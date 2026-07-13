@@ -1,5 +1,7 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
+import java.util.Map;
+
 /**
  * Constants for model payload field names used in mapper classes.
  * Centralizes all English field names to prevent hardcoding and enable easy
@@ -128,5 +130,20 @@ public final class ModelPayloadFieldNames {
 
     /** LTI field name in credit card model payload. */
     public static final String FIELD_LTI = "lti";
+
+    // ============================================================
+    // FIELD NAME ALIASES (database schema → canonical model names)
+    // ============================================================
+
+    /**
+     * Maps non-canonical field names (from database snapshots or external sources)
+     * to their canonical model payload field names.
+     * Used by mappers to normalize input at the adapter boundary.
+     */
+    public static final Map<String, String> FIELD_ALIASES = Map.of(
+            "workSector", FIELD_OCCUPATION_SECTOR,
+            "nrDependants", FIELD_DEPENDENTS,
+            "requestType", FIELD_LOAN_TYPE,
+            "requestedAmount", FIELD_LOAN_AMOUNT);
 
 }

@@ -7,14 +7,19 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Financia
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.ModelInputs;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.NamingConverter;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +37,13 @@ import java.util.stream.Collectors;
  */
 @Component
 public class ScoringMapper {
+
+    private final NamingConverter namingConverter;
+
+    public ScoringMapper(final NamingConverter namingConverter) {
+        this.namingConverter = Objects.requireNonNull(namingConverter,
+                LogMessage.NAMING_CONVERTER_CANNOT_BE_NULL);
+    }
 
     /**
      * Maps a ScoringDTO object to a Scoring entity.
@@ -144,6 +156,8 @@ public class ScoringMapper {
      * them into a
      * ModelInputs entity that encapsulates the features in a format suitable for
      * the domain layer.
+     * Keys are normalized from snake_case to camelCase and non-canonical aliases
+     * are resolved to their canonical model field names.
      * 
      * @param scoringDTO The ScoringDTO containing the input features to be mapped.
      * @return A ModelInputs entity populated with the features from the ScoringDTO.
@@ -154,9 +168,31 @@ public class ScoringMapper {
         if (scoringDTO.getInputFeatures() == null) {
             return new ModelInputs();
         }
-        ModelInputs modelInputs = new ModelInputs();
-        modelInputs.setFeatures((HashMap<String, Object>) scoringDTO.getInputFeatures());
+
+        final Map<String, Object> source = scoringDTO.getInputFeatures();
+        final HashMap<String, Object> normalized = new HashMap<>();
+
+        for (final Map.Entry<String, Object> entry : source.entrySet()) {
+            final String canonicalKey = resolveCanonicalFieldName(entry.getKey());
+            normalized.put(canonicalKey, entry.getValue());
+        }
+
+        final ModelInputs modelInputs = new ModelInputs();
+        modelInputs.setFeatures(normalized);
         return modelInputs;
+    }
+
+    /**
+     * Resolves a raw field name to its canonical model payload field name.
+     * First converts from snake_case to camelCase, then applies alias translations.
+     *
+     * @param rawFieldName The raw field name from the database snapshot.
+     * @return The canonical field name used in the domain layer.
+     */
+    private String resolveCanonicalFieldName(final String rawFieldName) {
+        final String camelCaseFieldName = namingConverter.toCamelCase(rawFieldName);
+        return ModelPayloadFieldNames.FIELD_ALIASES.getOrDefault(
+                camelCaseFieldName, camelCaseFieldName);
     }
 
 }

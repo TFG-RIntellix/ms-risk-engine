@@ -22,11 +22,6 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.NamingConverter;
 @Component
 public class SimulationModelPayloadMapper {
 
-    private static final Map<String, String> FIELD_ALIASES = Map.of(
-            "workSector", ModelPayloadFieldNames.FIELD_OCCUPATION_SECTOR,
-            "nrDependants", ModelPayloadFieldNames.FIELD_DEPENDENTS,
-            "requestType", ModelPayloadFieldNames.FIELD_LOAN_TYPE);
-
     private final ModelPayloadUtilities payloadUtilities;
     private final NamingConverter namingConverter;
 
@@ -67,7 +62,7 @@ public class SimulationModelPayloadMapper {
 
     private String resolveCanonicalFieldName(final String rawFieldName) {
         final String camelCaseFieldName = namingConverter.toCamelCase(rawFieldName);
-        return FIELD_ALIASES.getOrDefault(camelCaseFieldName, camelCaseFieldName);
+        return ModelPayloadFieldNames.FIELD_ALIASES.getOrDefault(camelCaseFieldName, camelCaseFieldName);
     }
 
     private Object normalizeValue(final String fieldName, final Object value) {
