@@ -11,8 +11,8 @@ import java.util.Objects;
  * Stores model metadata, model input snapshot, risk metrics,
  * and explainability top features.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-25-2026
+ * @author Lucía Fernández Mancebo
+ * @date 25/04/2026
  */
 public class Scoring {
 

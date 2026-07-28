@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
  * Request DTO for simulation draft calculation.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public class CalculateSimulationDraftRequestDTO {
 

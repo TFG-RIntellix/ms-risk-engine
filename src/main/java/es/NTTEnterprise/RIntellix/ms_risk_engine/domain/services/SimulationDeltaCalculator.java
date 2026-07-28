@@ -23,7 +23,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
  * Extracts simulation delta logic into a domain service for better SRP and
  * testability.
  *
- * @author Lucia Fernandez Mancebo
+ * @author Lucía Fernández Mancebo
  */
 public class SimulationDeltaCalculator {
 

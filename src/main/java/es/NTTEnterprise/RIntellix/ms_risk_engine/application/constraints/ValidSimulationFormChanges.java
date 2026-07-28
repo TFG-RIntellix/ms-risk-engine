@@ -15,7 +15,7 @@ import jakarta.validation.Payload;
  * supported fields.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

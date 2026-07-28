@@ -10,7 +10,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
  * so that ms-core-data can persist the scoring result in MongoDB.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  */
 public interface ScoringResultPublisherPort {
 

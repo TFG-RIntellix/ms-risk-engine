@@ -7,7 +7,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  * model.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-18-2026
+ * @date 18/05/2026
  */
 public final class SimulationFieldNames {
 

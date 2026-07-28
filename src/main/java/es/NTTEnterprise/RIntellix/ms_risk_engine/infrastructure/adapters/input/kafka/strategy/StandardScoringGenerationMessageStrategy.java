@@ -11,8 +11,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.infrastructure.mappers.ScoringK
 /**
  * Strategy for standard loan and mortgage scoring generation messages.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-20-2026
+ * @author Lucía Fernández Mancebo
+ * @date 20/04/2026
  */
 @Component
 public class StandardScoringGenerationMessageStrategy implements ScoringGenerationMessageStrategy {

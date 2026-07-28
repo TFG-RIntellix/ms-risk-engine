@@ -36,7 +36,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
  * - Linger: 10ms (batch messages for efficiency)
  *
  * @author Lucía Fernández Mancebo
- * @Date 03-15-2026
+ * @date 15/03/2026
  */
 @Configuration
 @EnableKafka

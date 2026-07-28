@@ -11,6 +11,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelPredicti
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infrastructure.adapters.output.clients.MsModelClient;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 
+/**
+ * Core component: MsModelPredictPdAdapter.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 @Component
 public class MsModelPredictPdAdapter implements PredictPdPort {
 

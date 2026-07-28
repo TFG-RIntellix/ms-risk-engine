@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  * - Other exceptions: re-throws as-is or wrapped in RuntimeException
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 @Slf4j
 @Component

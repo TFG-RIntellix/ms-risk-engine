@@ -7,8 +7,8 @@ import java.util.Map;
  * Centralizes all English field names to prevent hardcoding and enable easy
  * maintenance.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 public final class ModelPayloadFieldNames {
 

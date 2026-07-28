@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * ignored during deserialization.
  *
  * @author Lucía Fernández Mancebo
- * @Date 06-09-2026
+ * @date 09/06/2026
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditCardScoringGenerationDTO {

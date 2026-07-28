@@ -14,7 +14,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculatio
  * LGD = 1 - Recovery Rate = 0.70 (European retail average for unsecured loans).
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public class LoanRiskCalculationStrategy implements RiskCalculationStrategy {
 

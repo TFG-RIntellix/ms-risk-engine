@@ -22,8 +22,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
  * number of months
  *
  * 
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  * 
  */
 public class LoanPaymentCalculator {

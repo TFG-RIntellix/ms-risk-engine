@@ -12,7 +12,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums;
  * risk, while a PD of 0.1% (1 in 1000 borrowers defaults) is very low risk.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public enum RiskGrade {
     A,

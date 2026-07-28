@@ -11,7 +11,7 @@ import java.util.Map;
  * request ID, and return the predicted PD as a Double.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 03-03-2026
+ * @date 03/03/2026
  */
 public interface PredictPdPort {
     Double predictPd(Map<String, Object> mergedVariables, String requestId);

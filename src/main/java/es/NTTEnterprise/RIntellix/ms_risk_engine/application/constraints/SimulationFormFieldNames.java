@@ -10,7 +10,7 @@ import java.util.Set;
  * are accepted in form changes.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-18-2026
+ * @date 18/05/2026
  */
 public final class SimulationFormFieldNames {
 

@@ -6,7 +6,7 @@ import java.util.Map;
  * Base scoring data fetched from ms-core-data for simulation comparison.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public class BaseScoringData {
     private final SimulationMetrics baseMetrics;

@@ -8,7 +8,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
  * the impact of the changes made in the input features on the risk assessment.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  *
  */
 public class SimulationDeltaResponseDTO {

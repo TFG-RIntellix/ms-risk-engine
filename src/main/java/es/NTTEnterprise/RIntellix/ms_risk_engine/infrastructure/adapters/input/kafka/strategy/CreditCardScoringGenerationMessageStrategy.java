@@ -17,8 +17,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.infrastructure.mappers.ScoringK
  * and then converts it into the application-layer
  * {@link CreditCardScoringGenerationRequest}.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-20-2026
+ * @author Lucía Fernández Mancebo
+ * @date 20/04/2026
  */
 @Component
 public class CreditCardScoringGenerationMessageStrategy implements ScoringGenerationMessageStrategy {

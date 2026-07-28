@@ -6,8 +6,8 @@ import java.math.RoundingMode;
 /**
  * Utility class for mathematical operations, such as rounding.
  * 
- * @author Lucia Fernandez Mancebo
- * @Date 05-30-2026
+ * @author Lucía Fernández Mancebo
+ * @date 30/05/2026
  */
 public final class MathUtilities {
 

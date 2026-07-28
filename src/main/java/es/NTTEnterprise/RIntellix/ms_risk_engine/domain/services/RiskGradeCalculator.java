@@ -18,8 +18,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculatio
  * Risk Grade Algorithm:
  * 1. Base grade from PD thresholds (A/B/C/D/E/F/G)
  * 
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 public class RiskGradeCalculator {
 

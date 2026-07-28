@@ -8,7 +8,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
  * computation messages and persisting their results.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 03-21-2026
+ * @date 21/03/2026
  */
 public interface ScoringProcessingPortService {
 

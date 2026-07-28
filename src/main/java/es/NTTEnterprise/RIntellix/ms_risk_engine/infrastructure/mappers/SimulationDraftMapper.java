@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
  * - Domain calculations remain in application/domain layers
  * - API contract formatting remains in infrastructure layer
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 @Slf4j
 @Component

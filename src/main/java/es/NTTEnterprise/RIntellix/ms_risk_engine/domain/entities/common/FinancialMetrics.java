@@ -16,7 +16,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common;
  * payment
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-26-2026
+ * @date 26/05/2026
  */
 public class FinancialMetrics {
 

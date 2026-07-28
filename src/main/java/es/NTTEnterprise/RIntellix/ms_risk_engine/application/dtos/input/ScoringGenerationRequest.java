@@ -11,7 +11,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
  * project.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 03-15-2026
+ * @date 15/03/2026
  */
 public class ScoringGenerationRequest extends ScoringGenerationPayload {
 

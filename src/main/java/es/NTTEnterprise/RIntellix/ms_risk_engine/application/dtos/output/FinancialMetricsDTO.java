@@ -4,7 +4,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
  * Output DTO representing financial affordability metrics for API transport.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-26-2026
+ * @date 26/05/2026
  */
 public class FinancialMetricsDTO {
 

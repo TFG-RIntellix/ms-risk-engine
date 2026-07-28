@@ -23,17 +23,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Mapper class responsible for converting ScoringDTO objects into Scoring
- * entities.
- * This class serves as a bridge between the data transfer objects (DTOs)
- * used for communication with external services and the domain entities
- * used within the application.
- * It encapsulates the logic for mapping the fields from the ScoringDTO to the
- * Scoring entity,
- * including the risk metrics, explainability features, and input snapshot.
+ * Orchestrates the transformation of inbound data transfer objects (ScoringDTO)
+ * into the canonical domain entities (Scoring) required by the risk engine.
+ * This component acts as an anti-corruption layer, ensuring that external data
+ * structures
+ * are correctly parsed, normalized (e.g., resolving field aliases), and
+ * validated before
+ * entering the core domain logic.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 @Component
 public class ScoringMapper {
@@ -46,21 +45,15 @@ public class ScoringMapper {
     }
 
     /**
-     * Maps a ScoringDTO object to a Scoring entity.
-     * This method takes a ScoringDTO, which is a data transfer object typically
-     * used for
-     * communication with external services, and converts it into a Scoring entity
-     * that is used
-     * within the domain layer of the application. The mapping includes transferring
-     * basic fields,
-     * as well as converting the risk metrics, explainability features, and input
-     * snapshot into
-     * their corresponding domain representations.
+     * Constructs a valid domain Scoring entity from external API input.
+     * This process includes parsing timestamps to domain-compatible dates, mapping
+     * nested risk metrics, and translating the raw input snapshot features into
+     * canonical domain properties.
      * 
-     * @param scoringDTO The ScoringDTO object to be mapped, containing the data
-     *                   retrieved from an external source.
-     * @return A Scoring entity populated with the data from the ScoringDTO.
-     *         If the input ScoringDTO is null, null is returned.
+     * @param scoringDTO The inbound payload containing raw scoring data and
+     *                   results.
+     * @return A fully populated Scoring domain entity, or null if the input is
+     *         null.
      */
     public Scoring toDomain(ScoringDTO scoringDTO) {
 
@@ -77,10 +70,6 @@ public class ScoringMapper {
                     .atZone(ZoneId.systemDefault()).toInstant()));
         }
 
-        // NOTE: Scoring input snapshot uses model field names (mapped via
-        // LoanOrMortgageModelPayloadMapper during scoring generation).
-        // For simulation draft merges, SimulationModelPayloadMapper handles
-        // transformation of form changes from API to model field names.
         scoring.setModelVersion(scoringDTO.getModelVersion());
         scoring.setResults(mapRiskMetrics(scoringDTO));
         scoring.setExplainability(mapExplainability(scoringDTO.getTopFeatures()));
@@ -91,12 +80,11 @@ public class ScoringMapper {
     }
 
     /**
-     * Maps the risk metrics from the ScoringDTO to a RiskMetrics entity.
-     * This method extracts the relevant risk metrics (PD, LGD, EAD, ECL) from the
-     * ScoringDTO.
+     * Extracts and models the quantitative risk outcomes (PD, LGD, EAD, ECL)
+     * and associated financial metrics from the payload.
      * 
-     * @param scoringDTO The ScoringDTO containing the risk metrics to be mapped.
-     * @return A RiskMetrics entity populated with the values from the ScoringDTO.
+     * @param scoringDTO The inbound payload.
+     * @return Domain representation of the calculated risk metrics.
      */
     private RiskMetrics mapRiskMetrics(ScoringDTO scoringDTO) {
         RiskMetrics riskMetrics = new RiskMetrics();
@@ -121,18 +109,13 @@ public class ScoringMapper {
     }
 
     /**
-     * Maps the explainability features from the list of TopFeatureDTO to a list of
-     * RiskFeature entities.
-     * This method converts each TopFeatureDTO, which contains the feature name,
-     * value and SHAP value,
-     * into a RiskFeature entity that can be used in the domain layer.
+     * Transforms external SHAP data (explainability) into domain RiskFeature
+     * objects.
      * 
-     * @param featureImportanceDTOs The list of TopFeatureDTO objects representing
-     *                              the
-     *                              top contributing features and their SHAP values.
-     * @return A list of RiskFeature entities mapped from the provided
-     *         TopFeatureDTOs. If the input list is null, an empty list is returned.
-     *
+     * @param featureImportanceDTOs A list of top contributing features and their
+     *                              SHAP values.
+     * @return A list of RiskFeature entities, or an empty list if no explainability
+     *         data exists.
      */
     private List<RiskFeature> mapExplainability(List<TopFeatureDTO> featureImportanceDTOs) {
         if (featureImportanceDTOs == null) {
@@ -151,18 +134,12 @@ public class ScoringMapper {
     }
 
     /**
-     * Maps the input features from the ScoringDTO to a ModelInputs entity.
-     * This method takes the input features provided in the ScoringDTO and converts
-     * them into a
-     * ModelInputs entity that encapsulates the features in a format suitable for
-     * the domain layer.
-     * Keys are normalized from snake_case to camelCase and non-canonical aliases
-     * are resolved to their canonical model field names.
+     * Normalizes the raw request snapshot features into canonical ModelInputs.
+     * This is critical to ensure that legacy form keys (e.g. snake_case or aliases)
+     * are correctly resolved to the exact feature names the risk model expects.
      * 
-     * @param scoringDTO The ScoringDTO containing the input features to be mapped.
-     * @return A ModelInputs entity populated with the features from the ScoringDTO.
-     *         If the input features are null, an empty ModelInputs object is
-     *         returned.
+     * @param scoringDTO The inbound payload containing the raw user input snapshot.
+     * @return The normalized inputs ready for model evaluation or persistence.
      */
     private ModelInputs mapInputSnapshot(ScoringDTO scoringDTO) {
         if (scoringDTO.getInputFeatures() == null) {

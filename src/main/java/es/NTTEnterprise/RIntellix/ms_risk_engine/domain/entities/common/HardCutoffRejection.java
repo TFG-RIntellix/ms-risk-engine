@@ -6,8 +6,8 @@ import java.util.List;
  * Value object representing a hard-cutoff business rule rejection.
  * Contains domain risk metrics and explainability details.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 06-28-2026
+ * @author Lucía Fernández Mancebo
+ * @date 28/06/2026
  */
 public class HardCutoffRejection {
 

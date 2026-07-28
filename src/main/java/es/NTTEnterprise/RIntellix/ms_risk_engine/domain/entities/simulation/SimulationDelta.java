@@ -7,7 +7,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation;
  * the original scoring and a what-if simulation scenario.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  * @Updated 05-26-2026 - Added financial metrics delta tracking
  */
 public class SimulationDelta {

@@ -13,6 +13,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.FetchScorin
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ScoringNotFoundException;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.infrastructure.adapters.output.clients.MsCoreDataClient;
 
+/**
+ * Core component: MsCoreDataScoringAdapter.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 @Component
 public class MsCoreDataScoringAdapter implements FetchScoringPort {
 

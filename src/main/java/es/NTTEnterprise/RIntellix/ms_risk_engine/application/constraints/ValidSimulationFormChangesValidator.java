@@ -8,6 +8,14 @@ import java.util.Map;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+/**
+ * Core component: ValidSimulationFormChangesValidator.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 public class ValidSimulationFormChangesValidator
         implements ConstraintValidator<ValidSimulationFormChanges, Map<String, Object>> {
 

@@ -28,10 +28,6 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskGradeCalcul
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskIndicatorCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.SimulationDeltaCalculator;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RiskCalculationStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.LoanFinancialMetricsStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.StandardCreditCardFinancialMetricsStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RevolvingCreditCardFinancialMetricsStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadUtilities;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.NamingConverter;
@@ -39,12 +35,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.EnumNormalizer;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.BooleanConverter;
 
 /**
- * Configuration class that instantiates all application layer services as Spring Beans.
- * This keeps the application layer completely independent of the Spring framework
+ * Configuration class that instantiates all application layer services as
+ * Spring Beans.
+ * This keeps the application layer completely independent of the Spring
+ * framework
  * in accordance with Hexagonal Architecture.
  *
  * @author Lucía Fernández Mancebo
- * @Date 07-28-2026
+ * @date 28/07/2026
  */
 @Configuration
 public class ApplicationServicesConfig {
@@ -60,63 +58,16 @@ public class ApplicationServicesConfig {
     public BooleanConverter booleanConverter() {
         return new BooleanConverter();
     }
-    
+
     @Bean
-    public ModelPayloadUtilities modelPayloadUtilities(EnumNormalizer enumNormalizer, BooleanConverter booleanConverter) {
+    public ModelPayloadUtilities modelPayloadUtilities(EnumNormalizer enumNormalizer,
+            BooleanConverter booleanConverter) {
         return new ModelPayloadUtilities(enumNormalizer, booleanConverter);
     }
 
     @Bean
     public NamingConverter namingConverter() {
         return new NamingConverter();
-    }
-
-    @Bean
-    public DtiCalculationService dtiCalculationService() {
-        return new DtiCalculationService();
-    }
-
-    @Bean
-    public FinancialMetricsStrategy loanFinancialMetricsStrategy() {
-        return new LoanFinancialMetricsStrategy();
-    }
-
-    @Bean
-    public FinancialMetricsStrategy standardCreditCardFinancialMetricsStrategy() {
-        return new StandardCreditCardFinancialMetricsStrategy();
-    }
-
-    @Bean
-    public FinancialMetricsStrategy revolvingCreditCardFinancialMetricsStrategy() {
-        return new RevolvingCreditCardFinancialMetricsStrategy();
-    }
-
-    @Bean
-    public FinancialMetricsCalculationService financialMetricsCalculationService(
-            List<FinancialMetricsStrategy> strategies) {
-        return new FinancialMetricsCalculationService(strategies);
-    }
-
-    @Bean
-    public HardCutoffRuleEvaluator hardCutoffRuleEvaluator() {
-        return new HardCutoffRuleEvaluator();
-    }
-
-    @Bean
-    public RiskGradeCalculator riskGradeCalculator() {
-        return new RiskGradeCalculator();
-    }
-
-    @Bean
-    public RiskIndicatorCalculationService riskIndicatorCalculationService(
-            DtiCalculationService dtiCalculationService) {
-        return new RiskIndicatorCalculationService(dtiCalculationService);
-    }
-
-    @Bean
-    public SimulationDeltaCalculator simulationDeltaCalculator(
-            List<FinancialMetricsStrategy> strategies) {
-        return new SimulationDeltaCalculator(strategies);
     }
 
     // --- Mappers ---
@@ -161,7 +112,8 @@ public class ApplicationServicesConfig {
             RiskGradeCalculator riskGradeCalculator,
             FinancialMetricsCalculationService financialMetricsCalculationService,
             HardCutoffRuleEvaluator hardCutoffRuleEvaluator) {
-        return new RiskMetricsCalculationService(modelPredictionPort, riskCalculationStrategies, riskGradeCalculator, financialMetricsCalculationService, hardCutoffRuleEvaluator);
+        return new RiskMetricsCalculationService(modelPredictionPort, riskCalculationStrategies, riskGradeCalculator,
+                financialMetricsCalculationService, hardCutoffRuleEvaluator);
     }
 
     @Bean
@@ -169,7 +121,8 @@ public class ApplicationServicesConfig {
             LoanOrMortgageModelPayloadMapper loanOrMortgageModelPayloadMapper,
             RiskMetricsCalculationService riskMetricsCalculationService,
             @Value("${risk.model.predict-loan-path:/api/v1/risk/predict-loan}") String predictLoanPath) {
-        return new LoanOrMortgageScoringModelExecutionStrategy(loanOrMortgageModelPayloadMapper, riskMetricsCalculationService, predictLoanPath);
+        return new LoanOrMortgageScoringModelExecutionStrategy(loanOrMortgageModelPayloadMapper,
+                riskMetricsCalculationService, predictLoanPath);
     }
 
     @Bean
@@ -177,7 +130,8 @@ public class ApplicationServicesConfig {
             CreditCardModelPayloadMapper creditCardModelPayloadMapper,
             RiskMetricsCalculationService riskMetricsCalculationService,
             @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") String predictCreditCardPath) {
-        return new CreditCardScoringModelExecutionStrategy(creditCardModelPayloadMapper, riskMetricsCalculationService, predictCreditCardPath);
+        return new CreditCardScoringModelExecutionStrategy(creditCardModelPayloadMapper, riskMetricsCalculationService,
+                predictCreditCardPath);
     }
 
     @Bean
@@ -186,7 +140,8 @@ public class ApplicationServicesConfig {
             ScoringResultMapper scoringResultMapper,
             ScoringResultPublisherPort scoringResultPublisherPort,
             @Value("${risk.model.version:XGBoost_v1.0}") String modelVersion) {
-        return new ScoringProcessingService(scoringModelExecutionStrategies, scoringResultMapper, scoringResultPublisherPort, modelVersion);
+        return new ScoringProcessingService(scoringModelExecutionStrategies, scoringResultMapper,
+                scoringResultPublisherPort, modelVersion);
     }
 
     @Bean

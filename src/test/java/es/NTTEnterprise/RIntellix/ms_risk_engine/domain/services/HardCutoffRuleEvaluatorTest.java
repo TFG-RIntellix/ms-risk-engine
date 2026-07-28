@@ -64,6 +64,29 @@ class HardCutoffRuleEvaluatorTest {
         assertTrue(result.isPresent());
     }
 
+    @Test
+    @DisplayName("Should throw exception when DTI is negative")
+    void shouldThrowExceptionWhenDtiIsNegative() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(ModelPayloadFieldNames.FIELD_DTI, -0.01);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+            evaluator.evaluateRules(payload, "PRESTAMO", "REQ-1")
+        );
+        assertEquals("DTI cannot be negative", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not reject when DTI is at the threshold limit")
+    void shouldNotRejectWhenDtiAtThreshold() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(ModelPayloadFieldNames.FIELD_DTI, RiskCalculationDefaults.HARD_CUTOFF_DTI_THRESHOLD);
+
+        Optional<HardCutoffRejection> result = evaluator.evaluateRules(payload, "PRESTAMO", "REQ-1");
+
+        assertTrue(result.isEmpty());
+    }
+
     // ========== Rule 2: LTV (mortgage only) ==========
 
     @Test
@@ -91,6 +114,19 @@ class HardCutoffRuleEvaluatorTest {
         assertTrue(result.isEmpty(), "LTV rule should not apply to PRESTAMO");
     }
 
+    @Test
+    @DisplayName("Should throw exception when LTV is negative")
+    void shouldThrowExceptionWhenLtvIsNegative() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(ModelPayloadFieldNames.FIELD_DTI, 0.30);
+        payload.put(ModelPayloadFieldNames.FIELD_LTV, -0.05);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+            evaluator.evaluateRules(payload, "HIPOTECA", "REQ-1")
+        );
+        assertEquals("LTV cannot be negative", ex.getMessage());
+    }
+
     // ========== Rule 3: LTI (credit card only) ==========
 
     @Test
@@ -116,6 +152,19 @@ class HardCutoffRuleEvaluatorTest {
         Optional<HardCutoffRejection> result = evaluator.evaluateRules(payload, "PRESTAMO", "REQ-1");
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when LTI is negative")
+    void shouldThrowExceptionWhenLtiIsNegative() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(ModelPayloadFieldNames.FIELD_DTI, 0.30);
+        payload.put(ModelPayloadFieldNames.FIELD_LTI, -0.10);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+            evaluator.evaluateRules(payload, "TARJETA_CREDITO", "REQ-1")
+        );
+        assertEquals("LTI cannot be negative", ex.getMessage());
     }
 
     // ========== All rules pass ==========

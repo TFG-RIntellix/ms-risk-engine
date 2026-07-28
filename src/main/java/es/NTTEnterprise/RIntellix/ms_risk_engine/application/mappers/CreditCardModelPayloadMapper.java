@@ -20,8 +20,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  * Normalizes enum values and converts interest rate from percentage
  * to decimal fraction while preserving English field naming throughout.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-25-2026
+ * @author Lucía Fernández Mancebo
+ * @date 25/04/2026
  */
 
 public class CreditCardModelPayloadMapper {

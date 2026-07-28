@@ -10,7 +10,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions;
  * provided data.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public class ModelValidationException extends ModelPredictionException {
 

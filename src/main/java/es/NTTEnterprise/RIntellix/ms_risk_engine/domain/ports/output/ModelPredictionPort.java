@@ -14,7 +14,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPrediction
  * in the application layer.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  */
 public interface ModelPredictionPort {
 

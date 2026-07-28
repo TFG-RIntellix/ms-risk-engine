@@ -12,7 +12,7 @@ import java.util.Map;
  * and explainability top features.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  */
 public class ScoringResultMessageDTO {
 

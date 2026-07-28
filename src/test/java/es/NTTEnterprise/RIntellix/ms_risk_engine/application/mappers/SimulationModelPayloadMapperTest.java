@@ -46,7 +46,7 @@ class SimulationModelPayloadMapperTest {
         
         when(namingConverter.toCamelCase("loan_amount")).thenReturn("loanAmount");
         when(namingConverter.toCamelCase("interest_rate")).thenReturn("interestRate");
-        when(payloadUtilities.normalizeInterestRateToFraction(0.05)).thenReturn(0.05);
+        when(payloadUtilities.normalizeInterestRateToFraction(5.0)).thenReturn(0.05);
 
         Map<String, Object> result = mapper.normalizeBaseVariables(base);
 
@@ -54,7 +54,7 @@ class SimulationModelPayloadMapperTest {
         assertEquals(0.05, result.get("interestRate"));
         
         verify(namingConverter).toCamelCase("loan_amount");
-        verify(payloadUtilities).normalizeInterestRateToFraction(0.05);
+        verify(payloadUtilities).normalizeInterestRateToFraction(5.0);
     }
 
     @Test

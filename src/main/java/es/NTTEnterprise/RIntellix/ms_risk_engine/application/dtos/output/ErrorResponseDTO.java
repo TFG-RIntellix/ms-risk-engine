@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
  * Standard error response DTO used by GlobalExceptionHandler.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public class ErrorResponseDTO {
 

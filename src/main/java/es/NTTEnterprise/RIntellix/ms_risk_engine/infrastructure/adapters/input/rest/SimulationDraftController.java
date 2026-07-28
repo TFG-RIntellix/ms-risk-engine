@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * response format.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 03-15-2026
+ * @date 15/03/2026
  */
 @Slf4j
 @RestController

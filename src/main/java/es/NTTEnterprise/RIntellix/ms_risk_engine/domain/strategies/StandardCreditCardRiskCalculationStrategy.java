@@ -15,7 +15,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculatio
  * LGD = 0.80 (higher than loans due to revolving balance recovery difficulty).
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public class StandardCreditCardRiskCalculationStrategy implements RiskCalculationStrategy {
 

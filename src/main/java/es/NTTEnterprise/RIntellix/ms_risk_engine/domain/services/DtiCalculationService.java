@@ -16,7 +16,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  * responsibilities.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-30-2026
+ * @date 30/05/2026
  */
 public class DtiCalculationService {
 

@@ -5,7 +5,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
  * metadata and contribution value.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026S
+ * @date 26/04/2026S
  */
 public class RiskFeatureDTO {
 

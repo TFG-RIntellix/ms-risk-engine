@@ -11,7 +11,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.Simu
  * and external adapters in a hexagonal architecture.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public interface SimulationDraftPortService {
 

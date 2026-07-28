@@ -30,8 +30,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  * - termMonths: Loan term in months (null for credit cards)
  * - interestRate: Annual interest rate
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 public record RiskMetricsCalculationContext(
         Map<String, Object> modelPayload,

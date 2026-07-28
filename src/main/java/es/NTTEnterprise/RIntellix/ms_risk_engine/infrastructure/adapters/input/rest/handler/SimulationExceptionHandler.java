@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * without altering controller logic.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-30-2026
+ * @date 30/05/2026
  */
 @Slf4j
 @RestControllerAdvice

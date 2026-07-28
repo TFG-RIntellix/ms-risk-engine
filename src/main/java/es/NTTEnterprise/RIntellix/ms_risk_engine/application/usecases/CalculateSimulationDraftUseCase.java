@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * - Returns simulation draft with metrics and deltas
  *
  * @author Lucía Fernández Mancebo
- * @Date 03-15-2026
+ * @date 15/03/2026
  */
 @Slf4j
 

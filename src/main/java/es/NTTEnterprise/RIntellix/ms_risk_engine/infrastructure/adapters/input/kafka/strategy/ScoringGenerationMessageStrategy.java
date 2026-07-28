@@ -13,8 +13,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringG
  * strategies
  * that can recognize and map the incoming messages accordingly.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-20-2026
+ * @author Lucía Fernández Mancebo
+ * @date 20/04/2026
  */
 
 public interface ScoringGenerationMessageStrategy {

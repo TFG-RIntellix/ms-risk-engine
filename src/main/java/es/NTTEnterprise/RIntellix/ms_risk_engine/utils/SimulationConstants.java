@@ -4,7 +4,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  * Centralized constants for simulation draft calculations.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public final class SimulationConstants {
 

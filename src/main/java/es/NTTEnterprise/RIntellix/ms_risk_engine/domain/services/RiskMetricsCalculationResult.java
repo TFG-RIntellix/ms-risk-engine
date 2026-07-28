@@ -21,8 +21,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
  * - riskMetrics: The fully assembled risk metrics (includes PD, EAD, LGD, ECL,
  * risk grade)
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 public record RiskMetricsCalculationResult(
         ModelPredictionResult modelPredictionResult,

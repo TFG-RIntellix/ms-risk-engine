@@ -8,7 +8,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
  * total interest, and disposable income. Each field has corresponding getters and setters for easy access and modification.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public class SimulationMetricsResponseDTO {
     private Double pd;

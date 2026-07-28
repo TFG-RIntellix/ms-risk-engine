@@ -6,7 +6,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
  * for Kafka message transport.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  * @Updated 05-26-2026 - Added FinancialMetricsDTO
  */
 public class RiskMetricsDTO {

@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * as a Kafka message with requestId as the message key.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  */
 @Slf4j
 @Component

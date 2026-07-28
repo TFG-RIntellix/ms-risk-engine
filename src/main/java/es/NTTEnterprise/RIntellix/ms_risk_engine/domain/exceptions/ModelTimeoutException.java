@@ -8,7 +8,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions;
  * The model service may be overloaded or experiencing connectivity issues.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public class ModelTimeoutException extends ModelPredictionException {
 

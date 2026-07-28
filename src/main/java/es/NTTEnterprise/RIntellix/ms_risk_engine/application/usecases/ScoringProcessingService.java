@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
  * - Map strategy execution result into a Scoring domain entity.
  * - Publish the scoring result to Kafka for persistence.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-25-2026
+ * @author Lucía Fernández Mancebo
+ * @date 25/04/2026
  */
 @Slf4j
 

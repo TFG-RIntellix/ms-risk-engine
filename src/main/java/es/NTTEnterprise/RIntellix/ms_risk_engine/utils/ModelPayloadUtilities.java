@@ -17,8 +17,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  * - Translate English field names to the canonical model field names
  * - Provide common transformation utilities for all payload mappers
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 
 public class ModelPayloadUtilities {
@@ -52,16 +52,16 @@ public class ModelPayloadUtilities {
     }
 
     /**
-     * Normalizes the interest rate. It is assumed the input is already a decimal fraction (e.g. 0.2491 for 24.91%).
+     * Normalizes the interest rate from a percentage format (e.g., 24.91) to a decimal fraction format (e.g., 0.2491).
      *
-     * @param interestRate the interest rate in decimal fraction format.
-     * @return the interest rate as is, or null if input is null.
+     * @param interestRate the interest rate in percentage format.
+     * @return the interest rate as a fraction, or null if input is null.
      */
     public Double normalizeInterestRateToFraction(final Double interestRate) {
         if (interestRate == null) {
             return null;
         }
-        return interestRate;
+        return interestRate / SimulationConstants.PERCENTAGE_DIVISOR;
     }
 
 }

@@ -12,8 +12,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 /**
  * Mapper utility for inbound Kafka scoring payload conversion.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 04-20-2026
+ * @author Lucía Fernández Mancebo
+ * @date 20/04/2026
  */
 public final class ScoringKafkaRequestMapper {
 

@@ -30,6 +30,14 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Core component: KafkaConsumerConfig.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 @Slf4j
 @Configuration
 @EnableKafka

@@ -11,7 +11,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringD
  * Feign client for ms-core-data scoring endpoints.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 @FeignClient(name = "msCoreDataClient", url = "${ms-core-data.base-url:http://localhost:8081}")
 public interface MsCoreDataClient {

@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotNull;
  * duplication in the specific factories.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public class GenericStrategyFactory {
 

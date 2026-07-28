@@ -19,7 +19,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetr
  * in the domain layer.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-30-2026
+ * @date 30/05/2026
  */
 @Configuration
 public class DomainServicesConfig {
@@ -31,7 +31,8 @@ public class DomainServicesConfig {
      * @return FinancialMetricsCalculationService instance
      */
     @Bean
-    public FinancialMetricsCalculationService financialMetricsCalculationService(List<FinancialMetricsStrategy> strategies) {
+    public FinancialMetricsCalculationService financialMetricsCalculationService(
+            List<FinancialMetricsStrategy> strategies) {
         return new FinancialMetricsCalculationService(strategies);
     }
 

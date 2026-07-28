@@ -15,7 +15,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
  * Strategy Pattern for type-specific message transport.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-20-2026
+ * @date 20/04/2026
  */
 public class CreditCardScoringGenerationRequest extends ScoringGenerationPayload {
 

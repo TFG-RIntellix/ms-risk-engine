@@ -12,7 +12,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  * for better testability and reusability.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public final class ModelPayloadUtil {
 

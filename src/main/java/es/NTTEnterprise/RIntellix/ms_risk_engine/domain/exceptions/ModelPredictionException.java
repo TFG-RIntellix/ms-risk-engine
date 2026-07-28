@@ -8,7 +8,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions;
  * handle specific subtypes with fine-grained control.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public class ModelPredictionException extends RuntimeException {
 

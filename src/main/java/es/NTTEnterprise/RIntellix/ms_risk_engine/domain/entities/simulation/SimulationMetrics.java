@@ -4,7 +4,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation;
  * Value object representing simulation calculated metrics.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public class SimulationMetrics {
     private Double pd;

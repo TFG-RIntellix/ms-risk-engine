@@ -16,7 +16,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculatio
  * LGD = 0.90 (extremely low recovery rates on revolving balances in EU market).
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public class RevolvingCreditCardRiskCalculationStrategy implements RiskCalculationStrategy {
 

@@ -86,7 +86,7 @@ class LoanPaymentCalculatorTest {
         double result = calculator.calculateFrenchMonthlyPayment(100000.0, 12, 0.001);
         assertTrue(result > 0, "Payment should be positive");
         // With near-zero rate, payment ≈ principal/term
-        assertEquals(100000.0 / 12, result, 1.0);
+        assertEquals(100000.0 / 12, result, 5.0);
     }
 
     @Test

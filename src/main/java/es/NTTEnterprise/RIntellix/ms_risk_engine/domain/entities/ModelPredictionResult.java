@@ -11,8 +11,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeat
  * etc.).
  * JSON serialization/deserialization is handled at the infrastructure layer.
  *
- * @author Lucia Fernandez Mancebo
- * @Date 03-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/03/2026
  */
 public class ModelPredictionResult {
     private Double probabilityOfDefault;

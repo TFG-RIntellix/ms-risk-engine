@@ -45,8 +45,8 @@ import java.util.Map;
  * - Simulation: Use to calculate metrics for a what-if scenario
  * - Any other use case: Use to calculate risk metrics with custom payload
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 @Slf4j
 

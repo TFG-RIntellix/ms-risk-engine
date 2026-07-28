@@ -32,7 +32,11 @@ class DtiCalculationServiceTest {
     @DisplayName("Should calculate model DTI for standard scoring case")
     void calculateModelDtiForScoring_standardCase() {
         double result = service.calculateModelDtiForScoring(60000.0, 6000.0, 20000.0, 5.0, 36);
-        assertTrue(result > 0, "DTI should be positive for standard inputs");
+        // Income: 60000 / 12 = 5000
+        // Existing obligations: 6000 / 12 = 500
+        // Loan payment: 20000, 5%, 36mo -> ~599.42
+        // DTI = (500 + 599.42) / 5000 = 0.22
+        assertEquals(0.22, result, 0.01, "DTI should match mathematically expected value");
     }
 
     @Test

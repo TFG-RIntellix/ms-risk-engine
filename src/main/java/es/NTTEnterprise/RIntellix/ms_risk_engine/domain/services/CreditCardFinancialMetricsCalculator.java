@@ -102,7 +102,7 @@ public final class CreditCardFinancialMetricsCalculator {
         }
 
         double currentBalance = creditLimit * RiskCalculationDefaults.CC_AVERAGE_UTILIZATION_RATE;
-        double monthlyInterestRate = interestRate / SimulationConstants.MONTHS_PER_YEAR;
+        double monthlyInterestRate = interestRate / SimulationConstants.PERCENTAGE_DIVISOR / SimulationConstants.MONTHS_PER_YEAR;
         
         double totalInterestAccumulator = 0.0;
         double totalPaymentAccumulator = 0.0;

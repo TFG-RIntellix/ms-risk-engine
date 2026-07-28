@@ -54,7 +54,7 @@ class CreditCardModelPayloadMapperTest {
 
         when(payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_GENDER, "HOMBRE"))
                 .thenReturn("Hombre");
-        when(payloadUtilities.normalizeInterestRateToFraction(0.20)).thenReturn(0.20);
+        when(payloadUtilities.normalizeInterestRateToFraction(20.0)).thenReturn(0.20);
         when(dtiCalculationService.calculateModelDtiForCreditCardScoring(50000.0, 1200.0, 5000.0, true))
                 .thenReturn(0.15);
 
@@ -69,7 +69,7 @@ class CreditCardModelPayloadMapperTest {
         assertEquals(0.15, result.get(ModelPayloadFieldNames.FIELD_DTI));
 
         verify(payloadUtilities).normalizeEnumForField(ModelPayloadFieldNames.FIELD_GENDER, "HOMBRE");
-        verify(payloadUtilities).normalizeInterestRateToFraction(0.20);
+        verify(payloadUtilities).normalizeInterestRateToFraction(20.0);
         verify(dtiCalculationService).calculateModelDtiForCreditCardScoring(50000.0, 1200.0, 5000.0, true);
     }
 

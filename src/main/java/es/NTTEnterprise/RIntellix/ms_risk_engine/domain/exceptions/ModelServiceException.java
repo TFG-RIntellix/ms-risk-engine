@@ -9,7 +9,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions;
  * client input.
  * 
  * @author Lucía Fernández Mancebo
- * @Date 05-08-2026
+ * @date 08/05/2026
  */
 public class ModelServiceException extends ModelPredictionException {
 

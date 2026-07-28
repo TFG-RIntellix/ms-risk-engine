@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * infrastructure layers).
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-18-2026
+ * @date 18/05/2026
  */
 @Slf4j
 public class RiskIndicatorCalculationService {

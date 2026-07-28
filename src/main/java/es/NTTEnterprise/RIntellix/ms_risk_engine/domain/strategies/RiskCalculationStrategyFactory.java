@@ -14,7 +14,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  * standard and revolving risk calculation strategies.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public final class RiskCalculationStrategyFactory {
 

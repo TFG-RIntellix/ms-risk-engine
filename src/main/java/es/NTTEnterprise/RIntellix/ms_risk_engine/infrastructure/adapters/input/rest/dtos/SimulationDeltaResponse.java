@@ -1,5 +1,13 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.infrastructure.adapters.input.rest.dtos;
 
+/**
+ * Core component: SimulationDeltaResponse.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 public class SimulationDeltaResponse {
     private Double pdChange;
     private Double eclChange;

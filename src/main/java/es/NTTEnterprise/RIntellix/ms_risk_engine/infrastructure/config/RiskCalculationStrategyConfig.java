@@ -25,7 +25,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.RevolvingCred
  * infrastructure adapter that makes them available to the Spring context.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 @Configuration
 public class RiskCalculationStrategyConfig {

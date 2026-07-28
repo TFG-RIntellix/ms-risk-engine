@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  * ScoringResultMessageDTO for Kafka message publishing.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-26-2026
+ * @date 26/04/2026
  */
 @Slf4j
 

@@ -93,13 +93,13 @@ class ModelPayloadUtilitiesTest {
     @Test
     @DisplayName("Should normalize 24.91% to 0.2491 fraction")
     void normalizeInterestRateToFraction_standard() {
-        assertEquals(0.2491, utilities.normalizeInterestRateToFraction(0.2491), 0.0001);
+        assertEquals(0.2491, utilities.normalizeInterestRateToFraction(24.91), 0.0001);
     }
 
     @Test
     @DisplayName("Should normalize 5% to 0.05 fraction")
     void normalizeInterestRateToFraction_five() {
-        assertEquals(0.05, utilities.normalizeInterestRateToFraction(0.05), 0.0001);
+        assertEquals(0.05, utilities.normalizeInterestRateToFraction(5.0), 0.0001);
     }
 
     @Test

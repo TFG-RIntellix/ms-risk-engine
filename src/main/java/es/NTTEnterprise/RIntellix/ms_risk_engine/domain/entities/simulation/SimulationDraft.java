@@ -6,7 +6,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetr
  * Aggregate representing a stateless simulation draft result.
  *
  * @author Lucía Fernández Mancebo
- * @Date 05-10-2026
+ * @date 10/05/2026
  */
 public class SimulationDraft {
 

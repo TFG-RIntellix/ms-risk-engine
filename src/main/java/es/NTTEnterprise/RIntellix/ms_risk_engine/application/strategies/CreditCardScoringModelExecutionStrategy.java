@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * EAD/LGD.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 @Slf4j
 

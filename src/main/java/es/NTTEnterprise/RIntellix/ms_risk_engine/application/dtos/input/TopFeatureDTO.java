@@ -7,7 +7,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input;
  * SHAP contribution.
  *
  * @author Lucía Fernández Mancebo
- * @Date 03-03-2026
+ * @date 03/03/2026
  */
 public class TopFeatureDTO {
 

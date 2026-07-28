@@ -17,7 +17,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.constants.RiskCalculatio
  * Regulatory Floor: LGD cannot be lower than 10%.
  *
  * @author Lucía Fernández Mancebo
- * @Date 04-25-2026
+ * @date 25/04/2026
  */
 public class MortgageRiskCalculationStrategy implements RiskCalculationStrategy {
 

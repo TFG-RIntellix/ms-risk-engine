@@ -15,6 +15,14 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RiskGrade;
  * 
  * Updated: 05-26-2026 - Added financial metrics calculation support
  */
+/**
+ * Core component: RiskCalculationStrategy.
+ * Encapsulates the logic and responsibilities assigned to this element
+ * within the Hexagonal Architecture, ensuring separation of concerns.
+ *
+ * @author Lucía Fernández Mancebo
+ * @date 28/07/2026
+ */
 public interface RiskCalculationStrategy {
 
     boolean supports(String requestType, Boolean isRevolving);

@@ -18,8 +18,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeat
  * - Map external JSON field names to internal property names
  * - Provide conversion to domain entity (RiskFeature)
  *
- * @author Lucia Fernandez Mancebo
- * @Date 09-05-2026
+ * @author Lucía Fernández Mancebo
+ * @date 05/09/2026
  */
 public class RiskFeatureResponseDTO {
 
