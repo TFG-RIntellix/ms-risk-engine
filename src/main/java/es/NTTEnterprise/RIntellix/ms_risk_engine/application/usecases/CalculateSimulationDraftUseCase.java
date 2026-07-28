@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.stereotype.Service;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.SimulationModelPayloadMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.RiskMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ModelEndpointResolver;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.strategies.ScoringModelExecutionStrategy;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 03-15-2026
  */
 @Slf4j
-@Service
+
 public class CalculateSimulationDraftUseCase implements SimulationDraftPortService {
 
         private final FetchScoringPort fetchScoringPort;

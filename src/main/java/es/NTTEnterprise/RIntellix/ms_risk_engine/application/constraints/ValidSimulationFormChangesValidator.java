@@ -1,5 +1,8 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.application.constraints;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import java.util.Map;
 
 import jakarta.validation.ConstraintValidator;
@@ -13,9 +16,9 @@ public class ValidSimulationFormChangesValidator
         if (value == null || value.isEmpty()) {
             return true;
         }
-        java.util.List<String> unsupportedFields = value.keySet().stream()
+        List<String> unsupportedFields = value.keySet().stream()
                 .filter(key -> !SimulationFormFieldNames.ALLOWED_FIELD_NAMES.contains(key))
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
 
         if (unsupportedFields.isEmpty()) {
             return true;

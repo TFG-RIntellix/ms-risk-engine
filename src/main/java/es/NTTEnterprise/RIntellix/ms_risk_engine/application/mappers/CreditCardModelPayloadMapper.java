@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.stereotype.Component;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.CreditCardScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
@@ -23,7 +23,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  * @author Lucia Fernandez Mancebo
  * @Date 04-25-2026
  */
-@Component
+
 public class CreditCardModelPayloadMapper {
 
         private final ModelPayloadUtilities payloadUtilities;

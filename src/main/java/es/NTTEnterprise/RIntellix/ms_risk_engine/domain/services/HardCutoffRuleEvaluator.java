@@ -69,20 +69,25 @@ public class HardCutoffRuleEvaluator {
         }
 
         // Rule 2 — LTV > 80 % (mortgages only)
-        if (RequestType.HIPOTECA == parsedRequestType) {
-            final double ltv = MapUtilities.getDouble(modelPayload, ModelPayloadFieldNames.FIELD_LTV, -1.0);
-            if (ltv > RiskCalculationDefaults.HARD_CUTOFF_LTV_THRESHOLD) {
-                log.warn(LogMessage.SCORING_HARD_CUTOFF_LTV, ltv, requestId);
-                return Optional.of(buildRejection(modelPayload, parsedRequestType, ModelPayloadFieldNames.FIELD_LTV, ltv));
-            }
-        }
+        /*
+         * if (RequestType.HIPOTECA == parsedRequestType) {
+         * final double ltv = MapUtilities.getDouble(modelPayload,
+         * ModelPayloadFieldNames.FIELD_LTV, -1.0);
+         * if (ltv > RiskCalculationDefaults.HARD_CUTOFF_LTV_THRESHOLD) {
+         * log.warn(LogMessage.SCORING_HARD_CUTOFF_LTV, ltv, requestId);
+         * return Optional.of(buildRejection(modelPayload, parsedRequestType,
+         * ModelPayloadFieldNames.FIELD_LTV, ltv));
+         * }
+         * }
+         */
 
         // Rule 3 — LTI > 40 % (credit cards only)
         if (RequestType.TARJETA_CREDITO == parsedRequestType) {
             final double lti = MapUtilities.getDouble(modelPayload, ModelPayloadFieldNames.FIELD_LTI, -1.0);
             if (lti > RiskCalculationDefaults.HARD_CUTOFF_LTI_THRESHOLD) {
                 log.warn(LogMessage.SCORING_HARD_CUTOFF_LTI, lti, requestId);
-                return Optional.of(buildRejection(modelPayload, parsedRequestType, ModelPayloadFieldNames.FIELD_LTI, lti));
+                return Optional
+                        .of(buildRejection(modelPayload, parsedRequestType, ModelPayloadFieldNames.FIELD_LTI, lti));
             }
         }
 

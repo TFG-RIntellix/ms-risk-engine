@@ -10,8 +10,10 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
  */
 public final class LogMessage {
 
+        public static final String UTILITY_CLASS_NEVER_INSTANTIATE = "Never instantiate";
+
         private LogMessage() {
-                // Private constructor to prevent instantiation
+                throw new UnsupportedOperationException(UTILITY_CLASS_NEVER_INSTANTIATE);
         }
 
         // ============================================================
@@ -110,6 +112,8 @@ public final class LogMessage {
         public static final String EXCEPTION_INVALID_FORM_CHANGES = "Invalid form changes: {}";
         public static final String EXCEPTION_MODEL_SERVICE_ERROR = "Model service error: {}";
         public static final String EXCEPTION_UNEXPECTED = "Unexpected error: {}";
+        public static final String EXCEPTION_ILLEGAL_ARGUMENT = "Illegal argument: {}";
+        public static final String API_ERROR_UNEXPECTED_MESSAGE = "An unexpected error occurred. Please try again later.";
 
         // ============================================================
         // VALIDATION AND EXCEPTION MESSAGES
@@ -148,8 +152,6 @@ public final class LogMessage {
         public static final String REQUEST_ID_REQUIRED_MESSAGE = "requestId is required";
         public static final String REQUEST_TYPE_REQUIRED_MESSAGE = "requestType is required";
 
-        // Utility Class Messages
-        public static final String UTILITY_CLASS_NEVER_INSTANTIATE = "Utility class — never instantiate";
         public static final String FACTORY_CLASS_NEVER_INSTANTIATE = "Never instantiate";
 
         // ============================================================

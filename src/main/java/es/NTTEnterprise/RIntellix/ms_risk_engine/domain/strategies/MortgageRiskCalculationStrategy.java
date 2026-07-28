@@ -53,7 +53,8 @@ public class MortgageRiskCalculationStrategy implements RiskCalculationStrategy 
         safeCreditLimit = RiskCalculationDefaults.validateRequestAmount(requestedAmount);
 
         // For calculate the LGD.
-        safeLtv = RiskCalculationDefaults.clampRatio(ltv == null ? 0.0 : ltv);
+        // Cap LTV at 1.0 (100%) to prevent anomalous recovery values
+        safeLtv = Math.min(1.0, RiskCalculationDefaults.clampRatio(ltv == null ? 0.0 : ltv));
 
         if (safeLtv <= 0.0) {
             calculatedLgd = RiskCalculationDefaults.MORTGAGE_LGD_UNSECURED_LOAN;
@@ -61,8 +62,18 @@ public class MortgageRiskCalculationStrategy implements RiskCalculationStrategy 
             ead = safeCreditLimit;
             appraisalValue = safeCreditLimit / safeLtv;
             foreclosureCosts = appraisalValue * RiskCalculationDefaults.MORTGAGE_FORECLOSURE_COST_RATE;
-            recoverableCollateral = appraisalValue * (1.0 - RiskCalculationDefaults.MORTGAGE_HAIRCUT)
-                    - foreclosureCosts;
+
+            // Dynamic Haircut: Exponentially increase haircut for LTV > 80%
+            double dynamicHaircut = RiskCalculationDefaults.MORTGAGE_HAIRCUT; // Base 20%
+            if (safeLtv > 0.8) {
+                // Exponential penalty: 0.20 + 0.5 * (LTV - 0.8)^2
+                dynamicHaircut += 0.5 * Math.pow(safeLtv - 0.8, 2);
+            }
+
+            recoverableCollateral = appraisalValue * (1.0 - dynamicHaircut) - foreclosureCosts;
+            // Prevent negative recovery if haircut + foreclosure > 100%
+            recoverableCollateral = Math.max(0.0, recoverableCollateral);
+
             calculatedLgd = (ead - recoverableCollateral) / ead;
 
             calculatedLgd = RiskCalculationDefaults.clampRatio(Math.max(calculatedLgd,

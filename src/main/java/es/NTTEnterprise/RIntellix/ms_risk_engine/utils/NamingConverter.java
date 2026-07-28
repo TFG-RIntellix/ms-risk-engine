@@ -1,8 +1,8 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
-import org.springframework.stereotype.Component;
 
-@Component
+
+
 public class NamingConverter {
 
     public String toCamelCase(final String rawFieldName) {

@@ -133,16 +133,18 @@ public class RiskIndicatorCalculationService {
         // Determine property value to use for LTV calculation:
         // Priority 1: User-provided propertyValue in form changes (via mergedVariables)
         // Priority 2: Property value from base input snapshot
-        Double propertyValue = (Double) mergedVariables.get(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
-        if (propertyValue == null && baseInputSnapshot != null) {
-            propertyValue = (Double) baseInputSnapshot.get(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
+        Double propertyValue = null;
+        if (mergedVariables.containsKey(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE)) {
+            propertyValue = getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_PROPERTY_VALUE, 0);
+        } else if (baseInputSnapshot != null && baseInputSnapshot.containsKey(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE)) {
+            propertyValue = getDouble(baseInputSnapshot, ModelPayloadFieldNames.FIELD_PROPERTY_VALUE, 0);
         }
 
         // If we have a valid property value, calculate and set LTV
         if (propertyValue != null && propertyValue > 0) {
             final double newLtv = MathUtilities.roundFinal(loanAmount / propertyValue);
             mergedVariables.put(ModelPayloadFieldNames.FIELD_LTV, newLtv);
-            log.debug(LogMessage.SIMULATION_LTV_RECALCULATED, newLtv, loanAmount, propertyValue);
+            log.info(LogMessage.SIMULATION_LTV_RECALCULATED, newLtv, loanAmount, propertyValue);
         }
 
         // CRITICAL: Remove propertyValue from model input

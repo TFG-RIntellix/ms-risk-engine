@@ -144,6 +144,7 @@ public final class ModelPayloadFieldNames {
             "workSector", FIELD_OCCUPATION_SECTOR,
             "nrDependants", FIELD_DEPENDENTS,
             "requestType", FIELD_LOAN_TYPE,
-            "requestedAmount", FIELD_LOAN_AMOUNT);
+            "requestedAmount", FIELD_LOAN_AMOUNT,
+            "propertyValue", FIELD_PROPERTY_VALUE);
 
 }

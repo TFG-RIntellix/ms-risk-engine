@@ -73,7 +73,7 @@ public class LoanPaymentCalculator {
 
         // Validate and normalize annual interest rate, convert to monthly decimal rate
         final double annualRate = annualInterestRate == null ? 0.0 : annualInterestRate;
-        final double monthlyRate = annualRate / 1200.0; // Convert to monthly decimal (e.g., 5% → 0.05 → 0.00417)
+        final double monthlyRate = annualRate / 12.0; // Convert to monthly decimal (e.g., 0.05 → 0.00417)
 
         // Handle zero interest rate: simple division of principal by term
         if (monthlyRate == 0.0) {

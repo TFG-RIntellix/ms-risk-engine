@@ -2,7 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 import java.util.Objects;
 
-import org.springframework.stereotype.Component;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
 
@@ -20,7 +20,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  * @author Lucia Fernandez Mancebo
  * @Date 09-05-2026
  */
-@Component
+
 public class ModelPayloadUtilities {
     private final EnumNormalizer enumNormalizer;
     private final BooleanConverter booleanConverter;
@@ -52,17 +52,16 @@ public class ModelPayloadUtilities {
     }
 
     /**
-     * Converts an interest rate from percentage format (e.g. 24.91)
-     * to decimal fraction (e.g. 0.2491) as expected by the model.
+     * Normalizes the interest rate. It is assumed the input is already a decimal fraction (e.g. 0.2491 for 24.91%).
      *
-     * @param interestRate the interest rate in percentage format.
-     * @return the interest rate as a decimal fraction, or null if input is null.
+     * @param interestRate the interest rate in decimal fraction format.
+     * @return the interest rate as is, or null if input is null.
      */
     public Double normalizeInterestRateToFraction(final Double interestRate) {
         if (interestRate == null) {
             return null;
         }
-        return interestRate / SimulationConstants.PERCENTAGE_DIVISOR;
+        return interestRate;
     }
 
 }

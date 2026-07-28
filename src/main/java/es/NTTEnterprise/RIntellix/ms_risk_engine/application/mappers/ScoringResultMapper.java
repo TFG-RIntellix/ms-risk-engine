@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskFeature;
@@ -18,7 +18,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
  * @author Lucia Fernandez Mancebo
  * @Date 04-25-2026
  */
-@Component
+
 public class ScoringResultMapper {
 
     /**

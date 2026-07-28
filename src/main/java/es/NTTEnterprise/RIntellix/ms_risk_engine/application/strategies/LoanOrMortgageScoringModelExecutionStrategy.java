@@ -4,14 +4,14 @@ import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.LoanOrMortgageModelPayloadMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.RiskMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.enums.RequestType;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-25-2026
  */
 @Slf4j
-@Component
+
 public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
 
         private final LoanOrMortgageModelPayloadMapper payloadMapper;
@@ -54,7 +54,7 @@ public class LoanOrMortgageScoringModelExecutionStrategy implements ScoringModel
         public LoanOrMortgageScoringModelExecutionStrategy(
                         final LoanOrMortgageModelPayloadMapper payloadMapper,
                         final RiskMetricsCalculationService metricsCalculationService,
-                        @Value("${risk.model.predict-loan-path:/api/v1/risk/predict-loan}") final String predictLoanPath) {
+                        final String predictLoanPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
                 this.predictLoanPath = Objects.requireNonNull(predictLoanPath);

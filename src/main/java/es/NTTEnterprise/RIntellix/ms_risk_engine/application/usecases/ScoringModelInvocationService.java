@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.ports.output.ModelPredictionPort;
@@ -16,13 +16,13 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
  *
  * It delegates model execution to the ModelPredictionPort, passing the payload
  * and endpoint as separate parameters for clean separation of concerns.
- * The @Async annotation ensures the method runs in a separate thread pool,
+ * The  annotation ensures the method runs in a separate thread pool,
  * allowing true non-blocking composition.
  *
  * @author Lucia Fernandez Mancebo
  * @Date 04-25-2026
  */
-@Service
+
 public class ScoringModelInvocationService {
 
     private final ModelPredictionPort modelPredictionPort;
@@ -49,7 +49,7 @@ public class ScoringModelInvocationService {
      *         if the model service returns an error response.
      * @throws IllegalArgumentException if payload or endpoint is null.
      */
-    @Async
+    
     public CompletableFuture<ModelPredictionResult> invokePrediction(
             final Map<String, Object> modelPayload,
             final String requestId,

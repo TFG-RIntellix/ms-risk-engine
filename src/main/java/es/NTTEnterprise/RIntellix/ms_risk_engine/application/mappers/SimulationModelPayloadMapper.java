@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.stereotype.Component;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
@@ -19,7 +19,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.NamingConverter;
  * the common snake_case / camelCase / PascalCase cases without requiring a
  * separate alias registry.
  */
-@Component
+
 public class SimulationModelPayloadMapper {
 
     private final ModelPayloadUtilities payloadUtilities;
@@ -84,6 +84,9 @@ public class SimulationModelPayloadMapper {
 
         if (value instanceof String stringValue && isEnumField(fieldName)) {
             return payloadUtilities.normalizeEnumForField(fieldName, stringValue);
+        }
+        if (value instanceof Number numValue) {
+            return numValue.doubleValue();
         }
 
         return value;

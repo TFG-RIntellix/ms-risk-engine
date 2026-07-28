@@ -3,8 +3,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-25-2026
  */
 @Slf4j
-@Service
+
 public class ScoringProcessingService implements ScoringProcessingPortService {
 
     private final List<ScoringModelExecutionStrategy> scoringModelExecutionStrategies;
@@ -57,7 +57,7 @@ public class ScoringProcessingService implements ScoringProcessingPortService {
             final List<ScoringModelExecutionStrategy> scoringModelExecutionStrategies,
             final ScoringResultMapper scoringResultMapper,
             final ScoringResultPublisherPort scoringResultPublisher,
-            @Value("${risk.model.version:xgboost-loan-v1}") final String modelVersion) {
+            final String modelVersion) {
         this.scoringModelExecutionStrategies = Objects.requireNonNull(scoringModelExecutionStrategies);
         this.scoringResultMapper = Objects.requireNonNull(scoringResultMapper);
         this.scoringResultPublisher = Objects.requireNonNull(scoringResultPublisher);

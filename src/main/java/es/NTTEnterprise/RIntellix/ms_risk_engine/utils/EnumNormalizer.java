@@ -1,11 +1,11 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
-import org.springframework.stereotype.Component;
+
 
 /**
  * Small utility for normalizing enum-like values into human-friendly strings.
  */
-@Component
+
 public class EnumNormalizer {
 
     public String normalizeToTitleCase(final String value, final boolean withSpaces) {

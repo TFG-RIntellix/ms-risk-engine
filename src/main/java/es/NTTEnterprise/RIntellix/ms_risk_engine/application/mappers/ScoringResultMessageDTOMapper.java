@@ -2,7 +2,7 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.FinancialMetricsDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.RiskFeatureDTO;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-26-2026
  */
 @Slf4j
-@Component
+
 public class ScoringResultMessageDTOMapper {
 
     /**

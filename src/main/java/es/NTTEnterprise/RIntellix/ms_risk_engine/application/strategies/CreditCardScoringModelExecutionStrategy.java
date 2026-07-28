@@ -4,14 +4,14 @@ import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
+
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.CreditCardScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationPayload;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output.ScoringModelExecutionResultDTO;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.mappers.CreditCardModelPayloadMapper;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.application.services.RiskMetricsCalculationService;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.application.usecases.RiskMetricsCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalculationContext;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Date 04-25-2026
  */
 @Slf4j
-@Component
+
 public class CreditCardScoringModelExecutionStrategy implements ScoringModelExecutionStrategy {
 
         private final CreditCardModelPayloadMapper payloadMapper;
@@ -54,7 +54,7 @@ public class CreditCardScoringModelExecutionStrategy implements ScoringModelExec
         public CreditCardScoringModelExecutionStrategy(
                         final CreditCardModelPayloadMapper payloadMapper,
                         final RiskMetricsCalculationService metricsCalculationService,
-                        @Value("${risk.model.predict-credit-card-path:/api/v1/risk/predict-credit-card}") final String predictCreditCardPath) {
+                        final String predictCreditCardPath) {
                 this.payloadMapper = Objects.requireNonNull(payloadMapper);
                 this.metricsCalculationService = Objects.requireNonNull(metricsCalculationService);
                 this.predictCreditCardPath = Objects.requireNonNull(predictCreditCardPath);
