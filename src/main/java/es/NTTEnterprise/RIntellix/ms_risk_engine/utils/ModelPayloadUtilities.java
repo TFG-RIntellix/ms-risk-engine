@@ -1,10 +1,10 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 import java.util.Objects;
-
-
+import java.util.Set;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
+import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 
 /**
  * Utility component for handling model payload transformations.
@@ -22,6 +22,15 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
  */
 
 public class ModelPayloadUtilities {
+    
+    // Define separators based on the AI model schemas in ms-model/app/schemas/enums.py
+    private static final java.util.Map<String, String> FIELD_SEPARATORS = java.util.Map.of(
+            ModelPayloadFieldNames.FIELD_EDUCATION, " ",
+            ModelPayloadFieldNames.FIELD_OCCUPATION_SECTOR, " ",
+            ModelPayloadFieldNames.FIELD_HOME_OWNERSHIP, "_",
+            ModelPayloadFieldNames.FIELD_PURPOSE, "_"
+    );
+
     private final EnumNormalizer enumNormalizer;
     private final BooleanConverter booleanConverter;
 
@@ -39,16 +48,19 @@ public class ModelPayloadUtilities {
     }
 
     /**
-     * Normalize enum-like values for a given field by auto-detecting whether
-     * the input uses spaces. If the input contains spaces the normalized value
-     * will be produced using spaces; otherwise underscores will be preserved.
+     * Normalize enum-like values for a given field automatically based on known AI model schemas.
+     * Extracts the correct separator for fields that require multiple words.
+     * Single words (e.g. "Personal") are unaffected by the separator choice.
      */
     public String normalizeEnumForField(final String fieldName, final String value) {
         if (value == null) {
             return null;
         }
-        final boolean withSpaces = value.contains(" ");
-        return enumNormalizer.normalizeToTitleCase(value, withSpaces);
+        
+        // Lookup the specific separator for this field. Defaults to underscore if not specified.
+        final String separator = FIELD_SEPARATORS.getOrDefault(fieldName, "_");
+        
+        return enumNormalizer.normalizeToTitleCaseWithSeparator(value, separator);
     }
 
     /**

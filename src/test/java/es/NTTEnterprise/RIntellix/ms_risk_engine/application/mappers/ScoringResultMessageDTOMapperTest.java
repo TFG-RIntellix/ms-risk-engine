@@ -86,4 +86,30 @@ class ScoringResultMessageDTOMapperTest {
         
         assertNull(dto.getResults());
     }
+
+    @Test
+    @DisplayName("Should handle null financial metrics gracefully")
+    void toDTO_nullFinancialMetrics() {
+        Scoring scoring = new Scoring();
+        RiskMetrics riskMetrics = new RiskMetrics();
+        riskMetrics.setProbabilityOfDefault(0.05);
+        scoring.setResults(riskMetrics);
+        
+        ScoringResultMessageDTO dto = mapper.toDTO(scoring);
+        
+        assertNotNull(dto.getResults());
+        assertNull(dto.getResults().getFinancialMetrics());
+        assertEquals(0.05, dto.getResults().getProbabilityOfDefault());
+    }
+
+    @Test
+    @DisplayName("Should handle empty explainability list gracefully")
+    void toDTO_emptyExplainability() {
+        Scoring scoring = new Scoring();
+        scoring.setExplainability(List.of());
+        
+        ScoringResultMessageDTO dto = mapper.toDTO(scoring);
+        
+        assertTrue(dto.getExplainability().isEmpty());
+    }
 }

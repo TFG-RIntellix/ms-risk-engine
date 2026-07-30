@@ -96,4 +96,28 @@ class LoanPaymentCalculatorTest {
         double rounded = Math.round(result * 100.0) / 100.0;
         assertEquals(rounded, result, 0.001, "Result should be rounded to 2 decimal places");
     }
+
+    @Test
+    @DisplayName("Should handle extremely short term (1 month)")
+    void shouldHandleExtremelyShortTerm() {
+        double result = calculator.calculateFrenchMonthlyPayment(12000.0, 1, 0.12);
+        // 1 month at 12% annual (1% monthly). Payment = 12000 + 12000*0.01 = 12120
+        assertEquals(12120.0, result, 0.01);
+    }
+
+    @Test
+    @DisplayName("Should handle extremely long term (600 months)")
+    void shouldHandleExtremelyLongTerm() {
+        double result = calculator.calculateFrenchMonthlyPayment(500000.0, 600, 0.04);
+        assertTrue(result > 0, "Payment should be positive for extremely long term");
+        assertTrue(Double.isFinite(result), "Payment should be finite");
+    }
+
+    @Test
+    @DisplayName("Should handle extremely high interest rate")
+    void shouldHandleHighInterestRate() {
+        double result = calculator.calculateFrenchMonthlyPayment(10000.0, 12, 0.50);
+        assertTrue(result > 10000.0 / 12, "Payment should be significantly higher than simple division");
+        assertTrue(Double.isFinite(result), "Payment should be finite");
+    }
 }

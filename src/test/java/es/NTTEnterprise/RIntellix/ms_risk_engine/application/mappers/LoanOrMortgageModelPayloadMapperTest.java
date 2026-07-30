@@ -63,4 +63,40 @@ class LoanOrMortgageModelPayloadMapperTest {
 
         assertThat(payload.get(ModelPayloadFieldNames.FIELD_DTI)).isEqualTo(SimulationConstants.ZERO_VALUE);
     }
+
+    @Test
+    @DisplayName("Should handle entirely null input request safely (throws NPE due to logic)")
+    void shouldHandleNullRequest() {
+        ModelPayloadUtilities utilities = new ModelPayloadUtilities(new EnumNormalizer(), new BooleanConverter());
+        LoanOrMortgageModelPayloadMapper mapper = new LoanOrMortgageModelPayloadMapper(
+                utilities,
+                new DtiCalculationService());
+
+        // In a real application, controller validations prevent this. But we can test it throws NPE or handles it.
+        org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
+            mapper.toModelPayload(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Should handle missing optional fields safely")
+    void shouldHandleMissingOptionalFields() {
+        ModelPayloadUtilities utilities = new ModelPayloadUtilities(new EnumNormalizer(), new BooleanConverter());
+        LoanOrMortgageModelPayloadMapper mapper = new LoanOrMortgageModelPayloadMapper(
+                utilities,
+                new DtiCalculationService());
+
+        ScoringGenerationRequest request = new ScoringGenerationRequest();
+        request.setLoanAmount(15000.0);
+        request.setInterestRate(5.0);
+        request.setTermMonths(36);
+        // missing all demographic/employment data, etc.
+
+        Map<String, Object> payload = mapper.toModelPayload(request);
+        
+        // Assert that the map was created without throwing
+        assertThat(payload).isNotNull();
+        // and DTI is calculated as 0
+        assertThat(payload.get(ModelPayloadFieldNames.FIELD_DTI)).isEqualTo(SimulationConstants.ZERO_VALUE);
+    }
 }

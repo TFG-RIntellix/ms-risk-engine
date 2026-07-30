@@ -82,4 +82,34 @@ class CreditCardModelPayloadMapperTest {
         assertThrows(NullPointerException.class, () -> new CreditCardModelPayloadMapper(null, dtiCalculationService));
         assertThrows(NullPointerException.class, () -> new CreditCardModelPayloadMapper(payloadUtilities, null));
     }
+
+    @Test
+    @DisplayName("Should handle entirely null input request safely (throws NPE due to logic)")
+    void shouldHandleNullRequest() {
+        // In a real application, controller validations prevent this. But we can test it throws NPE or handles it.
+        org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
+            mapper.toModelPayload(null, "TARJETA_CREDITO");
+        });
+    }
+
+    @Test
+    @DisplayName("Should handle missing optional fields safely")
+    void shouldHandleMissingOptionalFields() {
+        CreditCardScoringGenerationRequest request = new CreditCardScoringGenerationRequest();
+        request.setCreditLimit(5000.0);
+        request.setInterestRate(20.0);
+        request.setIsRevolving(false);
+        // missing all demographic/employment data, etc.
+
+        when(payloadUtilities.normalizeInterestRateToFraction(20.0)).thenReturn(0.20);
+        when(dtiCalculationService.calculateModelDtiForCreditCardScoring(eq(0.0), eq(0.0), eq(5000.0), anyBoolean()))
+                .thenReturn(0.0); // Assume service handles missing parts and returns 0
+
+        Map<String, Object> payload = mapper.toModelPayload(request, "TARJETA_CREDITO");
+        
+        // Assert that the map was created without throwing
+        assertNotNull(payload);
+        // and DTI is calculated as 0
+        assertEquals(0.0, payload.get(ModelPayloadFieldNames.FIELD_DTI));
+    }
 }

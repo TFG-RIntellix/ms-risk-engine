@@ -76,6 +76,14 @@ class CreditCardFinancialMetricsCalculatorTest {
         assertEquals(0.0, CreditCardFinancialMetricsCalculator.calculateCreditCardDti(200.0, -12000.0));
     }
 
+    @Test
+    @DisplayName("Should handle extremely high monthly payment and low income (max DTI)")
+    void calculateCreditCardDti_extremeValues() {
+        // e.g. payment = 100,000, income = 1200 => monthlyIncome=100
+        double result = CreditCardFinancialMetricsCalculator.calculateCreditCardDti(100000.0, 1200.0);
+        assertEquals(1000.0, result, 0.001); // 100000 / 100 = 1000.0
+    }
+
     // ========== calculateCreditCardDisposableIncome ==========
 
     @Test
@@ -138,6 +146,16 @@ class CreditCardFinancialMetricsCalculatorTest {
         var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(1_000_000.0, 30.0);
         assertTrue(result.totalPayment() > 0);
     }
+
+    @Test
+    @DisplayName("Should handle extremely high interest rate")
+    void simulateRevolvingPayoff_highInterestRate() {
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, 50.0); // 50% interest
+        assertTrue(result.totalInterest() >= 0);
+        assertTrue(result.totalPayment() >= 0);
+    }
+
+
 
     // ========== Non-instantiability ==========
 

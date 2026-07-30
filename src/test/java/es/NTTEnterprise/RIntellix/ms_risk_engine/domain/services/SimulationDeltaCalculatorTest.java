@@ -105,4 +105,66 @@ class SimulationDeltaCalculatorTest {
             () -> new SimulationDeltaCalculator(null));
         assertEquals(LogMessage.FINANCIAL_METRICS_STRATEGIES_CANNOT_BE_NULL, exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Should handle missing base financial metrics gracefully")
+    void calculateDelta_nullBaseFinancialMetrics() {
+        Scoring baseScoring = new Scoring();
+        RiskMetrics baseMetrics = new RiskMetrics();
+        baseMetrics.setProbabilityOfDefault(0.05);
+        baseScoring.setResults(baseMetrics);
+
+        RiskMetrics simMetrics = new RiskMetrics();
+        simMetrics.setProbabilityOfDefault(0.08);
+        
+        FinancialMetrics simFinMetrics = new FinancialMetrics();
+        simFinMetrics.setMonthlyPayment(400.0);
+        simFinMetrics.setTotalPayment(14400.0);
+        simFinMetrics.setTotalInterest(0.0);
+        simFinMetrics.setMonthlyDisposableIncome(0.0);
+        simFinMetrics.setDebtToIncomeRatio(0.0);
+        
+        when(strategy.calculateFinancialMetrics(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt()))
+                .thenReturn(simFinMetrics);
+
+        Map<String, Object> baseVariables = new HashMap<>();
+        Map<String, Object> mergedVariables = new HashMap<>();
+        mergedVariables.put(ModelPayloadFieldNames.FIELD_REQUEST_TYPE, "PRESTAMO");
+        mergedVariables.put(ModelPayloadFieldNames.FIELD_DTI, 0.40); 
+
+        SimulationDelta delta = calculator.calculateDelta(baseScoring, simMetrics, baseVariables, mergedVariables);
+
+        // Since base had no payment, delta should be current payment
+        assertEquals(400.0, delta.getMonthlyPaymentChange(), 0.001);
+        assertEquals(14400.0, delta.getTotalPaymentChange(), 0.001);
+    }
+
+    @Test
+    @DisplayName("Should handle zero change correctly")
+    void calculateDelta_zeroChange() {
+        Scoring baseScoring = new Scoring();
+        RiskMetrics baseMetrics = new RiskMetrics();
+        baseMetrics.setProbabilityOfDefault(0.05);
+        baseMetrics.setRiskLevel("C");
+        baseScoring.setResults(baseMetrics);
+
+        RiskMetrics simMetrics = new RiskMetrics();
+        simMetrics.setProbabilityOfDefault(0.05);
+        simMetrics.setRiskLevel("C");
+        
+        FinancialMetrics simFinMetrics = new FinancialMetrics();
+        simFinMetrics.setMonthlyPayment(0.0);
+        simFinMetrics.setTotalPayment(0.0);
+        simFinMetrics.setTotalInterest(0.0);
+        simFinMetrics.setMonthlyDisposableIncome(0.0);
+        simFinMetrics.setDebtToIncomeRatio(0.0);
+        
+        when(strategy.calculateFinancialMetrics(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt()))
+                .thenReturn(simFinMetrics);
+
+        SimulationDelta delta = calculator.calculateDelta(baseScoring, simMetrics, new HashMap<>(), new HashMap<>());
+
+        assertEquals(0.0, delta.getPdChange(), 0.001);
+        assertEquals("C -> C", delta.getRiskGradeChange());
+    }
 }

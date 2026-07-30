@@ -5,8 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-
-
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.ModelPredictionResult;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
@@ -69,7 +67,8 @@ public class RiskMetricsCalculationService {
          *                                           calculation.
          * @param financialMetricsCalculationService the domain service for financial
          *                                           metrics calculation.
-         * @param hardCutoffRuleEvaluator            the domain service for hard-cutoff rule evaluation.
+         * @param hardCutoffRuleEvaluator            the domain service for hard-cutoff
+         *                                           rule evaluation.
          */
         public RiskMetricsCalculationService(
                         final ModelPredictionPort modelPredictionPort,
@@ -114,13 +113,13 @@ public class RiskMetricsCalculationService {
 
                 log.info(LogMessage.RISK_METRICS_CALCULATION_STARTED, context.requestId());
 
-                // Step 0.5: Evaluate hard-cutoff rules
                 final Optional<HardCutoffRejection> rejectionOpt = hardCutoffRuleEvaluator.evaluateRules(
                                 context.modelPayload(),
                                 context.requestType(),
                                 context.requestId());
 
-                // Step 1: Fire async model call (returns immediately) or complete instantly if cutoff triggered
+                // Step 1: Fire async model call (returns immediately) or complete instantly if
+                // cutoff triggered
                 final CompletableFuture<ModelPredictionResult> modelFuture;
                 final boolean isHardCutoff = rejectionOpt.isPresent();
 
@@ -128,7 +127,7 @@ public class RiskMetricsCalculationService {
                         final HardCutoffRejection rejection = rejectionOpt.get();
                         final ModelPredictionResult bypassedPrediction = new ModelPredictionResult(
                                         1.0,
-                                        "HIGH", // This will be set properly later by RiskGradeCalculator anyway
+                                        "HIGH",
                                         0.0,
                                         rejection.getExplainability());
                         modelFuture = CompletableFuture.completedFuture(bypassedPrediction);
@@ -192,7 +191,8 @@ public class RiskMetricsCalculationService {
                                 fullMetrics.getRiskLevel());
 
                 // Step 5: Calculate and attach financial metrics
-                Double existingObligations = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
+                Double existingObligations = (Double) modelPayload
+                                .get(ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
                 double existingMonthly = existingObligations != null ? existingObligations / 12.0 : 0.0;
 
                 Double rawRate = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE);

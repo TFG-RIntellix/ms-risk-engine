@@ -1,10 +1,4 @@
-package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
-
-
-
-/**
- * Small utility for normalizing enum-like values into human-friendly strings.
- */
+﻿package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 /**
  * Core component: EnumNormalizer.
@@ -17,10 +11,10 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 public class EnumNormalizer {
 
     public String normalizeToTitleCase(final String value, final boolean withSpaces) {
-        return normalizeValue(value, withSpaces ? " " : "_");
+        return normalizeToTitleCaseWithSeparator(value, withSpaces ? " " : "_");
     }
 
-    private String normalizeValue(final String value, final String separator) {
+    public String normalizeToTitleCaseWithSeparator(final String value, final String separator) {
         if (value == null || value.isEmpty()) {
             return value;
         }

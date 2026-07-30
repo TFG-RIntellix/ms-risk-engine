@@ -72,7 +72,9 @@ public class LoanOrMortgageModelPayloadMapper {
                                 Boolean.TRUE.equals(request.getHasMortgage()) ? ModelPayloadConstants.BOOLEAN_VALUE_YES
                                                 : ModelPayloadConstants.BOOLEAN_VALUE_NO);
                 modelPayload.put(ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, request.getAnnualIncome());
-                modelPayload.put(ModelPayloadFieldNames.FIELD_LOAN_TYPE, loanType);
+                modelPayload.put(ModelPayloadFieldNames.FIELD_LOAN_TYPE,
+                                payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_LOAN_TYPE,
+                                                loanType));
                 modelPayload.put(ModelPayloadFieldNames.FIELD_PURPOSE,
                                 payloadUtilities.normalizeEnumForField(ModelPayloadFieldNames.FIELD_PURPOSE,
                                                 request.getPurpose()));

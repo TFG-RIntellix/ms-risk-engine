@@ -26,7 +26,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.exceptions.ModelServiceE
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex,
+            HttpServletRequest request) {
         log.warn(LogMessage.EXCEPTION_ILLEGAL_ARGUMENT, ex.getMessage());
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -46,7 +47,8 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity with the error details and appropriate HTTP status
      */
     @ExceptionHandler(ScoringNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleScoringNotFound(ScoringNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleScoringNotFound(ScoringNotFoundException ex,
+            HttpServletRequest request) {
         log.warn(LogMessage.EXCEPTION_SCORING_NOT_FOUND, ex.getMessage());
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -66,7 +68,8 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity with the error details and appropriate HTTP status
      */
     @ExceptionHandler(InvalidFormChangesException.class)
-    public ResponseEntity<ApiErrorResponse> handleInvalidFormChanges(InvalidFormChangesException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleInvalidFormChanges(InvalidFormChangesException ex,
+            HttpServletRequest request) {
         log.warn(LogMessage.EXCEPTION_INVALID_FORM_CHANGES, ex.getMessage());
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
