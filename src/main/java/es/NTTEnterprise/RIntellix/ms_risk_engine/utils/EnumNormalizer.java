@@ -1,4 +1,4 @@
-﻿package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
+package es.NTTEnterprise.RIntellix.ms_risk_engine.utils;
 
 /**
  * Core component: EnumNormalizer.

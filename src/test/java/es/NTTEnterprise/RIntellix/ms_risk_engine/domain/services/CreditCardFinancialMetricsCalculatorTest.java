@@ -100,7 +100,7 @@ class CreditCardFinancialMetricsCalculatorTest {
     @Test
     @DisplayName("Should return zeros when credit limit is zero")
     void simulateRevolvingPayoff_zeroCreditLimit() {
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(0.0, 20.0);
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(0.0, 0.20);
         assertEquals(0.0, result.totalInterest());
         assertEquals(0.0, result.totalPayment());
     }
@@ -108,7 +108,7 @@ class CreditCardFinancialMetricsCalculatorTest {
     @Test
     @DisplayName("Should return zeros when credit limit is negative")
     void simulateRevolvingPayoff_negativeCreditLimit() {
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(-1000.0, 20.0);
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(-1000.0, 0.20);
         assertEquals(0.0, result.totalInterest());
         assertEquals(0.0, result.totalPayment());
     }
@@ -124,7 +124,7 @@ class CreditCardFinancialMetricsCalculatorTest {
     @Test
     @DisplayName("Should return zero interest when rate is negative")
     void simulateRevolvingPayoff_negativeInterestRate() {
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, -5.0);
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, -0.05);
         assertEquals(0.0, result.totalInterest());
         assertEquals(5000.0, result.totalPayment());
     }
@@ -132,7 +132,7 @@ class CreditCardFinancialMetricsCalculatorTest {
     @Test
     @DisplayName("Should calculate positive total interest for normal case")
     void simulateRevolvingPayoff_normalCase() {
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, 24.0);
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, 0.24);
         assertTrue(result.totalInterest() > 0, "Total interest should be positive");
         assertTrue(result.totalPayment() > 0, "Total payment should be positive");
         assertTrue(result.totalPayment() > result.totalInterest(),
@@ -143,19 +143,17 @@ class CreditCardFinancialMetricsCalculatorTest {
     @DisplayName("Should not exceed max simulation months")
     void simulateRevolvingPayoff_respectsMaxMonths() {
         // Very large credit limit and low payment percentage should cap at max months
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(1_000_000.0, 30.0);
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(1_000_000.0, 0.30);
         assertTrue(result.totalPayment() > 0);
     }
 
     @Test
     @DisplayName("Should handle extremely high interest rate")
     void simulateRevolvingPayoff_highInterestRate() {
-        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, 50.0); // 50% interest
+        var result = CreditCardFinancialMetricsCalculator.simulateRevolvingPayoff(5000.0, 0.50); // 50% interest
         assertTrue(result.totalInterest() >= 0);
         assertTrue(result.totalPayment() >= 0);
     }
-
-
 
     // ========== Non-instantiability ==========
 

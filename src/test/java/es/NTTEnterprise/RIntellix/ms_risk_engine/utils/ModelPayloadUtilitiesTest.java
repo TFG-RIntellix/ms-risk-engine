@@ -62,23 +62,23 @@ class ModelPayloadUtilitiesTest {
     @Test
     @DisplayName("normalizeEnumForField should detect spaces and use withSpaces=true")
     void normalizeEnumForField_detectsSpaces() {
-        when(enumNormalizer.normalizeToTitleCase("SECTOR PUBLICO", true)).thenReturn("Sector Publico");
+        when(enumNormalizer.normalizeToTitleCaseWithSeparator("SECTOR PUBLICO", " ")).thenReturn("Sector Publico");
 
-        String result = utilities.normalizeEnumForField("field", "SECTOR PUBLICO");
+        String result = utilities.normalizeEnumForField("occupationSector", "SECTOR PUBLICO");
 
         assertEquals("Sector Publico", result);
-        verify(enumNormalizer).normalizeToTitleCase("SECTOR PUBLICO", true);
+        verify(enumNormalizer).normalizeToTitleCaseWithSeparator("SECTOR PUBLICO", " ");
     }
 
     @Test
     @DisplayName("normalizeEnumForField should detect no spaces and use withSpaces=false")
     void normalizeEnumForField_detectsUnderscores() {
-        when(enumNormalizer.normalizeToTitleCase("FORMACION_PROFESIONAL", false)).thenReturn("Formacion_Profesional");
+        when(enumNormalizer.normalizeToTitleCaseWithSeparator("FORMACION_PROFESIONAL", "_")).thenReturn("Formacion_Profesional");
 
-        String result = utilities.normalizeEnumForField("field", "FORMACION_PROFESIONAL");
+        String result = utilities.normalizeEnumForField("homeOwnership", "FORMACION_PROFESIONAL");
 
         assertEquals("Formacion_Profesional", result);
-        verify(enumNormalizer).normalizeToTitleCase("FORMACION_PROFESIONAL", false);
+        verify(enumNormalizer).normalizeToTitleCaseWithSeparator("FORMACION_PROFESIONAL", "_");
     }
 
     @Test

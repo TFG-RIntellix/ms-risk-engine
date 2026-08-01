@@ -123,7 +123,7 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
                 // 2. Extract base variables for delta calculation & merge
                 final Map<String, Object> baseVariables = extractBaseVariables(baseScoring);
 
-                final Map<String, Object> mergedVariables = mergeData(baseScoring, formChanges);
+                final Map<String, Object> mergedVariables = mergeData(baseScoring, formChanges, requestType);
 
                 // 3. For dynamic calculated fields like dti & ltv, recalculate them and replace
                 // then in the mergeVariables.
@@ -198,7 +198,7 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
          *         names, ready for model
          *         invocation without further transformation.
          */
-        private Map<String, Object> mergeData(final Scoring baseScoring, final FormChanges formChanges) {
+        private Map<String, Object> mergeData(final Scoring baseScoring, final FormChanges formChanges, final String requestType) {
                 final Map<String, Object> baseInputs = baseScoring.getInputSnapshot();
                 if (baseInputs == null || baseInputs.isEmpty()) {
                         throw new ScoringNotFoundException(String.format(
@@ -208,12 +208,12 @@ public class CalculateSimulationDraftUseCase implements SimulationDraftPortServi
 
                 // Normalize scoring variables from snakeCase to camelCase
                 final Map<String, Object> normalizedBase = simulationPayloadMapper
-                                .normalizeBaseVariables(baseInputs);
+                                .normalizeBaseVariables(baseInputs, requestType);
 
                 // Normalize formChanges values, convert them into camelCase and convert boolean
                 // into yes/no values.
                 final Map<String, Object> normalizedFormChanges = simulationPayloadMapper
-                                .normalizeFormChangesToCamelcase(formChanges.getValues());
+                                .normalizeFormChangesToCamelcase(formChanges.getValues(), requestType);
 
                 // Override with normalized form changes
                 normalizedBase.putAll(normalizedFormChanges);

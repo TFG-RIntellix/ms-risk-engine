@@ -71,31 +71,31 @@ class MathUtilitiesTest {
         assertTrue(Double.isInfinite(MathUtilities.roundIntermediate(Double.POSITIVE_INFINITY)));
     }
 
-    // ========== calculateAbsoluteDelta ==========
+    // ========== calculateDelta ==========
 
     @Test
-    @DisplayName("calculateAbsoluteDelta should return positive delta when sim > base")
-    void calculateAbsoluteDelta_positive() {
-        assertEquals(2.0, MathUtilities.calculateAbsoluteDelta(10.0, 8.0));
+    @DisplayName("calculateDelta should return positive delta when sim > base")
+    void calculateDelta_positive() {
+        assertEquals(2.0, MathUtilities.calculateDelta(10.0, 8.0));
     }
 
     @Test
-    @DisplayName("calculateAbsoluteDelta should return positive delta when sim < base")
-    void calculateAbsoluteDelta_negative() {
-        assertEquals(3.0, MathUtilities.calculateAbsoluteDelta(5.0, 8.0));
+    @DisplayName("calculateDelta should return negative delta when sim < base")
+    void calculateDelta_negative() {
+        assertEquals(-3.0, MathUtilities.calculateDelta(5.0, 8.0));
     }
 
     @Test
-    @DisplayName("calculateAbsoluteDelta should return zero when sim equals base")
-    void calculateAbsoluteDelta_zero() {
-        assertEquals(0.0, MathUtilities.calculateAbsoluteDelta(5.0, 5.0));
+    @DisplayName("calculateDelta should return zero when sim equals base")
+    void calculateDelta_zero() {
+        assertEquals(0.0, MathUtilities.calculateDelta(5.0, 5.0));
     }
 
     @Test
-    @DisplayName("calculateAbsoluteDelta should round result to 2 decimals")
-    void calculateAbsoluteDelta_shouldRound() {
-        double result = MathUtilities.calculateAbsoluteDelta(10.123, 8.456);
-        assertEquals(1.67, result, 0.01);
+    @DisplayName("calculateDelta should round result to 2 decimals")
+    void calculateDelta_shouldRound() {
+        double result = MathUtilities.calculateDelta(10.123, 8.456);
+        assertEquals(1.67, result, 0.001);
     }
 
     // ========== Non-instantiability ==========

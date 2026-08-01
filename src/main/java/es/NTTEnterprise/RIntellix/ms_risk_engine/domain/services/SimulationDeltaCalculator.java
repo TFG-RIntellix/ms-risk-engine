@@ -1,19 +1,12 @@
 package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.FinancialMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.RiskMetrics;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.common.Scoring;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation.SimulationDelta;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategy;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.strategies.FinancialMetricsStrategyFactory;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.utils.MapUtilities;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.SimulationConstants;
-import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.LogMessage;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
 
 /**
@@ -27,11 +20,8 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.MathUtilities;
  */
 public class SimulationDeltaCalculator {
 
-        private final List<FinancialMetricsStrategy> financialMetricsStrategies;
-
-        public SimulationDeltaCalculator(final List<FinancialMetricsStrategy> financialMetricsStrategies) {
-                this.financialMetricsStrategies = Objects.requireNonNull(financialMetricsStrategies,
-                                LogMessage.FINANCIAL_METRICS_STRATEGIES_CANNOT_BE_NULL);
+        public SimulationDeltaCalculator() {
+                // No dependencies required
         }
 
         /**
@@ -53,78 +43,40 @@ public class SimulationDeltaCalculator {
 
                 // Extract base financial metrics from the scoring
                 final RiskMetrics baseMetrics = baseScoring.getResults();
-                final double baseMonthlyPayment = baseMetrics.getFinancialMetrics() != null
+                final double baseMonthlyPayment = baseMetrics.getFinancialMetrics() != null && baseMetrics.getFinancialMetrics().getMonthlyPayment() != null
                                 ? baseMetrics.getFinancialMetrics().getMonthlyPayment()
                                 : 0.0;
-                final double baseDti = baseMetrics.getFinancialMetrics() != null
+                final double baseDti = baseMetrics.getFinancialMetrics() != null && baseMetrics.getFinancialMetrics().getDebtToIncomeRatio() != null
                                 ? baseMetrics.getFinancialMetrics().getDebtToIncomeRatio()
                                 : 0.0;
-                final double baseTotalPayment = baseMetrics.getFinancialMetrics() != null
+                final double baseTotalPayment = baseMetrics.getFinancialMetrics() != null && baseMetrics.getFinancialMetrics().getTotalPayment() != null
                                 ? baseMetrics.getFinancialMetrics().getTotalPayment()
                                 : 0.0;
-                final double baseTotalInterest = baseMetrics.getFinancialMetrics() != null
+                final double baseTotalInterest = baseMetrics.getFinancialMetrics() != null && baseMetrics.getFinancialMetrics().getTotalInterest() != null
                                 ? baseMetrics.getFinancialMetrics().getTotalInterest()
                                 : 0.0;
-                final double baseDisposableIncome = baseMetrics.getFinancialMetrics() != null
+                final double baseDisposableIncome = baseMetrics.getFinancialMetrics() != null && baseMetrics.getFinancialMetrics().getMonthlyDisposableIncome() != null
                                 ? baseMetrics.getFinancialMetrics().getMonthlyDisposableIncome()
                                 : 0.0;
 
-                // Extract request details to pick strategy
-                final String resolvedRequestType = (String) mergedVariables
-                                .getOrDefault(ModelPayloadFieldNames.FIELD_REQUEST_TYPE, "PRESTAMO");
-                String revolving = (String) mergedVariables.get(ModelPayloadFieldNames.FIELD_IS_REVOLVING);
+                // Extract simulated financial metrics
+                final FinancialMetrics simFinancialMetrics = simulatedMetrics.getFinancialMetrics();
+                final double simMonthlyPayment = simFinancialMetrics != null && simFinancialMetrics.getMonthlyPayment() != null
+                                ? simFinancialMetrics.getMonthlyPayment()
+                                : 0.0;
+                final double simTotalPayment = simFinancialMetrics != null && simFinancialMetrics.getTotalPayment() != null
+                                ? simFinancialMetrics.getTotalPayment()
+                                : 0.0;
+                final double simTotalInterest = simFinancialMetrics != null && simFinancialMetrics.getTotalInterest() != null
+                                ? simFinancialMetrics.getTotalInterest()
+                                : 0.0;
+                final double simDisposableIncome = simFinancialMetrics != null && simFinancialMetrics.getMonthlyDisposableIncome() != null
+                                ? simFinancialMetrics.getMonthlyDisposableIncome()
+                                : 0.0;
+                final double simDti = simFinancialMetrics != null && simFinancialMetrics.getDebtToIncomeRatio() != null
+                                ? simFinancialMetrics.getDebtToIncomeRatio()
+                                : 0.0;
 
-                final Boolean isRevolving = "Si".equals(revolving);
-
-                // Extract simulated variables for calculation
-                double simAmount = MapUtilities.getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT,
-                                MapUtilities.getDouble(baseVariables, ModelPayloadFieldNames.FIELD_LOAN_AMOUNT, 0));
-
-                // If it's a credit card, use credit limit instead
-                if (simAmount == 0 && (mergedVariables.containsKey(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT)
-                                || baseVariables.containsKey(ModelPayloadFieldNames.FIELD_CREDIT_LIMIT))) {
-                        simAmount = MapUtilities.getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT,
-                                        MapUtilities.getDouble(baseVariables, ModelPayloadFieldNames.FIELD_CREDIT_LIMIT,
-                                                        0));
-                }
-
-                final double simAnnualRate = MapUtilities.getDouble(mergedVariables,
-                                ModelPayloadFieldNames.FIELD_INTEREST_RATE,
-                                MapUtilities.getDouble(baseVariables,
-                                                ModelPayloadFieldNames.FIELD_INTEREST_RATE, 0));
-                final int simTermMonths = (int) MapUtilities.getDouble(mergedVariables,
-                                ModelPayloadFieldNames.FIELD_TERM_MONTHS,
-                                MapUtilities.getDouble(baseVariables,
-                                                ModelPayloadFieldNames.FIELD_TERM_MONTHS,
-                                                SimulationConstants.MIN_TERM_MONTHS));
-                final double simAnnualIncome = MapUtilities.getDouble(mergedVariables,
-                                ModelPayloadFieldNames.FIELD_ANNUAL_INCOME,
-                                MapUtilities.getDouble(baseVariables,
-                                                ModelPayloadFieldNames.FIELD_ANNUAL_INCOME, 0));
-
-                // Use the strategy to calculate the simulated financial metrics
-                final FinancialMetricsStrategy strategy = FinancialMetricsStrategyFactory
-                                .createStrategy(resolvedRequestType, isRevolving, financialMetricsStrategies);
-
-                // We calculate delta without existing obligations here for simplicity, or we
-                // could pass 0 if DTI was already recalculated
-                // For delta we usually just want to see the change in the new payment part, or
-                // total DTI.
-                // Actually, RiskIndicatorCalculationService recalculates the overall DTI and
-                // stores it. So we can just pull it!
-                final double simDti = MapUtilities.getDouble(mergedVariables, ModelPayloadFieldNames.FIELD_DTI,
-                                baseDti);
-
-                final double existingObligationsAnnual = MapUtilities.getDouble(mergedVariables,
-                                ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS, 0.0);
-                final double existingMonthly = existingObligationsAnnual / SimulationConstants.MONTHS_PER_YEAR;
-
-                final FinancialMetrics simFinancialMetrics = strategy.calculateFinancialMetrics(simAmount,
-                                simAnnualRate * 100.0, simAnnualIncome, existingMonthly, simTermMonths);
-                final double simMonthlyPayment = simFinancialMetrics.getMonthlyPayment();
-                final double simTotalPayment = simFinancialMetrics.getTotalPayment();
-                final double simTotalInterest = simFinancialMetrics.getTotalInterest();
-                final double simDisposableIncome = simFinancialMetrics.getMonthlyDisposableIncome();
                 // Build delta
                 final SimulationDelta delta = new SimulationDelta();
                 delta.setPdChange(MathUtilities.roundIntermediate(
@@ -141,13 +93,21 @@ public class SimulationDeltaCalculator {
                                 : SimulationConstants.UNKNOWN_RISK_GRADE;
 
                 delta.setRiskGradeChange(baseRiskGradeName + SimulationConstants.RISK_GRADE_ARROW + simRiskGradeName);
+                
+                delta.setLgdChange(MathUtilities.roundIntermediate(
+                                SimulationConstants.getSafe(simulatedMetrics.getLossGivenDefault())
+                                                - SimulationConstants.getSafe(baseMetrics.getLossGivenDefault())));
+                delta.setEadChange(MathUtilities.roundFinal(
+                                SimulationConstants.getSafe(simulatedMetrics.getExposureAtDefault())
+                                                - SimulationConstants.getSafe(baseMetrics.getExposureAtDefault())));
+
                 delta.setMonthlyPaymentChange(
-                                MathUtilities.calculateAbsoluteDelta(simMonthlyPayment, baseMonthlyPayment));
-                delta.setDtiChange(MathUtilities.calculateAbsoluteDelta(simDti, baseDti));
-                delta.setTotalPaymentChange(MathUtilities.calculateAbsoluteDelta(simTotalPayment, baseTotalPayment));
-                delta.setTotalInterestChange(MathUtilities.calculateAbsoluteDelta(simTotalInterest, baseTotalInterest));
+                                MathUtilities.calculateDelta(simMonthlyPayment, baseMonthlyPayment));
+                delta.setDtiChange(MathUtilities.calculateDelta(simDti, baseDti));
+                delta.setTotalPaymentChange(MathUtilities.calculateDelta(simTotalPayment, baseTotalPayment));
+                delta.setTotalInterestChange(MathUtilities.calculateDelta(simTotalInterest, baseTotalInterest));
                 delta.setMonthlyDisposableIncomeChange(
-                                MathUtilities.calculateAbsoluteDelta(simDisposableIncome, baseDisposableIncome));
+                                MathUtilities.calculateDelta(simDisposableIncome, baseDisposableIncome));
 
                 return delta;
         }

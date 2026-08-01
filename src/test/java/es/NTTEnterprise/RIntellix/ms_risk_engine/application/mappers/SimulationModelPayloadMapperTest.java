@@ -48,7 +48,7 @@ class SimulationModelPayloadMapperTest {
         when(namingConverter.toCamelCase("interest_rate")).thenReturn("interestRate");
         when(payloadUtilities.normalizeInterestRateToFraction(5.0)).thenReturn(0.05);
 
-        Map<String, Object> result = mapper.normalizeBaseVariables(base);
+        Map<String, Object> result = mapper.normalizeBaseVariables(base, "PRESTAMO");
 
         assertEquals(10000.0, result.get("loanAmount"));
         assertEquals(0.05, result.get("interestRate"));
@@ -60,7 +60,7 @@ class SimulationModelPayloadMapperTest {
     @Test
     @DisplayName("normalizeFormChangesToCamelcase should handle empty map")
     void normalizeFormChangesToCamelcase_emptyMap() {
-        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(new HashMap<>());
+        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(new HashMap<>(), "PRESTAMO");
         assertTrue(result.isEmpty());
     }
 
@@ -72,7 +72,7 @@ class SimulationModelPayloadMapperTest {
         when(namingConverter.toCamelCase("hasMortgage")).thenReturn("hasMortgage");
         when(payloadUtilities.toModelBoolean(true)).thenReturn("Si");
 
-        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(changes);
+        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(changes, "PRESTAMO");
 
         assertEquals("Si", result.get("hasMortgage"));
     }
@@ -85,7 +85,7 @@ class SimulationModelPayloadMapperTest {
         when(namingConverter.toCamelCase("gender")).thenReturn("gender");
         when(payloadUtilities.normalizeEnumForField("gender", "HOMBRE")).thenReturn("Hombre");
 
-        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(changes);
+        Map<String, Object> result = mapper.normalizeFormChangesToCamelcase(changes, "PRESTAMO");
 
         assertEquals("Hombre", result.get("gender"));
     }
@@ -93,6 +93,21 @@ class SimulationModelPayloadMapperTest {
     @Test
     @DisplayName("normalizeBaseVariables should throw on null")
     void normalizeBaseVariables_null() {
-        assertThrows(NullPointerException.class, () -> mapper.normalizeBaseVariables(null));
+        assertThrows(NullPointerException.class, () -> mapper.normalizeBaseVariables(null, "PRESTAMO"));
+    }
+
+    @Test
+    @DisplayName("resolveCanonicalFieldName should map loanAmount to creditLimit for TARJETA_CREDITO")
+    void resolveCanonicalFieldName_intelligentMapping() {
+        Map<String, Object> base = Map.of("requestedAmount", 15000.0);
+        
+        when(namingConverter.toCamelCase("requestedAmount")).thenReturn("requestedAmount");
+
+        Map<String, Object> result = mapper.normalizeBaseVariables(base, "TARJETA_CREDITO");
+
+        assertEquals(15000.0, result.get("creditLimit"));
+        assertNull(result.get("loanAmount"));
+        
+        verify(namingConverter).toCamelCase("requestedAmount");
     }
 }

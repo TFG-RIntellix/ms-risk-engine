@@ -80,12 +80,11 @@ public class DomainServicesConfig {
     /**
      * Creates a SimulationDeltaCalculator bean.
      *
-     * @param strategies the list of financial metrics strategies
      * @return SimulationDeltaCalculator instance
      */
     @Bean
-    public SimulationDeltaCalculator simulationDeltaCalculator(List<FinancialMetricsStrategy> strategies) {
-        return new SimulationDeltaCalculator(strategies);
+    public SimulationDeltaCalculator simulationDeltaCalculator() {
+        return new SimulationDeltaCalculator();
     }
 
     /**

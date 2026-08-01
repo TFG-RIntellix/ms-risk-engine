@@ -13,7 +13,7 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringD
  * @author Lucía Fernández Mancebo
  * @date 08/05/2026
  */
-@FeignClient(name = "msCoreDataClient", url = "${ms-core-data.base-url:http://localhost:8081}")
+@FeignClient(name = "msCoreDataClient", url = "${risk.core-data.base-url:http://localhost:8081}")
 public interface MsCoreDataClient {
 
     @GetMapping("/api/requests/{requestId}/scoring")

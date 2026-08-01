@@ -68,6 +68,8 @@ class SimulationDraftMapperTest {
         
         SimulationDelta delta = new SimulationDelta();
         delta.setPdChange(0.01);
+        delta.setLgdChange(-0.05);
+        delta.setEadChange(-1000.0);
         delta.setMonthlyPaymentChange(100.0);
         draft.setDelta(delta);
 
@@ -82,6 +84,8 @@ class SimulationDraftMapperTest {
         
         assertNotNull(result.getDelta());
         assertEquals(0.01, result.getDelta().getPdChange());
+        assertEquals(-0.05, result.getDelta().getLgdChange());
+        assertEquals(-1000.0, result.getDelta().getEadChange());
         assertEquals(100.0, result.getDelta().getMonthlyPaymentChange());
     }
 

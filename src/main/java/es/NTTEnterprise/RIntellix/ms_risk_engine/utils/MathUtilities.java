@@ -51,7 +51,7 @@ public final class MathUtilities {
      * @param baseValue the base value
      * @return the absolute rounded difference
      */
-    public static double calculateAbsoluteDelta(final double simValue, final double baseValue) {
-        return Math.abs(roundFinal(simValue - baseValue));
+    public static double calculateDelta(final double simValue, final double baseValue) {
+        return roundFinal(simValue - baseValue);
     }
 }

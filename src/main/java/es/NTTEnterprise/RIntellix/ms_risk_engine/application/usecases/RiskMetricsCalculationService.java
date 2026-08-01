@@ -196,7 +196,7 @@ public class RiskMetricsCalculationService {
                 double existingMonthly = existingObligations != null ? existingObligations / 12.0 : 0.0;
 
                 Double rawRate = (Double) modelPayload.get(ModelPayloadFieldNames.FIELD_INTEREST_RATE);
-                double simRate = rawRate != null ? rawRate * 100.0 : 0.0;
+                double simRate = rawRate != null ? rawRate : 0.0;
 
                 final FinancialMetrics financialMetrics = financialMetricsCalculationService.calculateFinancialMetrics(
                                 context.requestType(),

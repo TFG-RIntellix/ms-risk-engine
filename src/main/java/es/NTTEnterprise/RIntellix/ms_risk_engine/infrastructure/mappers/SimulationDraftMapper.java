@@ -167,6 +167,8 @@ public class SimulationDraftMapper {
 
         // Map all delta attributes to response DTO
         response.setPdChange(delta.getPdChange());
+        response.setLgdChange(delta.getLgdChange());
+        response.setEadChange(delta.getEadChange());
         response.setEclChange(delta.getEclChange());
         response.setRiskGradeChange(delta.getRiskGradeChange());
         response.setMonthlyPaymentChange(delta.getMonthlyPaymentChange());

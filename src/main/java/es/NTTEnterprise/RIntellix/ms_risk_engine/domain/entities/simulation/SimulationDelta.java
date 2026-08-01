@@ -12,6 +12,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.domain.entities.simulation;
  */
 public class SimulationDelta {
     private Double pdChange;
+    private Double lgdChange;
+    private Double eadChange;
     private Double eclChange;
     private String riskGradeChange;
 
@@ -28,6 +30,22 @@ public class SimulationDelta {
 
     public void setPdChange(final Double pdChange) {
         this.pdChange = pdChange;
+    }
+
+    public Double getLgdChange() {
+        return lgdChange;
+    }
+
+    public void setLgdChange(final Double lgdChange) {
+        this.lgdChange = lgdChange;
+    }
+
+    public Double getEadChange() {
+        return eadChange;
+    }
+
+    public void setEadChange(final Double eadChange) {
+        this.eadChange = eadChange;
     }
 
     public Double getEclChange() {
@@ -90,6 +108,8 @@ public class SimulationDelta {
     public String toString() {
         return "SimulationDelta{" +
                 "pdChange=" + pdChange +
+                ", lgdChange=" + lgdChange +
+                ", eadChange=" + eadChange +
                 ", eclChange=" + eclChange +
                 ", riskGradeChange='" + riskGradeChange + '\'' +
                 ", monthlyPaymentChange=" + monthlyPaymentChange +

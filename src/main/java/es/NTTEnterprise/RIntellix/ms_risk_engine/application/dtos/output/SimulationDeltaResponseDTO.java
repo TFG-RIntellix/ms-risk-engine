@@ -14,6 +14,8 @@ package es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.output;
 public class SimulationDeltaResponseDTO {
 
     private Double pdChange;
+    private Double lgdChange;
+    private Double eadChange;
     private Double eclChange;
     private String riskGradeChange;
     private Double monthlyPaymentChange;
@@ -45,9 +47,11 @@ public class SimulationDeltaResponseDTO {
      * @param dtiChange            The change in Debt-to-Income ratio (DTI) compared
      *                             to the original scoring
      */
-    public SimulationDeltaResponseDTO(Double pdChange, Double eclChange, String riskGradeChange,
+    public SimulationDeltaResponseDTO(Double pdChange, Double lgdChange, Double eadChange, Double eclChange, String riskGradeChange,
             Double monthlyPaymentChange, Double dtiChange) {
         this.pdChange = pdChange;
+        this.lgdChange = lgdChange;
+        this.eadChange = eadChange;
         this.eclChange = eclChange;
         this.riskGradeChange = riskGradeChange;
         this.monthlyPaymentChange = monthlyPaymentChange;
@@ -61,6 +65,22 @@ public class SimulationDeltaResponseDTO {
 
     public void setPdChange(final Double pdChange) {
         this.pdChange = pdChange;
+    }
+
+    public Double getLgdChange() {
+        return lgdChange;
+    }
+
+    public void setLgdChange(final Double lgdChange) {
+        this.lgdChange = lgdChange;
+    }
+
+    public Double getEadChange() {
+        return eadChange;
+    }
+
+    public void setEadChange(final Double eadChange) {
+        this.eadChange = eadChange;
     }
 
     public Double getEclChange() {
@@ -132,6 +152,10 @@ public class SimulationDeltaResponseDTO {
 
         if (pdChange != null ? !pdChange.equals(that.pdChange) : that.pdChange != null)
             return false;
+        if (lgdChange != null ? !lgdChange.equals(that.lgdChange) : that.lgdChange != null)
+            return false;
+        if (eadChange != null ? !eadChange.equals(that.eadChange) : that.eadChange != null)
+            return false;
         if (eclChange != null ? !eclChange.equals(that.eclChange) : that.eclChange != null)
             return false;
         if (riskGradeChange != null ? !riskGradeChange.equals(that.riskGradeChange) : that.riskGradeChange != null)
@@ -155,6 +179,8 @@ public class SimulationDeltaResponseDTO {
     @Override
     public int hashCode() {
         int result = pdChange != null ? pdChange.hashCode() : 0;
+        result = 31 * result + (lgdChange != null ? lgdChange.hashCode() : 0);
+        result = 31 * result + (eadChange != null ? eadChange.hashCode() : 0);
         result = 31 * result + (eclChange != null ? eclChange.hashCode() : 0);
         result = 31 * result + (riskGradeChange != null ? riskGradeChange.hashCode() : 0);
         result = 31 * result + (monthlyPaymentChange != null ? monthlyPaymentChange.hashCode() : 0);
@@ -169,6 +195,8 @@ public class SimulationDeltaResponseDTO {
     public String toString() {
         return "SimulationDeltaResponseDTO{" +
                 "pdChange=" + pdChange +
+                ", lgdChange=" + lgdChange +
+                ", eadChange=" + eadChange +
                 ", eclChange=" + eclChange +
                 ", riskGradeChange='" + riskGradeChange + '\'' +
                 ", monthlyPaymentChange=" + monthlyPaymentChange +
