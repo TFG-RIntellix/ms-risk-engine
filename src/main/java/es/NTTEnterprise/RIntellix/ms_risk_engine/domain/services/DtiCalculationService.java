@@ -43,9 +43,10 @@ public class DtiCalculationService {
 
         final double existingMonthly = existingObligationsAnnual / SimulationConstants.MONTHS_PER_YEAR;
         final int safeTermMonths = termMonths == null ? SimulationConstants.MIN_TERM_MONTHS : termMonths;
+        final double interestRateFraction = interestRate / SimulationConstants.PERCENTAGE_DIVISOR;
         final double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
                 loanAmount,
-                interestRate,
+                interestRateFraction,
                 safeTermMonths);
         final double monthlyIncome = annualIncome / SimulationConstants.MONTHS_PER_YEAR;
         return MathUtilities.roundFinal((existingMonthly + monthlyPayment) / monthlyIncome);

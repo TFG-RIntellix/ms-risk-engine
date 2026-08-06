@@ -17,8 +17,8 @@ class FinancialMetricsCalculatorTest {
     @Test
     @DisplayName("Should calculate correct monthly payment with standard values")
     void calculateMonthlyPayment_standard() {
-        // 100,000 at 5% for 36 months
-        double result = FinancialMetricsCalculator.calculateMonthlyPayment(100000.0, 5.0, 36);
+        // 100,000 at 5% (0.05 as fraction) for 36 months
+        double result = FinancialMetricsCalculator.calculateMonthlyPayment(100000.0, 0.05, 36);
         assertTrue(result > 0);
         assertEquals(2997.09, result, 1.5);
     }

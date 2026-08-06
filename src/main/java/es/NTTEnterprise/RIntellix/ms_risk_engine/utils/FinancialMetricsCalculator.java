@@ -16,17 +16,16 @@ public final class FinancialMetricsCalculator {
      * Calculates the monthly payment using French amortization formula.
      *
      * @param principal  the principal amount.
-     * @param annualRate the annual nominal interest rate (percentage).
+     * @param annualRate the annual nominal interest rate (as a fraction, e.g., 0.045 for 4.5%).
      * @param termMonths the loan term in months.
      * @return the monthly payment.
      */
     public static double calculateMonthlyPayment(final double principal, final double annualRate,
             final int termMonths) {
         final int safeTermMonths = Math.max(termMonths, SimulationConstants.MIN_TERM_MONTHS);
-        final double monthlyRate = annualRate / SimulationConstants.PERCENTAGE_DIVISOR
-                / SimulationConstants.MONTHS_PER_YEAR;
+        final double monthlyRate = annualRate / SimulationConstants.MONTHS_PER_YEAR;
 
-        if (monthlyRate == SimulationConstants.ZERO_RATE) {
+        if (monthlyRate <= SimulationConstants.ZERO_RATE) {
             return MathUtilities.roundFinal(principal / safeTermMonths);
         }
 

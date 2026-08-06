@@ -83,10 +83,8 @@ public class RiskIndicatorCalculationService {
                 final Boolean isRevolving = MapUtilities.getBoolean(mergedVariables, ModelPayloadFieldNames.FIELD_IS_REVOLVING, false);
                 monthlyPayment = CreditCardFinancialMetricsCalculator.calculateMonthlyPayment(creditLimit, isRevolving);
             } else {
-                // TODO: Not hardcoding values, do it properly, also check how will be
-                // interestRate populated.
                 monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
-                        loanAmount, interestRate * 100.0, termMonths);
+                        loanAmount, interestRate, termMonths);
             }
 
             final double existingObligationsAnnual = MapUtilities.getDouble(
@@ -147,8 +145,6 @@ public class RiskIndicatorCalculationService {
             log.info(LogMessage.SIMULATION_LTV_RECALCULATED, newLtv, loanAmount, propertyValue);
         }
 
-        // CRITICAL: Remove propertyValue from model input
-        // propertyValue is NOT a model feature, only LTV is
         mergedVariables.remove(ModelPayloadFieldNames.FIELD_PROPERTY_VALUE);
         log.debug(LogMessage.SIMULATION_PROPERTY_VALUE_REMOVED);
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Assertions;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.application.dtos.input.ScoringGenerationRequest;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.DtiCalculationService;
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.BooleanConverter;
@@ -38,7 +38,7 @@ class LoanOrMortgageModelPayloadMapperTest {
 
         double monthlyIncome = request.getAnnualIncome() / SimulationConstants.MONTHS_PER_YEAR;
         double monthlyPayment = FinancialMetricsCalculator.calculateMonthlyPayment(
-                request.getLoanAmount(), request.getInterestRate(), request.getTermMonths());
+                request.getLoanAmount(), request.getInterestRate() / SimulationConstants.PERCENTAGE_DIVISOR, request.getTermMonths());
         double expectedDti = MathUtilities.roundFinal((request.getExistingObligations() / 12.0 + monthlyPayment)
                 / monthlyIncome);
 
@@ -72,8 +72,7 @@ class LoanOrMortgageModelPayloadMapperTest {
                 utilities,
                 new DtiCalculationService());
 
-        // In a real application, controller validations prevent this. But we can test it throws NPE or handles it.
-        org.junit.jupiter.api.Assertions.assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             mapper.toModelPayload(null);
         });
     }
@@ -90,13 +89,12 @@ class LoanOrMortgageModelPayloadMapperTest {
         request.setLoanAmount(15000.0);
         request.setInterestRate(5.0);
         request.setTermMonths(36);
-        // missing all demographic/employment data, etc.
 
         Map<String, Object> payload = mapper.toModelPayload(request);
         
-        // Assert that the map was created without throwing
+       
         assertThat(payload).isNotNull();
-        // and DTI is calculated as 0
+        
         assertThat(payload.get(ModelPayloadFieldNames.FIELD_DTI)).isEqualTo(SimulationConstants.ZERO_VALUE);
     }
 }

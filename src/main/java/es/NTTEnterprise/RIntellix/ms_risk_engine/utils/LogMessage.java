@@ -114,6 +114,12 @@ public final class LogMessage {
         public static final String EXCEPTION_UNEXPECTED = "Unexpected error: {}";
         public static final String EXCEPTION_ILLEGAL_ARGUMENT = "Illegal argument: {}";
         public static final String API_ERROR_UNEXPECTED_MESSAGE = "An unexpected error occurred. Please try again later.";
+        public static final String EXCEPTION_FEIGN_CLIENT_ERROR = "Feign client error: {}";
+        public static final String EXCEPTION_FEIGN_SCORING_NOT_FOUND = "Scoring data not found";
+        public static final String EXCEPTION_MALFORMED_JSON_LOG = "Malformed JSON request or empty body: {}";
+        public static final String EXCEPTION_MALFORMED_JSON_MESSAGE = "Malformed JSON request or empty body";
+        public static final String EXCEPTION_MODEL_PROCESSING_ERROR = "Error processing model request";
+        public static final String EXCEPTION_VALIDATION_ERROR_DEFAULT = "Validation error";
 
         // ============================================================
         // VALIDATION AND EXCEPTION MESSAGES
