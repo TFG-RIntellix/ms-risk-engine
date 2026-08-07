@@ -1,226 +1,114 @@
 # ms-risk-engine
 
-> Credit risk scoring microservice for the **RIntellix** platform — part of the NTT Enterprise ecosystem.
+**Risk-calculation orchestration microservice for the RIntellix credit-risk platform.**
 
-**ms-risk-engine** is a Spring Boot 4 microservice that orchestrates real-time credit risk scoring by consuming loan/mortgage/credit-card requests from Apache Kafka, invoking an external AI prediction model (XGBoost), computing financial risk metrics (EAD, LGD, ECL), and publishing enriched scoring results for downstream persistence.
-
----
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Scoring Pipeline](#scoring-pipeline)
-- [Domain Model](#domain-model)
-- [Risk Calculation Strategies](#risk-calculation-strategies)
-- [SHAP Explainability](#shap-explainability)
-- [Inter-Service Communication](#inter-service-communication)
-- [Configuration](#configuration)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
+`Java 17` · `Spring Boot 4` · `OpenFeign` · `Apache Kafka` · `Hexagonal Architecture`
 
 ---
 
-## Architecture
+## 1. Overview
 
-The service follows **Hexagonal Architecture** (Ports & Adapters) organized in three layers:
+`ms-risk-engine` is the orchestrator of a credit-risk simulation. It does not compute the
+probability of default itself (that is delegated to `ms-model`); instead it coordinates the
+whole simulation flow: it validates the incoming draft, fetches request data, calls the ML
+scoring service, applies risk-calculation strategies per product type, and publishes the final
+scoring result back to `ms-core-data` for persistence.
 
-```
-ms-risk-engine/
-├── domain/             # Pure business logic, zero framework dependencies
-│   ├── entities/       # Scoring, RiskMetrics, RiskFeature, ModelPredictionResult
-│   ├── enums/          # RiskGrade, RequestType, ContractCategory
-│   ├── exceptions/     # Domain-specific exceptions
-│   ├── ports/          # Input & output port interfaces
-│   └── strategies/     # Risk calculation strategies (Loan, Mortgage, Credit Card)
-├── application/        # Use cases, orchestration, DTOs, mappers
-│   ├── usecases/       # ScoringProcessingService, ScoringModelInvocationService
-│   ├── strategies/     # Model execution strategies (per product type)
-│   ├── mappers/        # Payload & result mappers
-│   ├── dtos/           # Input/output DTOs
-│   ├── constraints/    # Validation constraints
-│   └── ports/          # Application-level port interfaces
-└── infraestructure/    # Framework adapters, Kafka, HTTP clients
-    ├── adapters/
-    │   ├── input/      # Kafka consumer (ScoringKafkaConsumer)
-    │   └── output/     # Kafka producer, AI model HTTP client
-    ├── config/         # Spring configuration beans
-    └── mappers/        # Infrastructure-level mappers
-```
+Responsibilities at a glance:
 
----
+- Expose the endpoint that starts a new simulation draft.
+- Retrieve request/scoring context from `ms-core-data`.
+- Call `ms-model` to obtain the PD (probability of default) prediction and its SHAP explanation.
+- Apply product-specific risk strategies (e.g. revolving credit cards vs. term loans).
+- Publish the resulting scoring event to Kafka for `ms-core-data` and `ms-reporting` to consume.
 
-## Scoring Pipeline
+## 2. Key aspects of the system
 
-The end-to-end scoring flow follows an **event-driven, asynchronous** pattern:
+- **Hexagonal architecture (ports & adapters).** `domain` holds entities, strategies and
+  services with zero framework dependencies; `application` holds use cases, input ports and
+  DTOs; `infrastructure` holds REST/Kafka adapters, Feign clients and configuration.
+- **Strategy pattern for risk calculation.** `domain/strategies` (and its infrastructure Kafka
+  counterpart in `infrastructure/adapters/input/kafka/strategy`) implements one strategy per
+  credit product — e.g. `RevolvingCreditCardRiskCalculationStrategy` — so new product types can
+  be added without touching existing calculation logic.
+- **Declarative HTTP clients (Feign).** `infrastructure/adapters/output/clients` contains
+  `MsCoreDataClient` (reads request/scoring data) and `MsModelClient` (calls the ML prediction
+  endpoint), keeping outbound integration code declarative and testable.
+- **Event-driven result propagation.** Once a simulation is scored, the result is emitted over
+  Kafka rather than through a synchronous call, decoupling the engine from its downstream
+  consumers.
+- **Isolated error handling.** `infrastructure/adapters/output/handler` centralises how failures
+  from downstream calls (Feign, Kafka) are translated into domain-level outcomes.
 
-```
-┌──────────────┐       ┌──────────────────┐       ┌───────────────┐
-│ ms-core-data │──────►│  GenerateScoring  │──────►│ ms-risk-engine│
-│              │ Kafka │  (Kafka Topic)    │       │               │
-└──────────────┘       └──────────────────┘       └───────┬───────┘
-                                                          │
-                                          ┌───────────────┼───────────────┐
-                                          │               │               │
-                                          ▼               ▼               ▼
-                                   ┌────────────┐ ┌─────────────┐ ┌────────────┐
-                                   │ Map Payload │ │ Invoke AI   │ │ Calculate  │
-                                   │ (Mapper)    │ │ Model (HTTP)│ │ EAD/LGD    │
-                                   └────────────┘ └──────┬──────┘ └─────┬──────┘
-                                                         │              │
-                                                         ▼              ▼
-                                                  ┌─────────────────────────┐
-                                                  │ Assemble Full Metrics   │
-                                                  │ (PD + EAD + LGD → ECL) │
-                                                  └────────────┬────────────┘
-                                                               │
-                                                               ▼
-                                                  ┌─────────────────────────┐
-                                                  │  Enrich Explainability  │
-                                                  │  (SHAP + feature values)│
-                                                  └────────────┬────────────┘
-                                                               │
-                                                               ▼
-                                                  ┌─────────────────────────┐
-                                                  │   PersistScoring        │
-                                                  │   (Kafka Topic)         │
-                                                  └─────────────────────────┘
-```
+### Main REST resource
 
-### Parallelized Execution
-
-The AI model call and risk metric pre-computation run **in parallel**:
-
-1. The model invocation fires asynchronously via `CompletableFuture`.
-2. While the model call is in-flight, EAD and LGD are computed using the appropriate risk calculation strategy.
-3. When the model returns PD, the service joins both results to assemble ECL and the final risk grade.
-
----
-
-## Simulation Draft API (UC-06)
-
-`ms-risk-engine` also exposes a stateless draft simulation endpoint:
-
-- **POST** `/api/v1/simulations/draft`
-- Fetches base request + scoring from `ms-core-data`
-- Merges base variables with submitted `formChanges`
-- Calls `ms-model` to recalculate PD
-- Recomputes financial metrics and delta values
-- Returns `simulatedResults` + `delta` without persistence
-
-Persistence is intentionally out of scope for this microservice and belongs to `ms-core-data`.
-
----
-
-## Domain Model
-
-| Entity | Description |
-|---|---|
-| **Scoring** | Root aggregate — stores request ID, model version, execution date, input snapshot, risk metrics, and explainability features. |
-| **RiskMetrics** | PD (Probability of Default), LGD (Loss Given Default), EAD (Exposure at Default), ECL (Expected Calculated Loss), Risk Level. |
-| **RiskFeature** | Single SHAP explainability feature — feature name, the value sent to the model, SHAP impact contribution, and direction (increase/decrease). |
-| **ModelPredictionResult** | AI model response — PD, risk segment, SHAP base value, and top SHAP feature explanations. |
-
----
-
-## Risk Calculation Strategies
-
-Product-specific risk calculations are encapsulated as **Strategy Pattern** implementations:
-
-| Strategy | Product Types | Key Logic |
+| Resource | Path | Notes |
 |---|---|---|
-| `LoanRiskCalculationStrategy` | Loans (PRESTAMO) | Standard EAD = loan amount; fixed LGD |
-| `MortgageRiskCalculationStrategy` | Mortgages (HIPOTECA) | LGD adjusted by collateral haircut and liquidation costs |
-| `StandardCreditCardRiskCalculationStrategy` | Standard credit cards | EAD = balance × CCF (normal) |
-| `RevolvingCreditCardRiskCalculationStrategy` | Revolving credit cards | EAD = balance × CCF (revolving); higher LGD |
+| Simulation draft | `POST /api/v1/simulations/draft` | Starts a new risk-simulation flow |
 
-**ECL Formula:** `ECL = PD × LGD × EAD`
 
----
+### Repository structure
 
-## SHAP Explainability
+The following schematic illustrates the source code layout and how the key architectural pieces described above map to the main project folders:
 
-The AI model returns SHAP (SHapley Additive exPlanations) values for the top contributing features. The service enriches each SHAP feature with the actual **input value** sent to the model by performing a case-insensitive lookup against the model payload snapshot.
+![Directory structure](./estructura_directorios_ms_risk_engine.svg)
 
-Example output:
-```json
-{
-  "featureName": "Num_Moras_Previas",
-  "featureValue": "3",
-  "shapValue": 2.2487,
-  "description": "increase"
-}
+## 3. Tech stack
+
+- **Language / runtime:** Java 17
+- **Framework:** Spring Boot 4 (`spring-boot-starter-web`, `spring-boot-starter-webflux`,
+  `spring-boot-starter-validation`, `spring-boot-starter-actuator`, `spring-boot-starter-logging`)
+- **Inter-service calls:** Spring Cloud OpenFeign (`spring-cloud-starter-openfeign`)
+- **Messaging:** `spring-kafka`
+- **Utilities:** Lombok, Jackson
+
+## 4. Prerequisites
+
+- JDK 17+
+- Maven 3.9+
+
+## 5. Getting started
+
+> `**IMPORTANT**`
+>
+> **Global platform deployment**:
+> This repository contains only the risk engine code. To spin up the entire RIntellix platform (including this service, Kafka, Keycloak, and the rest of the microservices), clone the main infrastructure repository **[TFG-RIntellix/rintellix-deployment]** and follow its instructions.
+
+The following commands are provided for local development, code review, and testing:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/TFG-RIntellix/ms-risk-engine.git
+cd ms-risk-engine
+
+# 2. Build and run local tests
+mvn clean test
 ```
 
----
+## 6. Configuration
 
-## Inter-Service Communication
-
-| Channel | Direction | Counterpart | Purpose |
-|---|---|---|---|
-| **Kafka** `GenerateScoring` | Inbound | ms-core-data | Receives scoring generation requests |
-| **Kafka** `PersistScoring` | Outbound | ms-core-data | Publishes enriched scoring results |
-| **HTTP** (WebClient) | Outbound | ms-model (Python) | Invokes AI prediction endpoints |
-
----
-
-## Configuration
-
-Key configuration properties (`application.properties`):
+The following properties are consumed via `application.yaml` or corresponding environment variables:
 
 | Property | Description | Default |
 |---|---|---|
-| `server.port` | Service port | `8082` |
-| `spring.kafka.bootstrap-servers` | Kafka broker address | `localhost:9092` |
-| `scoring.kafka.topic.generation` | Inbound Kafka topic | `GenerateScoring` |
-| `scoring.kafka.topic.persist` | Outbound Kafka topic | `PersistScoring` |
-| `risk.model.base-url` | AI model service URL | `http://localhost:8000` |
-| `risk.model.predict-loan-path` | Loan prediction endpoint | `/api/v1/risk/predict-loan` |
-| `risk.model.version` | Model version label | `xgboost-loan-v1` |
-| `risk.simulation.lgd.*` | LGD configuration per product | See properties file |
+| `app.clients.core-data.url` | Base URL of the Feign client for `ms-core-data` | `http://localhost:8081` |
+| `app.clients.model.url` | Base URL of the Feign client for `ms-model` | `http://localhost:8000` |
+| `spring.kafka.bootstrap-servers` | Kafka broker bootstrap servers | `localhost:9092` |
+| `app.kafka.topics.scoring-result` | Topic where the scoring result is published | `risk.scoring.result` |
+| `server.port` | Internal port the service listens on | `8082` |
 
----
+See `SIMULATION_ERROR_ANALYSIS.md` in this repository for a breakdown of known failure modes in the simulation flow and how they are currently handled.
 
-## Tech Stack
+## 7. Related services
 
-| Technology | Version | Purpose |
-|---|---|---|
-| Java | 17 | Language |
-| Spring Boot | 4.0.4 | Application framework |
-| Spring Kafka | — | Event-driven messaging |
-| Spring WebClient | — | Reactive HTTP client for AI model calls |
-| Jackson | — | JSON serialization/deserialization |
-| Lombok | — | Boilerplate reduction |
-| Maven | — | Build & dependency management |
+- **ms-core-data** — provides request data and persists the final scoring result.
+- **ms-model** — provides the ML probability-of-default prediction and SHAP explanation.
+- **ms-reporting** — consumes the scoring event to generate the credit report.
+- **ms-sec-gateway** — routes external traffic to this service.
 
----
+## 8. Author
 
-## Getting Started
+Lucía Fernández Mancebo — TFG *RIntellix*, Universidad de Cantabria.
 
-### Prerequisites
 
-- Java 17+
-- Apache Kafka running on `localhost:9092`
-- [ms-model](../ms-model) (Python AI service) running on `localhost:8000`
-- [ms-core-data](../ms-core-data) running on `localhost:8081`
 
-### Build & Run
-
-```bash
-# Build
-./mvnw clean package -DskipTests
-
-# Run
-./mvnw spring-boot:run
-```
-
-### Kafka Topics
-
-Ensure the following topics exist in your Kafka cluster:
-- `GenerateScoring` — consumed by this service
-- `PersistScoring` — produced by this service
-
----
-
-## Author
-
-**Lucía Fernández Mancebo** — NTT Enterprise · RIntellix Platform

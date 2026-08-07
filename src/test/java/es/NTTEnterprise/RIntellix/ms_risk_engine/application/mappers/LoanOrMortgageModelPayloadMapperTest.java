@@ -72,7 +72,7 @@ class LoanOrMortgageModelPayloadMapperTest {
                 utilities,
                 new DtiCalculationService());
 
-        assertThrows(NullPointerException.class, () -> {
+        Assertions.assertThrows(NullPointerException.class, () -> {
             mapper.toModelPayload(null);
         });
     }
