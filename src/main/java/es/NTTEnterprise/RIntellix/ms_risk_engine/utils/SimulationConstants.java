@@ -40,7 +40,7 @@ public final class SimulationConstants {
      * When employmentStatus changes in a simulation, incomeType MUST be
      * synchronized to maintain data coherence with the model's training domain.
      */
-    public static final java.util.Map<String, String> EMPLOYMENT_TO_INCOME_TYPE = Map.of(
+    public static final Map<String, String> EMPLOYMENT_TO_INCOME_TYPE = Map.of(
             "Indefinido", "Salario",
             "Temporal", "Salario",
             "Funcionario", "Salario",
