@@ -32,6 +32,8 @@ public final class SimulationFormFieldNames {
             "hasMortgage", // Scenario: mortgage obligation changes
             "propertyValue", // Mortgage: property value to calculate LTV (for mortgage only)
             "creditLimit", // Credit card: credit limit field
-            "isRevolving" // Revolving Credit: revolving field
+            "isRevolving", // Revolving Credit: revolving field
+            "loanType", // Read-only but submitted by frontend
+            "repaymentSystem" // Read-only but submitted by frontend
     );
 }

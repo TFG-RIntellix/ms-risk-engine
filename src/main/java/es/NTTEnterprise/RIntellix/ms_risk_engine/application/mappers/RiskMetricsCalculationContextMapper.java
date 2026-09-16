@@ -9,7 +9,9 @@ import es.NTTEnterprise.RIntellix.ms_risk_engine.domain.services.RiskMetricsCalc
 import es.NTTEnterprise.RIntellix.ms_risk_engine.utils.ModelPayloadFieldNames;
 
 /**
- * Mapper for building the RiskMetricsCalculationContext from form changes and base scoring.
+ * Mapper for building the RiskMetricsCalculationContext from form changes and
+ * base scoring.
+ * 
  * @date 27/08/2026
  */
 @Component
@@ -22,7 +24,7 @@ public class RiskMetricsCalculationContextMapper {
             Map<String, Object> mergedVariables,
             String endpointPath,
             String requestId) {
-        
+
         final Map<String, Object> baseInputs = baseScoring.getInputSnapshot();
         final Map<String, Object> formValues = formChanges.getValues();
 
@@ -37,7 +39,8 @@ public class RiskMetricsCalculationContextMapper {
         final Double annualIncome = extractDouble(formValues, baseInputs, ModelPayloadFieldNames.FIELD_ANNUAL_INCOME);
         final Integer termMonths = extractInteger(formValues, baseInputs, ModelPayloadFieldNames.FIELD_TERM_MONTHS);
         final Double interestRate = extractDouble(formValues, baseInputs, ModelPayloadFieldNames.FIELD_INTEREST_RATE);
-        final Double existingObligations = extractDouble(formValues, baseInputs, ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
+        final Double existingObligations = extractDouble(formValues, baseInputs,
+                ModelPayloadFieldNames.FIELD_EXISTING_OBLIGATIONS);
         final Double existingMonthly = existingObligations != null ? existingObligations / 12.0 : 0.0;
 
         return new RiskMetricsCalculationContext(
@@ -51,10 +54,17 @@ public class RiskMetricsCalculationContextMapper {
                 annualIncome,
                 termMonths,
                 interestRate,
-                existingMonthly
-        );
+                existingMonthly);
     }
 
+    /**
+     * Extracts a Boolean value from either formValues or baseInputs.
+     * 
+     * @param formValues Map of form values
+     * @param baseInputs Map of base inputs
+     * @param fieldName  Field name to extract
+     * @return Extracted Boolean value or null if not found
+     */
     private Boolean extractBoolean(Map<String, Object> formValues, Map<String, Object> baseInputs, String fieldName) {
         if (formValues != null && formValues.containsKey(fieldName)) {
             return (Boolean) formValues.get(fieldName);
@@ -62,6 +72,14 @@ public class RiskMetricsCalculationContextMapper {
         return (Boolean) baseInputs.get(fieldName);
     }
 
+    /**
+     * Extracts a Double value from either formValues or baseInputs.
+     * 
+     * @param formValues Map of form values
+     * @param baseInputs Map of base inputs
+     * @param fieldName  Field name to extract
+     * @return Extracted Double value or null if not found
+     */
     private Double extractDouble(Map<String, Object> formValues, Map<String, Object> baseInputs, String fieldName) {
         Object val = null;
         if (formValues != null && formValues.containsKey(fieldName)) {
@@ -75,6 +93,14 @@ public class RiskMetricsCalculationContextMapper {
         return null;
     }
 
+    /**
+     * Extracts an Integer value from either formValues or baseInputs.
+     * 
+     * @param formValues Map of form values
+     * @param baseInputs Map of base inputs
+     * @param fieldName  Field name to extract
+     * @return Extracted Integer value or null if not found
+     */
     private Integer extractInteger(Map<String, Object> formValues, Map<String, Object> baseInputs, String fieldName) {
         Object val = null;
         if (formValues != null && formValues.containsKey(fieldName)) {
